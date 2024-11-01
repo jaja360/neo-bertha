@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: ssh://github.com/jaja360/neo-bertha.git
+  url: ssh://git@github.com/jaja360/neo-bertha.git
   ref:
     branch: main
   secretRef:

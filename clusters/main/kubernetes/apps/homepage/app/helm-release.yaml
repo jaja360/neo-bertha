@@ -14,66 +14,10 @@ spec:
                 name: truecharts
                 namespace: flux-system
     values:
-        configmap:
-            config:
-                data:
-                    bookmarks.yaml: |
-                        ---
-                        # https://gethomepage.dev/latest/configs/bookmarks
-                        - Developer:
-                            - Github:
-                                - abbr: GH
-                                  href: https://github.com/
-                        - Social:
-                            - Reddit:
-                                - abbr: RE
-                                  href: https://reddit.com/
-                        - Entertainment:
-                            - YouTube:
-                                - abbr: YT
-                                  href: https://youtube.com/
-                        - TrueCharts:
-                            - TrueCharts:
-                              - abbr: TC
-                                icon: https://truecharts.org/svg/favicon.svg
-                                href: https://truecharts.org
-                                description: "TrueCharts Website"
-                            - Github:
-                              - abbr: GH
-                                icon: https://github.com/fluidicon.png
-                                href: https://github.com/truecharts
-                                description: "TrueCharts GitHub"
-                            - Open Collective:
-                              - abbr: TC
-                                icon: https://opencollective.com/favicon.ico
-                                href: https://opencollective.com/truecharts
-                                description: "TrueCharts Open Collective"
-                            - Discord:
-                              - abbr: DC
-                                icon: https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://discord.com&size=32
-                                href: https://truecharts.org/s/discord
-                                description: "TrueCharts Discord"
-                    custom.css: ""
-                    custom.js: ""
-                    kubernetes.yaml: |
-                        mode: cluster
-                    services.yaml: "---\n# For configuration options and examples, please see:\n# https://gethomepage.dev/latest/configs/services\n\n- Arr:\n    - My First Service:\n        href: http://localhost/\n        description: Homepage is awesome\n\n- Media:\n    - My Second Service:\n        href: http://localhost/\n        description: Homepage is the best\n\n- Infra:\n    - My Third Service:\n        href: http://localhost/\n        description: Homepage is \U0001F60E\n"
-                    settings.yaml: |
-                        ---
-                        # https://gethomepage.dev/latest/configs/settings
-                        providers:
-                          openweathermap: '${OPENWEATHERMAP_API_KEY}'
-                    widgets.yaml: |
-                        ---
-                        # https://gethomepage.dev/latest/configs/widgets
-                        - resources:
-                            cpu: true
-                            memory: true
-                            disk: /
-                        - search:
-                            provider: duckduckgo
-                            target: _blank
+        service:
+            main:
                 enabled: true
+                type: LoadBalancer
         credentials:
             backblaze:
                 name: backblaze

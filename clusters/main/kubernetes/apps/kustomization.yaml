@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - kubernetes-dashboard/ks.yaml
   - homepage/ks.yaml
+  - static-web-server/ks.yaml

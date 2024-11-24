@@ -1,60 +1,125 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-    name: homepage
-    namespace: homepage
+  name: homepage
+  namespace: homepage
 spec:
-    interval: 15m
-    chart:
-        spec:
-            chart: homepage
-            version: 9.3.4
-            sourceRef:
-                kind: HelmRepository
-                name: truecharts
-                namespace: flux-system
-    values:
-        service:
-            main:
-                enabled: true
-                type: LoadBalancer
-        credentials:
-            backblaze:
-                name: backblaze
-                type: s3
-                path: ""
-                accessKey: "${BACKBLAZE_ID}"
-                bucket: "${BACKBLAZE_BUCKET}"
-                encrKey: "${BACKBLAZE_ENCR_KEY}"
-                secretKey: "${BACKBLAZE_KEY}"
-                url: "${BACKBLAZE_URL}"
-        forceConfigFromValues: false
-        ingress:
-            main:
-                enabled: true
-                hosts:
-                    - host: "home.${DOMAIN_0}"
-                integrations:
-                    certManager:
-                        enabled: true
-                        certificateIssuer: domain-0-le-prod
-                    traefik:
-                        enabled: true
-                        entrypoints:
-                            - websecure
-                        # middlewares:
-                        #     - name: auth
-                        #       namespace: ""
-        persistence:
-            config:
-                enabled: true
-                readOnly: false
-                mountPath: /app/config
-                volsync:
-                    - name: config
-                      credentials: backblaze
-                      type: restic
-                      dest:
-                        enabled: true
-                      src:
-                        enabled: false
+  interval: 15m
+  chart:
+    spec:
+      chart: homepage
+      version: 9.3.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "home.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            # middlewares:
+            #   - name: auth
+            #    namespace: ""
+    persistence:
+      config:
+        enabled: true
+        mountPath: /app/config
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+    forceConfigFromValues: true
+    configmap:
+      config:
+        data:
+          bookmarks.yaml: |
+            ---
+            - Developer:
+              - Github:
+                - abbr: GH
+                 href: https://github.com/
+            - Social:
+              - Reddit:
+                - abbr: RE
+                 href: https://reddit.com/
+            - Entertainment:
+              - YouTube:
+                - abbr: YT
+                 href: https://youtube.com/
+            - TrueCharts:
+              - TrueCharts:
+               - abbr: TC
+                icon: https://truecharts.org/svg/favicon.svg
+                href: https://truecharts.org
+                description: "TrueCharts Website"
+              - Github:
+               - abbr: GH
+                icon: https://github.com/fluidicon.png
+                href: https://github.com/truecharts
+                description: "TrueCharts GitHub"
+              - Discord:
+               - abbr: DC
+                icon: https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://discord.com&size=32
+                href: https://truecharts.org/s/discord
+                description: "TrueCharts Discord"
+          kubernetes.yaml: |
+            mode: cluster
+          services.yaml: ""
+          settings.yaml: |
+            providers:
+             openweathermap: '${OPENWEATHERMAP_API_KEY}'
+          widgets.yaml: |
+            - resources:
+              cpu: true
+              memory: true
+              disk: /
+            - search:
+              provider: duckduckgo
+              target: _blank
+          custom.css: ""
+          custom.js: ""

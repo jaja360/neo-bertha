@@ -39,6 +39,9 @@ spec:
         enabled: true
         hosts:
           - host: "dash.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
         integrations:
             certManager:
                 enabled: true
@@ -50,9 +53,9 @@ spec:
                 # middlewares:
                 #     - name: auth
                 #       namespace: ""
-            homepage:
-              enabled: true
-              description: ""
-              group: Admin
-              icon: "https://www.svgrepo.com/show/376331/kubernetes.svg"
-              name: "Kubernetes Dashboard"
+            # homepage:
+            #   enabled: true
+            #   description: ""
+            #   group: Admin
+            #   icon: "https://www.svgrepo.com/show/376331/kubernetes.svg"
+            #   name: "Kubernetes Dashboard"

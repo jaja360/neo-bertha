@@ -34,5 +34,58 @@ spec:
       stopAll: false
     defaultCertificate: "domain-0-wildcard"
     service:
+      main:
+        enabled: true
+        loadBalancerIP: ${TRAEFIK_DASH_IP}
+        type: LoadBalancer
+        ports:
+          main:
+            port: 9000
+            protocol: http
       tcp:
+        enabled: true
         loadBalancerIP: ${TRAEFIK_IP}
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: traefik.${DOMAIN_0}
+        tls:
+          - hosts:
+              - traefik.${DOMAIN_0}
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domaine-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            # middlewares:
+            #   - name: auth
+            #     namespace: ""
+          homepage:
+            enabled: true
+            description: ""
+            group: Admin
+            icon: ""
+            name: ""
+            widget:
+              enabled: true
+              custom:
+                key: ""
+    # middlewares:
+    #   forwardAuth:
+    #     - address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https://auth.${DOMAIN_0}
+    #       authRequestHeaders: []
+    #       authResponseHeaders:
+    #         - Remote-User
+    #         - Remote-Group
+    #         - Remote-Name
+    #         - Remote-Email
+    #       authResponseHeadersRegex: ""
+    #       name: auth
+    #       tls:
+    #         insecureSkipVerify: false
+    #       trustForwardHeader: true

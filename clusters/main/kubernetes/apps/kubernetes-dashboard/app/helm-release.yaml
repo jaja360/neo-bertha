@@ -34,6 +34,25 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${DASHBOARD_IP}
-        ports:
-          main:
-            port: 80
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "dash.${DOMAIN_0}"
+        integrations:
+            certManager:
+                enabled: true
+                certificateIssuer: domain-0-le-prod
+            traefik:
+                enabled: true
+                entrypoints:
+                    - websecure
+                # middlewares:
+                #     - name: auth
+                #       namespace: ""
+            homepage:
+              enabled: true
+              description: ""
+              group: Admin
+              icon: "https://www.svgrepo.com/show/376331/kubernetes.svg"
+              name: "Kubernetes Dashboard"

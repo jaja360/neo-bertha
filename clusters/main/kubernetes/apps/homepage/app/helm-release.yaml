@@ -34,9 +34,6 @@ spec:
                 enabled: true
                 hosts:
                     - host: "home.${DOMAIN_0}"
-                      paths:
-                        - path: /
-                          pathType: Prefix
                 integrations:
                     certManager:
                         enabled: true

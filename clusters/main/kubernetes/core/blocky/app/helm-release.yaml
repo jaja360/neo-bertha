@@ -36,6 +36,25 @@ spec:
         externalTrafficPolicy: Local
         loadBalancerIP: ${BLOCKY_IP}
         type: LoadBalancer
+    defaultUpstreams:
+      # Cloudflare (udp)
+      # - 1.1.1.1
+      # - 1.0.0.1
+      # Cloudflare (DoH)
+      - https://1.1.1.1/dns-query
+      - https://1.0.0.1/dns-query
+    blocking:
+      whitelist:
+      - name: default
+        lists:
+        - https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/optional-list.txt
+        - https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/whitelist.txt
+        - https://raw.githubusercontent.com/rahilpathan/pihole-whitelist/main/1.LowWL.txt
+    blacklist:
+    - name: default
+      lists:
+      - https://big.oisd.nl/domainswild
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
     k8sgateway:
       # -- list of processed domains
       domains:
@@ -46,7 +65,6 @@ spec:
         dnsChallenge:
           enabled: false
           domain: dns01.clouddns.com
-
       forward:
         enabled: false
         primary: tls://1.1.1.1

@@ -7,3 +7,4 @@ resources:
   - metallb-config/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
+  - lldap/ks.yaml

@@ -52,13 +52,14 @@ spec:
             enabled: true
             entrypoints:
               - websecure
-          # TODO: homepage doesn't seem to work with this app
-          # homepage:
-          #  enabled: true
-          #  description: ""
-          #  group: Misc
-          #  icon: ""
-          #  name: "Static Web Server"
+          homepage:
+            enabled: true
+            description: ""
+            group: Misc
+            icon: ""
+            name: "Static Web Server"
+            widget:
+              enabled: false
     persistence:
       config:
         enabled: true

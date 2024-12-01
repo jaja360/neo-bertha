@@ -48,7 +48,7 @@ spec:
         hosts:
           - host: traefik.${DOMAIN_0}
             paths:
-              - path: /dashboard
+              - path: /
                 pathType: Prefix
         integrations:
           certManager:

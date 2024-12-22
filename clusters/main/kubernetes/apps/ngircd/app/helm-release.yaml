@@ -1,0 +1,74 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ngircd
+  namespace: ngircd
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: ngircd
+      version: 10.0.9
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "irc.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            # middlewares:
+            #   - name: auth
+            #    namespace: ""
+    persistence:
+      config:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true

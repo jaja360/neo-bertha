@@ -5,3 +5,4 @@ resources:
   - static-web-server/ks.yaml
   - homepage/ks.yaml
   - ngircd/ks.yaml
+  - flaresolverr/ks.yaml

@@ -31,7 +31,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
-
     crds:
       install: true
     grafana:

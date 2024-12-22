@@ -73,17 +73,14 @@ spec:
           - name: tls_servername
             value: cloudflare-dns.com
 
-    # CANNOT be defined in above yaml section
     queryLog:
       # optional one of: mysql, postgresql, csv, csv-client. If empty, log to console only
       type: ""
-
     configmap:
       dashboard:
         enabled: false
       datasource:
         enabled: false
-
     cnpg:
       main:
         enabled: false

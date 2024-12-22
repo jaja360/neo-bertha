@@ -38,13 +38,14 @@ spec:
         url: "${BACKBLAZE_URL}"
     cnpg:
       main:
-        enabled: true
         user: lldap
         database: lldap
         password: ${CNPG_PASSWD}
         pgVersion: 15
         hibernate: false
         mode: recovery  # standalone
+        cluster:
+          singleNode: true
         backups:
           enabled: true
           revision: "1"
@@ -80,8 +81,6 @@ spec:
               enabled: false
     persistence:
       data:
-        enabled: true
-        mountPath: /data
         volsync:
           - name: config
             type: restic

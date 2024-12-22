@@ -29,7 +29,6 @@ spec:
     uninstall:
         keepHistory: false
     values:
-
         kind: Deployment
         deschedulerPolicy:
             strategies:

@@ -50,9 +50,9 @@ spec:
             enabled: true
             entrypoints:
               - websecure
-            # middlewares:
-            #   - name: auth
-            #     namespace: ""
+            middlewares:
+              - name: auth
+                namespace: traefik
           homepage:
             enabled: true
             description: ""

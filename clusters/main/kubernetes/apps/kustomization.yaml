@@ -4,3 +4,4 @@ resources:
   - kubernetes-dashboard/ks.yaml
   - homepage/ks.yaml
   - firefox/ks.yaml
+  - thelounge/ks.yaml

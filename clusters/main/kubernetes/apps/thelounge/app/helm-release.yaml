@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: ngircd
-  namespace: ngircd
+  name: thelounge
+  namespace: thelounge
 spec:
   interval: 15m
   chart:
     spec:
-      chart: ngircd
-      version: 11.2.2
+      chart: thelounge
+      version: 14.0.12
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -28,10 +28,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    service:
-      main:
-        enabled: true
-        type: LoadBalancer
     credentials:
       backblaze:
         name: backblaze
@@ -42,11 +38,25 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
+    persistence:
+      config:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
     ingress:
       main:
         enabled: true
         hosts:
-          - host: "irc.${DOMAIN_0}"
+          - host: "lounge.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
@@ -60,14 +70,12 @@ spec:
               - websecure
             middlewares:
               - name: auth
-                namespace: traefik
-    persistence:
-      config:
-        volsync:
-          - name: config
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
+                namespace: ""
+          homepage:
+            description: ""
+            enabled: true
+            group: Misc
+            icon: ""
+            name: "The Lounge"
+            widget:
+              enabled: false

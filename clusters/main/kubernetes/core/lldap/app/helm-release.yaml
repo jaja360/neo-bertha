@@ -45,6 +45,7 @@ spec:
         hibernate: false
         mode: recovery  # standalone
         cluster:
+          instances: 1
           singleNode: true
         backups:
           enabled: true

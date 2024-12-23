@@ -1,0 +1,136 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: authelia
+      version: 24.1.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "auth.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+          homepage:
+            enabled: true
+            description: ""
+            group: Admin
+            icon: ""
+            name: "Authelia"
+            widget:
+              enabled: false
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+    domain: ${DOMAIN_0}
+    default_redirection_url: https://auth.${DOMAIN_0}
+    theme: auto
+    access_control:
+      default_policy: deny
+      rules:
+      - domain:
+        - "*.${DOMAIN_0}"
+        policy: bypass
+        resources:
+          - ^/api([/?].*)?$
+          - ^/identity.*$
+          - ^/triggers.*$
+          - ^/meshagents.*$
+          - ^/meshsettings.*$
+          - ^/agent.*$
+          - ^/control.*$
+          - ^/meshrelay.*$
+          - ^/wl.*$
+          - ^(/[0-9]*)?/api([/?].*)?$
+          - ^/transmission/rpc([/?].*)?$
+          - ^/uploads/.*$
+      - domain:
+        - nextcloud.${DOMAIN_0}
+        - lounge.${DOMAIN_0}
+        - calibreweb.${DOMAIN_0}
+        policy: two_factor
+        subject:
+          - group:nextcloud_users
+      - domain:
+        - "*.${DOMAIN_0}"
+        policy: two_factor
+        subject:
+          - group:all_access
+    authentication_backend:
+      file:
+        enabled: false
+      ldap:
+        enabled: true
+        implementation: custom
+        base_dn: ${LDAP_BASE_DN}
+        plain_password: ${LDAP_ADMIN_PASSWD}
+        display_name_attribute: displayName
+        group_name_attribute: cn
+        additional_groups_dn: ou=groups
+        additional_users_dn: ou=people
+        groups_filter: (member={dn})
+        mail_attribute: mail
+        start_tls: false
+        timeout: 5s
+        tls:
+          minimum_version: TLS1.2
+          server_name: ""
+          skip_verify: false
+        url: ldap://lldap-ldap.lldap.svc.cluster.local:3890
+        user: uid=admin,ou=people,${LDAP_BASE_DN}
+        username_attribute: uid
+        users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))
+    duo_api:
+      enabled: true
+      hostname: "${DUO_HOSTNAME}"
+      integration_key: "${DUO_INTEG_KEY}"
+      plain_api_key: "${DUO_API_KEY}"
+    notifier:
+      filesystem:
+        enabled: false
+      smtp:
+        enabled: true
+        host: smtp.gmail.com
+        username: ${EMAIL_GMAIL}
+        plain_password: ${EMAIL_GMAIL_PASSWD}
+        port: 587
+        sender: ${EMAIL_GMAIL}
+        startup_check_address: test@${DOMAIN_0}
+    totp:
+      issuer: Authelia
+      period: 30
+      skew: 1

@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-service-truenas
+  namespace: external-service
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: external-service
+      version: 15.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    service:
+      main:
+        enabled: true
+        type: ExternalIP
+        externalIP: ${TRUENAS_IP}
+        ports:
+          main:
+            enabled: true
+            port: 444
+            protocol: https
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "truenas.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            description: ""
+            group: Admin
+            icon: ""
+            name: "TrueNAS"
+            widget:
+              enabled: false

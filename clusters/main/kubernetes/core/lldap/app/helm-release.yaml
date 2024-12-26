@@ -77,10 +77,8 @@ spec:
                 namespace: traefik
           homepage:
             enabled: true
-            name: ""
+            name: "LLDAP"
             group: Admin
-            description: ""
-            icon: ""
             widget:
               enabled: false
     persistence:

@@ -55,9 +55,8 @@ spec:
                 namespace: traefik
           homepage:
             enabled: true
-            description: ""
             group: Admin
-            icon: "https://www.svgrepo.com/show/376331/kubernetes.svg"
+            icon: "kubernetes-dashboard.svg"
             name: "Kubernetes Dashboard"
             widget:
               enabled: false

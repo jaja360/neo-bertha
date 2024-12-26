@@ -63,9 +63,7 @@ spec:
                 namespace: traefik
           homepage:
             enabled: true
-            description: ""
             group: Admin
-            icon: ""
             name: "Traefik"
             widget:
               enabled: true

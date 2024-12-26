@@ -53,9 +53,7 @@ spec:
                 namespace: traefik
           homepage:
             enabled: true
-            description: ""
             group: Misc
-            icon: ""
             name: "Firefox"
             widget:
               enabled: false

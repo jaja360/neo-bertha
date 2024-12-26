@@ -72,10 +72,8 @@ spec:
               - name: auth
                 namespace: ""
           homepage:
-            description: ""
             enabled: true
             group: Misc
-            icon: ""
             name: "The Lounge"
             widget:
               enabled: false

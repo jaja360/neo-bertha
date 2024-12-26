@@ -46,9 +46,7 @@ spec:
               - websecure
           homepage:
             enabled: true
-            description: ""
             group: Admin
-            icon: ""
             name: "Authelia"
             widget:
               enabled: false

@@ -54,7 +54,7 @@ spec:
                 cert-manager.io/private-key-rotation-policy: Always
                 gethomepage.dev/enabled: "true"
                 gethomepage.dev/href: "https://longhorn.${DOMAIN_0}"
-                gethomepage.dev/description: "View and manage PVC and snapshots"
+                gethomepage.dev/description: "View and manage PVCs and snapshots"
                 gethomepage.dev/group: Admin
                 gethomepage.dev/icon: longhorn.svg
                 gethomepage.dev/name: "Longhorn UI"

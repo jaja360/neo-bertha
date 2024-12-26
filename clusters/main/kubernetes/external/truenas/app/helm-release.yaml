@@ -59,9 +59,8 @@ spec:
                 namespace: traefik
           homepage:
             enabled: true
-            description: ""
             group: Admin
-            icon: ""
+            icon: "truenas.svg"
             name: "TrueNAS"
             widget:
               enabled: false

@@ -5,3 +5,4 @@ resources:
   - homepage/ks.yaml
   - firefox/ks.yaml
   - thelounge/ks.yaml
+  - sabnzbd/ks.yaml

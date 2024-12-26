@@ -64,5 +64,5 @@ spec:
         enabled: true
         type: nfs
         mountPath: /public
-        path: /mnt/Qwerty/Data/jgareau/site
+        path: ${NFS_WEBSITE_PATH}
         server: ${NFS_SERVER}

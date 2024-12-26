@@ -70,7 +70,7 @@ spec:
               - websecure
             middlewares:
               - name: auth
-                namespace: ""
+                namespace: traefik
           homepage:
             enabled: true
             group: Misc

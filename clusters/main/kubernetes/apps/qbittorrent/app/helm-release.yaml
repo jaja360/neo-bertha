@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: sabnzbd
-  namespace: sabnzbd
+  name: qbittorrent
+  namespace: qbittorrent
 spec:
   interval: 15m
   chart:
     spec:
-      chart: sabnzbd
-      version: 21.2.5
+      chart: qbittorrent
+      version: 22.1.8
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -19,7 +19,7 @@ spec:
         - target:
             version: v1
             kind: Deployment
-            name: sabnzbd
+            name: qbittorrent
           patch: |
             - op: add
               path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
@@ -49,10 +49,11 @@ spec:
           VPN_TYPE: wireguard
           VPN_SERVICE_PROVIDER: custom
           VPN_ENDPOINT_PORT: ${WG_ENDPOINT_PORT}
-          VPN_ENDPOINT_IP: ${WG_SABNZBD_ENDPOINT_IP}
-          WIREGUARD_ADDRESSES: ${WG_SABNZBD_ADDRESSES}
-          WIREGUARD_PRIVATE_KEY: ${WG_SABNZBD_PRIVATE_KEY}
-          WIREGUARD_PUBLIC_KEY: ${WG_SABNZBD_PUBLIC_KEY}
+          VPN_ENDPOINT_IP: ${WG_QBIT_ENDPOINT_IP}
+          WIREGUARD_ADDRESSES: ${WG_QBIT_ADDRESSES}
+          WIREGUARD_PRIVATE_KEY: ${WG_QBIT_PRIVATE_KEY}
+          WIREGUARD_PUBLIC_KEY: ${WG_QBIT_PUBLIC_KEY}
+          FIREWALL_VPN_INPUT_PORTS: ${WG_QBIT_INPUT_PORT}
     credentials:
       backblaze:
         name: backblaze
@@ -67,11 +68,15 @@ spec:
       main:
         enabled: true
         type: LoadBalancer
+      torrent:
+        ports:
+          torrent:
+            port: 60502
     ingress:
       main:
         enabled: true
         hosts:
-          - host: "sabnzbd.${DOMAIN_0}"
+          - host: "qbit.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
@@ -89,11 +94,12 @@ spec:
           homepage:
             enabled: true
             group: Downloads
-            name: "SABnzbd"
+            name: "qbittorrent"
             widget:
               enabled: true
-              custom:
-                key: ${SABNZBD_APIKEY}
+              enableLeechProgress: true
+              username: ${QBIT_USERNAME}
+              password: ${QBIT_PASSWORD}
     persistence:
       config:
         volsync:
@@ -111,9 +117,5 @@ spec:
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
     workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                SABNZBD__HOST_WHITELIST_ENTRIES: sabnzbd.${DOMAIN_0}, sabnzbd.sabnzbd.svc, ${TRUENAS_IP}
+      qbitportforward:
+        enabled: false

@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: calibre-web
-  namespace: calibre-web
+  name: readarr
+  namespace: readarr
 spec:
   interval: 15m
   chart:
     spec:
-      chart: calibre-web
-      version: 20.2.8
+      chart: readarr
+      version: 22.0.12
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -38,14 +38,11 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    service:
-      main:
-        type: LoadBalancer
     ingress:
       main:
         enabled: true
         hosts:
-          - host: "calibreweb.${DOMAIN_0}"
+          - host: "readarr.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
@@ -55,22 +52,19 @@ spec:
             certificateIssuer: domain-0-le-prod
           traefik:
             enabled: true
-            enableFixedMiddlewares: false
             entrypoints:
               - websecure
             middlewares:
               - name: auth
                 namespace: traefik
-              - name: basic-ratelimit
-                namespace: traefik
-              - name: compress
-                namespace: traefik
           homepage:
             enabled: true
             group: Arrs
-            name: "Calibre Web"
+            name: "Readarr"
             widget:
-              enabled: false
+              enabled: true
+              custom:
+                key: ${READARR_APIKEY}
     persistence:
       config:
         volsync:

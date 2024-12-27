@@ -55,6 +55,7 @@ spec:
             certificateIssuer: domain-0-le-prod
           traefik:
             enabled: true
+            allowCors: true
             entrypoints:
               - websecure
             middlewares:

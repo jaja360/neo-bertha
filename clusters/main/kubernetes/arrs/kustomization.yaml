@@ -5,3 +5,4 @@ resources:
   - radarr/ks.yaml
   - lidarr/ks.yaml
   - sonarr/ks.yaml
+  - bazarr/ks.yaml

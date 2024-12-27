@@ -4,3 +4,4 @@ resources:
   - prowlarr/ks.yaml
   - radarr/ks.yaml
   - lidarr/ks.yaml
+  - sonarr/ks.yaml

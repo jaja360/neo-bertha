@@ -6,3 +6,4 @@ resources:
   - lidarr/ks.yaml
   - sonarr/ks.yaml
   - bazarr/ks.yaml
+  - calibre/ks.yaml

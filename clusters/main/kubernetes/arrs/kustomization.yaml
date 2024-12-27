@@ -9,3 +9,4 @@ resources:
   - calibre/ks.yaml
   - calibre-web/ks.yaml
   - readarr/ks.yaml
+  - jellyseerr/ks.yaml

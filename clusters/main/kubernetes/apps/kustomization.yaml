@@ -8,3 +8,4 @@ resources:
   - sabnzbd/ks.yaml
   - qbittorrent/ks.yaml
   - qbitmanage/ks.yaml
+  - openbooks/ks.yaml

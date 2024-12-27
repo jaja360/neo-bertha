@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qbitmanage
+  namespace: qbitmanage
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: qbitmanage
+      version: 10.2.5
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    persistence:
+      config:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      data:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}

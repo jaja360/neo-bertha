@@ -82,10 +82,10 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
-    # resources:
-    #   limits:
-    #     nvidia.com/gpu: 1
-    # workload:
-    #   main:
-    #     podSpec:
-    #       runtimeClassName: "nvidia"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    workload:
+      main:
+        podSpec:
+          runtimeClassName: "nvidia"

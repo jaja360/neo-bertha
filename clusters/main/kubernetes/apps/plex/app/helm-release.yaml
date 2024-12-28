@@ -1,19 +1,19 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: fileflows
-  namespace: fileflows
+  name: plex
+  namespace: plex
 spec:
   interval: 15m
   chart:
     spec:
-      chart: fileflows
-      version: 12.10.1
+      chart: plex
+      version: 19.4.2
       sourceRef:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  timeout: 20m
+  timeout: 30m
   maxHistory: 3
   driftDetection:
     mode: warn
@@ -38,14 +38,34 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
+    persistence:
+      medias:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}
+      config:
+        size: 300Gi
+        # volsync:
+        #   - name: config
+        #     type: restic
+        #     credentials: backblaze
+        #     dest:
+        #       enabled: true
+        #       cacheCapacity: 50Gi
+        #     src:
+        #       enabled: true
+        #       cacheCapacity: 50Gi
     service:
       main:
         type: LoadBalancer
+        loadBalancerIP: ${PLEX_IP}
     ingress:
       main:
         enabled: true
         hosts:
-          - host: "fileflows.${DOMAIN_0}"
+          - host: "plex.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
@@ -57,31 +77,17 @@ spec:
             enabled: true
             entrypoints:
               - websecure
-            middlewares:
-              - name: auth
-                namespace: traefik
           homepage:
             enabled: true
             group: Misc
-            name: "FileFlows"
+            name: "Plex"
             widget:
               enabled: false
-    persistence:
-      data:
-        volsync:
-          - name: data
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      medias:
-        enabled: true
-        type: nfs
-        mountPath: /medias
-        path: ${NFS_MEDIAS_PATH}
-        server: ${NFS_SERVER}
+              custom:
+                key: ${PLEX_APIKEY}
+    plex:
+      serverIP: ${PLEX_IP}
+      additionalAdvertiseURL: "http://plex.${DOMAIN_0}:32400,https://plex.${DOMAIN_0}"
     resources:
       limits:
         nvidia.com/gpu: 1

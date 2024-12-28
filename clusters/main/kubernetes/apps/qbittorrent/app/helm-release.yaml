@@ -67,8 +67,11 @@ spec:
     service:
       main:
         enabled: true
+        loadBalancerIP: ${QBIT_TORRENT_IP}
         type: LoadBalancer
       torrent:
+        loadBalancerIP: ${QBIT_TORRENT_IP}
+        type: LoadBalancer
         ports:
           torrent:
             port: 60502

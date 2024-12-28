@@ -1,0 +1,142 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: nextcloud
+      version: 30.1.24
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    cnpg:
+      main:
+        user: nextcloud
+        database: nextcloud
+        password: ${CNPG_PASSWD}
+        pgVersion: 15
+        hibernate: false
+        mode: recovery  # standalone
+        cluster:
+          instances: 1
+          singleNode: true
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          enabled: true
+          revision: ""
+          method: object_store
+          credentials: backblaze
+    service:
+      main:
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "nextcloud.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Nextcloud"
+            widget:
+              enabled: true
+              custom:
+                key: ${NEXTCLOUD_APIKEY}
+    nextcloud:
+      credentials:
+        initialAdminUser: ${NEXTCLOUD_ADMIN_USER}
+        initialAdminPassword: ${NEXTCLOUD_ADMIN_PASSWD}
+      general:
+        accessIP: ${TRAEFIK_IP}
+        default_phone_region: CA
+      previews:
+        providers:
+          - PNG
+          - JPEG
+          - BMP
+          - GIF
+          - Krita
+          - MarkDown
+          - MP3
+          - OpenDocument
+          - TXT
+          - XBitmap
+      clamav:
+        enabled: false
+      collabora:
+        enabled: true
+        username: ${NEXTCLOUD_ADMIN_USER}
+        password: ${NEXTCLOUD_ADMIN_PASSWD}
+        dictionaries:
+          - en_US
+          - fr_CA
+    persistence:
+      config:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      html:
+        volsync:
+          - name: html
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      data:
+        enabled: true
+        type: nfs
+        path: ${NFS_NEXTCLOUD_PATH}
+        server: ${NFS_SERVER}

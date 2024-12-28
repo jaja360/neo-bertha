@@ -11,3 +11,4 @@ resources:
   - openbooks/ks.yaml
   - autobrr/ks.yaml
   - vaultwarden/ks.yaml
+  - fileflows/ks.yaml

@@ -12,3 +12,4 @@ resources:
   - autobrr/ks.yaml
   - vaultwarden/ks.yaml
   - fileflows/ks.yaml
+  - nextcloud/ks.yaml

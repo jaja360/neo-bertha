@@ -43,7 +43,7 @@ spec:
         password: ${CNPG_PASSWD}
         pgVersion: 15
         hibernate: false
-        mode: recovery  # standalone
+        mode: standalone  # recovery
         cluster:
           instances: 1
           singleNode: true
@@ -53,7 +53,7 @@ spec:
           credentials: backblaze
         recovery:
           enabled: true
-          revision: ""
+          revision: "1"
           method: object_store
           credentials: backblaze
     ingress:

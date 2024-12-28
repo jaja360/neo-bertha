@@ -10,3 +10,4 @@ resources:
   - qbitmanage/ks.yaml
   - openbooks/ks.yaml
   - autobrr/ks.yaml
+  - vaultwarden/ks.yaml

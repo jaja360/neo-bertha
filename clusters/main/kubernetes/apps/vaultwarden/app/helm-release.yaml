@@ -115,20 +115,7 @@ spec:
           method: object_store
           credentials: backblaze
     vaultwarden:
-      allowSignups: false
-      allowInvitation: false
-      requireEmail: true
-      admin:
+      push:
         enabled: true
-        disableAdminToken: false
-        token: ${VAULTWARDEN_ADMIN_TOKEN}
-      smtp:
-        enabled: true
-        authMechanism: Plain
-        fromName: Jael Truenas
-        from: ${EMAIL_GMAIL}
-        user: ${EMAIL_GMAIL}
-        password: ${EMAIL_GMAIL_PASSWD}
-        host: smtp.gmail.com
-        port: 587
-        security: starttls
+        installationId: ${VAULTWARDEN_PUSH_ID}
+        installationKey: ${VAULTWARDEN_PUSH_KEY}

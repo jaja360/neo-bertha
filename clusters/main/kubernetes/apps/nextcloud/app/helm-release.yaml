@@ -110,8 +110,7 @@ spec:
             name: "Nextcloud"
             widget:
               enabled: true
-              username: ${NEXTCLOUD_ADMIN_USER}
-              password: ${NEXTCLOUD_ADMIN_PASSWD}
+              key: ${NEXTCLOUD_NC_TOKEN}
     nextcloud:
       credentials:
         initialAdminUser: ${NEXTCLOUD_ADMIN_USER}

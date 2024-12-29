@@ -73,7 +73,7 @@ spec:
           homepage:
             enabled: true
             group: Misc
-            name: "tautulli"
+            name: "Tautulli"
             widget:
               enabled: true
               key: ${TAUTULLI_APIKEY}

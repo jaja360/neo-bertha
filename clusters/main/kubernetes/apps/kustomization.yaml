@@ -14,3 +14,4 @@ resources:
   - fileflows/ks.yaml
   - nextcloud/ks.yaml
   - plex/ks.yaml
+  - tautulli/ks.yaml

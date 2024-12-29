@@ -11,3 +11,4 @@ resources:
   - readarr/ks.yaml
   - jellyseerr/ks.yaml
   - recyclarr/ks.yaml
+  - whisparr/ks.yaml

@@ -82,7 +82,7 @@ spec:
             group: Misc
             name: "Plex"
             widget:
-              enabled: false
+              enabled: true
               custom:
                 key: ${PLEX_APIKEY}
     plex:

@@ -75,4 +75,5 @@ spec:
             group: Misc
             name: "tautulli"
             widget:
-              enabled: false
+              enabled: true
+              key: ${TAUTULLI_APIKEY}

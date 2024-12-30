@@ -57,6 +57,8 @@ spec:
         #     src:
         #       enabled: true
         #       cacheCapacity: 50Gi
+        #       retain:
+        #         daily: 1
     service:
       main:
         type: LoadBalancer

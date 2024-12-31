@@ -91,6 +91,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 10 * * *
     service:
       ldap:
         enabled: true

@@ -48,6 +48,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 50 9 * * *
     service:
       main:
         enabled: true

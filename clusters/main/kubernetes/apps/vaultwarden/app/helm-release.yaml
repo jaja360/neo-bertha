@@ -94,6 +94,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 55 9 * * *
     cnpg:
       main:
         user: vaultwarden

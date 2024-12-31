@@ -113,6 +113,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 35 9 * * *
       medias:
         enabled: true
         type: nfs

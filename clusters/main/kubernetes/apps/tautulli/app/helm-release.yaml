@@ -48,6 +48,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 45 9 * * *
     service:
       main:
         type: LoadBalancer

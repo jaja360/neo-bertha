@@ -65,7 +65,7 @@ spec:
             group: Arrs
             name: "whisparr"
             widget:
-              enabled: true
+              enabled: false
               custom:
                 key: ${WHISPARR_APIKEY}
     persistence:

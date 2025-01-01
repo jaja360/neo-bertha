@@ -14,3 +14,4 @@ resources:
   - nextcloud/ks.yaml
   - plex/ks.yaml
   - tautulli/ks.yaml
+  - pgadmin/ks.yaml

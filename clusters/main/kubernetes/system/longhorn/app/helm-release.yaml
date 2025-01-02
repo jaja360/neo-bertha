@@ -30,6 +30,11 @@ spec:
             # Overprovisioning might be needed when using volsync
             storageOverProvisioningPercentage: 100000
             # v2DataEngine: true
+            csi:
+                attacherReplicaCount: ${NUMBER_OF_NODES}
+                provisionerReplicaCount: ${NUMBER_OF_NODES}
+                resizerReplicaCount: ${NUMBER_OF_NODES}
+                snapshotterReplicaCount: ${NUMBER_OF_NODES}
         persistence:
             # Set to false to pick another CSI as default
             defaultClass: true
@@ -37,6 +42,8 @@ spec:
             defaultClassReplicaCount: ${NUMBER_OF_NODES}
 
         # Enable the Longhorn UI
+        ui:
+            replicas: ${NUMBER_OF_NODES}
         service:
             ui:
                 type: LoadBalancer

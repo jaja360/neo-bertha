@@ -36,7 +36,6 @@ spec:
     service:
       main:
         enabled: true
-        loadBalancerIP: ""
         type: LoadBalancer
       tcp:
         enabled: true
@@ -50,6 +49,11 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                backend:
+                  service:
+                    name: api@internal
+                    port:
+                      number: 9000
         integrations:
           certManager:
             enabled: true

@@ -15,4 +15,5 @@ spec:
                 name: truecharts
                 namespace: flux-system
             interval: 30m
-    values: {}
+    values:
+        replicaCount: ${NUMBER_OF_NODES}

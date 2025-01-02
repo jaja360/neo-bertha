@@ -8,7 +8,6 @@ spec:
     releaseName: openebs
     chart:
         spec:
-
             chart: openebs
             version: 4.1.1
             sourceRef:

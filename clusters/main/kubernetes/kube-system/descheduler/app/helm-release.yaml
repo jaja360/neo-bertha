@@ -15,7 +15,7 @@ spec:
                 namespace: flux-system
             interval: 15m
     timeout: 20m
-    maxHistory: 3
+    maxHistory: 1
     driftDetection:
       mode: warn
     install:

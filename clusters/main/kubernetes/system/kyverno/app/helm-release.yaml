@@ -63,7 +63,7 @@ spec:
       serviceMonitor:
         enabled: true
     admissionController:
-      replicas: 3
+      replicas: ${NUMBER_OF_NODES}
       serviceMonitor:
         enabled: true
       rbac:

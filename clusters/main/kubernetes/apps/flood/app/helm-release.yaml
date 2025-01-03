@@ -1,0 +1,82 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flood
+  namespace: flood
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: flood
+      version: 15.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    service:
+      main:
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "flood.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            group: Downloads
+            name: "Flood"
+            widget:
+              enabled: true
+              username: ${QBIT_USERNAME}
+              password: ${QBIT_PASSWORD}
+    persistence:
+      data:
+        volsync:
+          - name: data
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 45 10 * * *

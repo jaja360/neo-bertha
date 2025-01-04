@@ -95,6 +95,6 @@ spec:
         nvidia.com/gpu: 1
     workload:
       main:
-        replicas: 1
+        replicas: ${NUMBER_OF_NODES}
         podSpec:
           runtimeClassName: "nvidia"

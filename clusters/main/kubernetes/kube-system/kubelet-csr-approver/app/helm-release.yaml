@@ -16,4 +16,6 @@ spec:
                 namespace: flux-system
             interval: 30m
     values:
-        replicaCount: ${NUMBER_OF_NODES}
+        workload:
+            main:
+                replicas: ${NUMBER_OF_NODES}

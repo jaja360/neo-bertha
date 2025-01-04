@@ -32,6 +32,9 @@ spec:
   values:
     global:
       stopAll: false
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}
     defaultCertificate: "domain-0-wildcard"
     service:
       main:
@@ -49,11 +52,6 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
-                backend:
-                  service:
-                    name: api@internal
-                    port:
-                      number: 9000
         integrations:
           certManager:
             enabled: true
@@ -65,6 +63,8 @@ spec:
             middlewares:
               - name: auth
                 namespace: traefik
+              - name: traefik-dashboard
+                namespace: traefik
           homepage:
             enabled: true
             group: Admin
@@ -72,6 +72,11 @@ spec:
             widget:
               enabled: true
     middlewares:
+      redirectRegex:
+        - name: traefik-dashboard
+          regex: https://traefik\.${DOMAIN_0}/?$
+          replacement: https://traefik.${DOMAIN_0}/dashboard/#/
+          permanent: true
       forwardAuth:
         - name: auth
           address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https://auth.${DOMAIN_0}

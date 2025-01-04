@@ -28,6 +28,16 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}
+    cnpg:
+      main:
+        hibernate: false
+        mode: standalone  # recovery
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
     ingress:
       main:
         enabled: true

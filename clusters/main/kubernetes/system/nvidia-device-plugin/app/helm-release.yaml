@@ -10,7 +10,7 @@ metadata:
   name: nvidia-device-plugin
   namespace: nvidia-device-plugin
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       # renovate: registryUrl=https://charts.truechartsoci.org
@@ -20,7 +20,7 @@ spec:
         kind: HelmRepository
         name: nvdp
         namespace: flux-system
-      interval: 5m
+      interval: 30m
   install:
     createNamespace: true
     crds: CreateReplace
@@ -37,6 +37,17 @@ spec:
     runtimeClassName: nvidia
     gfd:
       enabled: true
+    nfd:
+      enabled: false
+    tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
     config:
       map:
         default: |-

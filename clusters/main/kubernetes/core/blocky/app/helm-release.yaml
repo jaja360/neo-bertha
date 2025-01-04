@@ -31,6 +31,9 @@ spec:
   values:
     global:
       stopAll: false
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}
     service:
       dns:
         externalTrafficPolicy: Local

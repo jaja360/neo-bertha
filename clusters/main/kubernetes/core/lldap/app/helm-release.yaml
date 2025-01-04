@@ -45,8 +45,8 @@ spec:
         hibernate: false
         mode: standalone  # recovery
         cluster:
-          instances: 1
-          singleNode: true
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
           revision: "1"

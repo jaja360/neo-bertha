@@ -84,7 +84,6 @@ spec:
           - ^/meshrelay.*$
           - ^/wl.*$
           - ^(/[0-9]*)?/api([/?].*)?$
-          - ^/transmission/rpc([/?].*)?$
           - ^/uploads/.*$
       - domain:
         - nextcloud.${DOMAIN_0}

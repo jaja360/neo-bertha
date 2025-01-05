@@ -29,4 +29,5 @@ resources:
   - topolvm.yaml
   - truecharts.yaml
   - nvdp.yaml
+  - headlamp.yaml
 # more goes here!

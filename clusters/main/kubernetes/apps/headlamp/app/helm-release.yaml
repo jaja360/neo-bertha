@@ -1,0 +1,81 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: headlamp
+  namespace: headlamp
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: headlamp
+      version: 0.27.0
+      sourceRef:
+        kind: HelmRepository
+        name: headlamp
+        namespace: flux-system
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    persistentVolumeClaim:
+      accessModes:
+        - ReadWriteOnce
+      enabled: true
+      size: 1Gi
+    volumeMounts:
+      - mountPath: /build/plugins
+        name: headlamp-plugins
+    volumes:
+      - name: headlamp-plugins
+        persistentVolumeClaim:
+          claimName: headlamp
+    initContainers:
+      - command:
+          - /bin/sh
+          - -c
+          - mkdir -p /build/plugins && cp -r /plugins/* /build/plugins/
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
+        imagePullPolicy: Always
+        name: headlamp-plugins
+        volumeMounts:
+          - mountPath: /build/plugins
+            name: headlamp-plugins
+    config:
+      pluginsDir: /build/plugins
+    service:
+      type: LoadBalancer
+      loadBalancerIP: ${DASHBOARD_IP}
+    ingress:
+        enabled: true
+        hosts:
+          - host: headlamp.${DOMAIN_0}
+            paths:
+              - path: /
+                type: Prefix
+        tls:
+          - secretName: "headlamp-tls-0"
+            hosts:
+              - headlamp.${DOMAIN_0}
+        annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: websecure
+            traefik.ingress.kubernetes.io/router.middlewares: "traefik-chain-basic@kubernetescrd,traefik-auth@kubernetescrd"
+            traefik.ingress.kubernetes.io/router.tls: "true"
+            cert-manager.io/cluster-issuer: domain-0-le-prod
+            cert-manager.io/private-key-rotation-policy: Always
+            gethomepage.dev/enabled: "true"
+            gethomepage.dev/href: "https://headlamp.${DOMAIN_0}"
+            gethomepage.dev/description: "View and manage the Kubernetes cluster"
+            gethomepage.dev/group: Admin
+            gethomepage.dev/icon: headlamp.svg
+            gethomepage.dev/name: "Headlamp"

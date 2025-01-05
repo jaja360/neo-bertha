@@ -4,3 +4,4 @@ resources:
   - ngircd/ks.yaml
   - static-web-server/ks.yaml
   - mosquitto/ks.yaml
+  - hydroqc/ks.yaml

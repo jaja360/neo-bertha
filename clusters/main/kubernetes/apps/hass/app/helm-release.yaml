@@ -1,0 +1,123 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hass
+  namespace: hass
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: home-assistant
+      version: 26.11.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    # Select the node containing the Zigbee stick
+    nodeSelector:
+      kubernetes.io/hostname: k8s-control-1
+    extraVolumes:
+      - name: zigbee-usb
+        hostPath:
+          path: /dev/serial/by-id/${ZIGBEE_USB_ID}
+        type: CharDevice
+    extraVolumeMounts:
+      - name: zigbee-usb
+        mountPath: /dev/serial/by-id/${ZIGBEE_USB_ID}
+        readOnly: false
+
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    persistence:
+      config:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 11 * * *
+    cnpg:
+      main:
+        mode: recovery
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          credentials: backblaze
+        recovery:
+          enabled: true
+          method: object_store
+          credentials: backblaze
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: ${HASS_IP}
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "hass.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Home Assistant"
+            widget:
+              enabled: true
+              custom:
+                key: ${HASS_HOMEPAGE_TOKEN}
+    homeassistant:
+      trusted_proxies:
+        - 172.16.0.0/16
+        - 172.17.0.0/16
+
+    podOptions:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+    securityContext:
+      container:
+        privileged: true
+        capabilities:
+          add:
+            - CAP_NET_RAW
+            - CAP_NET_BIND_SERVICE
+            - SYS_RAWIO
+            - SYS_ADMIN

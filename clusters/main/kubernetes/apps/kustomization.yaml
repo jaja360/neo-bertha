@@ -16,3 +16,4 @@ resources:
   - flood/ks.yaml
   - headlamp/ks.yaml
   - pgadmin/ks.yaml
+  - hass/ks.yaml

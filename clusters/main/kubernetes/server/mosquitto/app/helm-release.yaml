@@ -32,6 +32,7 @@ spec:
       main:
         enabled: true
         type: LoadBalancer
+        loadBalancerIP: ${MOSQUITTO_IP}
     credentials:
       backblaze:
         name: backblaze
@@ -66,4 +67,4 @@ spec:
               trigger:
                 schedule: 50 10 * * *
     auth:
-      enabled: true
+      enabled: false

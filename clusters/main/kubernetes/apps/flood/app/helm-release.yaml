@@ -65,9 +65,7 @@ spec:
             group: Downloads
             name: "Flood"
             widget:
-              enabled: true
-              username: ${QBIT_USERNAME}
-              password: ${QBIT_PASSWORD}
+              enabled: false
     persistence:
       data:
         volsync:

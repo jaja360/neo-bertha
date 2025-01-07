@@ -58,9 +58,16 @@ spec:
               - name: auth
                 namespace: traefik
           homepage:
-            enabled: true
+            enabled: false
             group: Admin
+            description: Network Assisted Storage Operating System
             icon: "truenas.svg"
             name: "TrueNAS"
             widget:
-              enabled: false
+              enabled: true
+              type: truenas
+              url: http://${TRUENAS_IP}:81
+              custom:
+                key: ${TRUENAS_HOMEPAGE_TOKEN}
+                enablePools: true
+                nasType: scale

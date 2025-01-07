@@ -77,5 +77,5 @@ spec:
             gethomepage.dev/href: "https://headlamp.${DOMAIN_0}"
             gethomepage.dev/description: "View and manage the Kubernetes cluster"
             gethomepage.dev/group: Admin
-            gethomepage.dev/icon: https://raw.githubusercontent.com/headlamp-k8s/headlamp/refs/heads/main/frontend/src/resources/icon-light.svg
+            gethomepage.dev/icon: https://raw.githubusercontent.com/headlamp-k8s/headlamp/d8260857d16d28daedfbe8d6f53e1c165a4e4b05/frontend/public/android-chrome-512x512.png
             gethomepage.dev/name: "Headlamp"

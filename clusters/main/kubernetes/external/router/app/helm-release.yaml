@@ -58,9 +58,10 @@ spec:
               - name: auth
                 namespace: traefik
           homepage:
-            enabled: true
+            enabled: false
             group: Admin
             icon: "router.svg"
+            description: "Home router WebUI"
             name: "Router"
             widget:
               enabled: false

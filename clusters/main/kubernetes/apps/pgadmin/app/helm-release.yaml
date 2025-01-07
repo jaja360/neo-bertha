@@ -63,7 +63,7 @@ spec:
           homepage:
             enabled: true
             group: Admin
-            name: "pgadmin"
+            name: "pgAdmin"
             widget:
               enabled: false
     persistence:

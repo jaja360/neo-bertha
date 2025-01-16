@@ -30,7 +30,6 @@ spec:
   values:
     service:
       main:
-        enabled: true
         type: LoadBalancer
         loadBalancerIP: ${NGIRCD_IP}
     credentials:
@@ -68,6 +67,8 @@ spec:
           - name: config
             type: restic
             credentials: backblaze
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             dest:
               enabled: true
             src:

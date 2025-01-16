@@ -28,16 +28,36 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    workload:
-      main:
-        replicas: ${NUMBER_OF_NODES}
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     cnpg:
       main:
+        password: ${CNPG_PASSWD}
         hibernate: false
-        mode: standalone  # recovery
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          enabled: true
+          revision: ""
+          method: object_store
+          credentials: backblaze
+    service:
+      main:
+        type: LoadBalancer
     ingress:
       main:
         enabled: true
@@ -60,10 +80,6 @@ spec:
             name: "Authelia"
             widget:
               enabled: false
-    service:
-      main:
-        enabled: true
-        type: LoadBalancer
     domain: ${DOMAIN_0}
     default_redirection_url: https://auth.${DOMAIN_0}
     theme: auto
@@ -141,3 +157,6 @@ spec:
       issuer: Authelia
       period: 30
       skew: 1
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}

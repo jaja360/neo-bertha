@@ -30,7 +30,6 @@ spec:
   values:
     service:
       main:
-        enabled: true
         type: LoadBalancer
     ingress:
       main:

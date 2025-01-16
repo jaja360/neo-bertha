@@ -38,6 +38,40 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
+    persistence:
+      data:
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            cleanupTempPVC: true
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 55 9 * * *
+    cnpg:
+      main:
+        user: vaultwarden
+        database: vaultwarden
+        password: ${CNPG_PASSWD}
+        pgVersion: 15
+        hibernate: false
+        mode: recovery
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          enabled: true
+          revision: "1"
+          method: object_store
+          credentials: backblaze
     service:
       main:
         type: LoadBalancer
@@ -84,38 +118,6 @@ spec:
             middlewares:
             - name: auth
               namespace: traefik
-    persistence:
-      data:
-        volsync:
-          - name: config
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 55 9 * * *
-    cnpg:
-      main:
-        user: vaultwarden
-        database: vaultwarden
-        password: ${CNPG_PASSWD}
-        pgVersion: 15
-        hibernate: false
-        mode: standalone  # recovery
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-        backups:
-          enabled: true
-          revision: "1"
-          credentials: backblaze
-        recovery:
-          enabled: true
-          revision: "1"
-          method: object_store
-          credentials: backblaze
     vaultwarden:
       push:
         enabled: true

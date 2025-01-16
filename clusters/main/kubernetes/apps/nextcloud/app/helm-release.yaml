@@ -44,6 +44,8 @@ spec:
           - name: config
             type: restic
             credentials: backblaze
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             dest:
               enabled: true
             src:
@@ -53,6 +55,8 @@ spec:
           - name: html
             type: restic
             credentials: backblaze
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             dest:
               enabled: true
             src:
@@ -71,7 +75,7 @@ spec:
         password: ${CNPG_PASSWD}
         pgVersion: 15
         hibernate: false
-        mode: standalone  # recovery
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}

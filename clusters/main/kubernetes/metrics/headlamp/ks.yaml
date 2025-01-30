@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: clusters/main/kubernetes/apps/headlamp/app
+  path: clusters/main/kubernetes/metrics/headlamp/app
   prune: true
   sourceRef:
     kind: GitRepository

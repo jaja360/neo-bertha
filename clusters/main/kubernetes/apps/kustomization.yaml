@@ -12,8 +12,6 @@ resources:
   - fileflows/ks.yaml
   - nextcloud/ks.yaml
   - plex/ks.yaml
-  - tautulli/ks.yaml
   - flood/ks.yaml
-  - headlamp/ks.yaml
   - pgadmin/ks.yaml
   - hass/ks.yaml

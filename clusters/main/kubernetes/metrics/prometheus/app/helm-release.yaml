@@ -55,4 +55,4 @@ spec:
             group: Admin
             name: "prometheus"
             widget:
-              enabled: false
+              enabled: true

@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
   - headlamp/ks.yaml
   - tautulli/ks.yaml
+  - grafana/ks.yaml
+  - prometheus/ks.yaml

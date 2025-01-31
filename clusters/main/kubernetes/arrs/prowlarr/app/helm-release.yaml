@@ -83,3 +83,10 @@ spec:
               enabled: true
               trigger:
                 schedule: 20 10 * * *
+    workload:
+      main:
+        podSpec:
+          containers:
+            exportarr:
+              env:
+                PROWLARR__BACKFILL: "true"

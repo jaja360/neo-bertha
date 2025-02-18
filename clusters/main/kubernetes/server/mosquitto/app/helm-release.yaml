@@ -48,7 +48,6 @@ spec:
           - name: data
             type: restic
             credentials: backblaze
-            cleanupTempPVC: true
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -61,7 +60,6 @@ spec:
           - name: configinc
             type: restic
             credentials: backblaze
-            cleanupTempPVC: true
             cleanupCachePVC: true
             dest:
               enabled: true

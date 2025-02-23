@@ -57,3 +57,11 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
+        workload:
+    main:
+      podSpec:
+        containers:
+          main:
+            env:
+              QBT_SCHEDULE: 1440
+              QBT_CONFIG: /config/config.yml

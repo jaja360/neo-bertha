@@ -61,6 +61,8 @@ spec:
             enabled: true
             group: Misc
             name: "Maybe"
+            description: "The OS for your personal finances"
+            icon: "maybe.svg"
             widget:
               enabled: false
     persistence:
@@ -68,7 +70,14 @@ spec:
         enabled: true
         type: pvc
         mountPath: /rails/storage
-        targetSelectAll: true
+      rails-tmp:
+        enabled: true
+        type: emptyDir
+        mountPath: /rails/tmp
+      tmp:
+        enabled: true
+        type: emptyDir
+        mountPath: /tmp
     cnpg:
       main:
         enabled: true
@@ -95,9 +104,3 @@ spec:
                 POSTGRES_DB: maybe
                 POSTGRES_USER: maybe
                 POSTGRES_PASSWORD: ${CNPG_PASSWD}
-              securityContext:
-                container:
-                  readOnlyRootFilesystem: false
-                  runAsNonRoot: false
-                  runAsUser: 0
-                  runAsGroup: 0

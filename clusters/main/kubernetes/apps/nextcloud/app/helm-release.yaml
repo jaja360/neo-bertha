@@ -49,6 +49,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 15 9 * * *
       html:
         volsync:
           - name: html
@@ -60,7 +62,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 15 9 * * *
+                schedule: 16 9 * * *
       data:
         enabled: true
         type: nfs

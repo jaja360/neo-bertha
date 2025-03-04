@@ -15,3 +15,4 @@ resources:
   - flood/ks.yaml
   - pgadmin/ks.yaml
   - hass/ks.yaml
+  - maybe/ks.yaml

@@ -1,0 +1,103 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: maybe
+  namespace: maybe
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 14.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    image:
+      repository: ghcr.io/maybe-finance/maybe
+      pullPolicy: IfNotPresent
+      tag: 0.4.3
+    service:
+      main:
+        type: LoadBalancer
+        ports:
+          main:
+            port: 3000
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "maybe.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Maybe"
+            widget:
+              enabled: false
+    persistence:
+      app-storage:
+        enabled: true
+        type: pvc
+        mountPath: /rails/storage
+        targetSelectAll: true
+    cnpg:
+      main:
+        enabled: true
+        user: maybe
+        database: maybe
+        password: ${CNPG_PASSWD}
+        hibernate: false
+        mode: standalone
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                SELF_HOSTED: "true"
+                RAILS_FORCE_SSL: "false"
+                RAILS_ASSUME_SSL: "false"
+                GOOD_JOB_EXECUTION_MODE: async
+                SECRET_KEY_BASE: ${MAYBE_SECRET_KEY}
+                DB_HOST: maybe-app-template-cnpg-main-rw.maybe.svc.cluster.local
+                POSTGRES_DB: maybe
+                POSTGRES_USER: maybe
+                POSTGRES_PASSWORD: ${CNPG_PASSWD}
+              securityContext:
+                container:
+                  readOnlyRootFilesystem: false
+                  runAsNonRoot: false
+                  runAsUser: 0
+                  runAsGroup: 0

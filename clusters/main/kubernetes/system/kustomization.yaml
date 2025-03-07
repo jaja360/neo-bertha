@@ -16,3 +16,4 @@ resources:
   - generic-device-plugin/ks.yaml
   - nvidia-device-plugin/ks.yaml
   - spegel/ks.yaml
+  - cloudflareddns/ks.yaml

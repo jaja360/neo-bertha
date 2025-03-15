@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: authelia
-      version: 26.4.8
+      version: 27.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -52,7 +52,7 @@ spec:
           credentials: backblaze
         recovery:
           enabled: true
-          revision: ""
+          revision: "1"
           method: object_store
           credentials: backblaze
     service:
@@ -80,83 +80,95 @@ spec:
             name: "Authelia"
             widget:
               enabled: false
-    domain: ${DOMAIN_0}
-    default_redirection_url: https://auth.${DOMAIN_0}
-    theme: auto
-    access_control:
-      default_policy: deny
-      rules:
-      - domain:
-        - "*.${DOMAIN_0}"
-        policy: bypass
-        resources:
-          - ^/api([/?].*)?$
-          - ^/identity.*$
-          - ^/triggers.*$
-          - ^/meshagents.*$
-          - ^/meshsettings.*$
-          - ^/agent.*$
-          - ^/control.*$
-          - ^/meshrelay.*$
-          - ^/wl.*$
-          - ^(/[0-9]*)?/api([/?].*)?$
-          - ^/uploads/.*$
-      - domain:
-        - nextcloud.${DOMAIN_0}
-        - lounge.${DOMAIN_0}
-        - calibreweb.${DOMAIN_0}
-        policy: two_factor
-        subject:
-          - group:nextcloud_users
-      - domain:
-        - "*.${DOMAIN_0}"
-        policy: two_factor
-        subject:
-          - group:all_access
-    authentication_backend:
-      file:
-        enabled: false
-      ldap:
-        enabled: true
-        implementation: custom
-        base_dn: ${LDAP_BASE_DN}
-        plain_password: ${LDAP_ADMIN_PASSWD}
-        display_name_attribute: displayName
-        group_name_attribute: cn
-        additional_groups_dn: ou=groups
-        additional_users_dn: ou=people
-        groups_filter: (member={dn})
-        mail_attribute: mail
-        start_tls: false
-        timeout: 5s
-        tls:
-          minimum_version: TLS1.2
-          server_name: ""
-          skip_verify: false
-        url: ldap://lldap-ldap.lldap.svc.cluster.local:3890
-        user: uid=admin,ou=people,${LDAP_BASE_DN}
-        username_attribute: uid
-        users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))
-    duo_api:
-      enabled: true
-      hostname: "${DUO_HOSTNAME}"
-      integration_key: "${DUO_INTEG_KEY}"
-      plain_api_key: "${DUO_API_KEY}"
-    notifier:
-      filesystem:
-        enabled: false
-      smtp:
-        enabled: true
-        host: smtp.gmail.com
-        username: ${EMAIL_GMAIL}
-        plain_password: ${EMAIL_GMAIL_PASSWD}
-        port: 587
-        sender: ${EMAIL_GMAIL}
-        startup_check_address: test@${DOMAIN_0}
-    totp:
-      issuer: Authelia
-      period: 30
-      skew: 1
+    authelia:
+      theme: auto
+      totp:
+        issuer: Authelia
+        period: 30
+        skew: 1
+      duo_api:
+        disable: false
+        hostname: "${DUO_HOSTNAME}"
+        integration_key: "${DUO_INTEG_KEY}"
+        secret_key: "${DUO_API_KEY}"
+        enable_self_enrollment: false
+      authentication_backend:
+        file: null
+        ldap:
+          enabled: true
+          address: ldap://lldap-ldap.lldap.svc.cluster.local:3890
+          implementation: lldap
+          tls:
+            minimum_version: TLS1.2
+            skip_verify: false
+          base_dn: ${LDAP_BASE_DN}
+          user: uid=admin,ou=people,${LDAP_BASE_DN}
+          password: ${LDAP_ADMIN_PASSWD}
+          attributes:
+            display_name: displayName # cn ?
+      session:
+        cookies:
+          - domain: ${DOMAIN_0}
+            authelia_url: https://auth.${DOMAIN_0}
+            inactivity: '5m'
+            expiration: '1h'
+            remember_me: '1M'
+      storage:
+        postgres:
+          address: tcp://authelia-cnpg-main-rw:5432
+          database: authelia
+          username: authelia
+          password: ${POSTGRES_PASSWD}
+      notifier:
+        filesystem: null
+        smtp:
+          enabled: true
+          address: submission://smtp.gmail.com:587
+          username: ${EMAIL_GMAIL}
+          password: ${EMAIL_GMAIL_PASSWD}
+          sender: ${EMAIL_GMAIL}
+          startup_check_address: test@${DOMAIN_0}
+          tls:
+            server_name: smtp.gmail.com
+            minimum_version: TLS1.2
+            skip_verify: false
+      access_control:
+        default_policy: deny
+        rules:
+        - domain:
+          - "*.${DOMAIN_0}"
+          policy: bypass
+          resources:
+            - ^/api([/?].*)?$
+            - ^/identity.*$
+            - ^/triggers.*$
+            - ^/meshagents.*$
+            - ^/meshsettings.*$
+            - ^/agent.*$
+            - ^/control.*$
+            - ^/meshrelay.*$
+            - ^/wl.*$
+            - ^(/[0-9]*)?/api([/?].*)?$
+            - ^/uploads/.*$
+        - domain:
+          - nextcloud.${DOMAIN_0}
+          - lounge.${DOMAIN_0}
+          - calibreweb.${DOMAIN_0}
+          policy: two_factor
+          subject:
+            - group:nextcloud_users
+        - domain:
+          - "*.${DOMAIN_0}"
+          policy: two_factor
+          subject:
+            - group:all_access
     workload:
       main:
         replicas: ${NUMBER_OF_NODES}
+        podSpec:
+          containers:
+            main:
+              env:
+                AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET}
+                AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET: ${AUTHELIA_JWT_SECRET}
+                AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}

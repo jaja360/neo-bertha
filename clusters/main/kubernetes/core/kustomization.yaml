@@ -9,4 +9,3 @@ resources:
   - lldap/ks.yaml
   - flaresolverr/ks.yaml
   - blocky/ks.yaml
-  - authelia/ks.yaml

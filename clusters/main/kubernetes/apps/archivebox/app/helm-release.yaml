@@ -1,0 +1,68 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: archivebox
+  namespace: archivebox
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: archivebox
+      version: 4.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 30m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    config:
+      admin_username: ${ARCHIVEBOX_ADMIN_USERNAME}
+      admin_password: ${ARCHIVEBOX_ADMIN_PASSWORD}
+    persistence:
+      archive:
+        enabled: true
+        type: nfs
+        mountPath: /data/archive
+        path: ${NFS_ARCHIVE_PATH}
+        server: ${NFS_SERVER}
+    service:
+      main:
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "archivebox.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            group: Downloads
+            name: "ArchiveBox"
+            widget:
+              enabled: false

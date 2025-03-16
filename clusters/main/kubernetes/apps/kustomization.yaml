@@ -17,3 +17,4 @@ resources:
   - hass/ks.yaml
   - maybe/ks.yaml
   - plex-auto-languages/ks.yaml
+  - archivebox/ks.yaml

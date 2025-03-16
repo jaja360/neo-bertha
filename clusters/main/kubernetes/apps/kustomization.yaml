@@ -16,3 +16,4 @@ resources:
   - pgadmin/ks.yaml
   - hass/ks.yaml
   - maybe/ks.yaml
+  - plex-auto-languages/ks.yaml

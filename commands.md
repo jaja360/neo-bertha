@@ -4,6 +4,7 @@
 
 - Open a CLI: kubectl debug -n kube-system -it --image alpine node/k8s-control-1
 - Open Dashboard: talosctl dashboard
+- Create an etcd backup: talosctl etcd snapshot db.snapshot
 
 ## Flux
 

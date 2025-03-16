@@ -31,7 +31,29 @@ spec:
     config:
       admin_username: ${ARCHIVEBOX_ADMIN_USERNAME}
       admin_password: ${ARCHIVEBOX_ADMIN_PASSWORD}
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     persistence:
+      data:
+        volsync:
+          - name: data
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 15 * * *
       archive:
         enabled: true
         type: nfs

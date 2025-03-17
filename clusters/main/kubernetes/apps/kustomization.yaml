@@ -12,7 +12,6 @@ resources:
   - fileflows/ks.yaml
   - nextcloud/ks.yaml
   - plex/ks.yaml
-  - flood/ks.yaml
   - hass/ks.yaml
   - maybe/ks.yaml
   - plex-auto-languages/ks.yaml

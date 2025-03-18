@@ -42,7 +42,7 @@ spec:
       main:
         password: ${CNPG_PASSWD}
         hibernate: false
-        # mode: recovery
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
@@ -93,18 +93,12 @@ spec:
         secret_key: "${DUO_API_KEY}"
         enable_self_enrollment: false
       authentication_backend:
-        file: null
         ldap:
           address: ldap://lldap-ldap.lldap.svc.cluster.local:3890
           implementation: lldap
-          tls:
-            minimum_version: TLS1.2
-            skip_verify: false
           base_dn: ${LDAP_BASE_DN}
           user: uid=admin,ou=people,${LDAP_BASE_DN}
           password: ${LDAP_ADMIN_PASSWD}
-          attributes:
-            display_name: displayName # cn ?
       session:
         cookies:
           - domain: ${DOMAIN_0}
@@ -112,14 +106,7 @@ spec:
             inactivity: '5m'
             expiration: '1h'
             remember_me: '1M'
-      storage:
-        postgres:
-          address: tcp://authelia-cnpg-main-rw:5432
-          database: authelia
-          username: authelia
-          password: ${POSTGRES_PASSWD}
       notifier:
-        filesystem: null
         smtp:
           address: submission://smtp.gmail.com:587
           username: ${EMAIL_GMAIL}

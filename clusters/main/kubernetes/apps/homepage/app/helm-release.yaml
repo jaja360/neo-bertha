@@ -74,3 +74,10 @@ spec:
               enabled: true
               trigger:
                 schedule: 10 9 * * *
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                HOMEPAGE_ALLOWED_HOSTS: "home.${DOMAIN_0}"

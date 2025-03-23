@@ -59,6 +59,7 @@ controlPlane:
                     - siderolabs/qemu-guest-agent
                     - siderolabs/nonfree-kmod-nvidia-lts
                     - siderolabs/nvidia-container-toolkit-lts
+                    - siderolabs/realtek-firmware
     machineFiles:
     - content: |
         [plugins."io.containerd.grpc.v1.cri"]
@@ -101,6 +102,7 @@ worker:
                     - siderolabs/qemu-guest-agent
                     - siderolabs/nonfree-kmod-nvidia-lts
                     - siderolabs/nvidia-container-toolkit-lts
+                    - siderolabs/realtek-firmware
     machineFiles:
     - content: |
         [plugins."io.containerd.grpc.v1.cri"]

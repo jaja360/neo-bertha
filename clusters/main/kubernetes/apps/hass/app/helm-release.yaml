@@ -64,6 +64,11 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 11 * * *
+      dbus:
+        enabled: true
+        type: hostPath
+        hostPath: /var/run/dbus
+        mountPath: /run/dbus
     cnpg:
       main:
         mode: recovery

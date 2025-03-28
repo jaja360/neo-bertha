@@ -4,3 +4,5 @@ resources:
   - namespace.yaml
   - truenas/ks.yaml
   - router/ks.yaml
+  - antminer/ks.yaml
+  - jetkvm/ks.yaml

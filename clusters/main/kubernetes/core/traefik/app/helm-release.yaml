@@ -68,6 +68,7 @@ spec:
           homepage:
             enabled: true
             group: Admin
+            icon: "traefik.svg"
             name: "Traefik"
             widget:
               enabled: true

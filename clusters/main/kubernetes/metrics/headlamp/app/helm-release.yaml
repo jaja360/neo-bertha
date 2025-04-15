@@ -28,29 +28,23 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    persistentVolumeClaim:
-      accessModes:
-        - ReadWriteOnce
-      enabled: true
-      size: 1Gi
     volumeMounts:
-      - mountPath: /build/plugins
-        name: headlamp-plugins
+      - name: headlamp-plugins
+        mountPath: /build/plugins
     volumes:
       - name: headlamp-plugins
-        persistentVolumeClaim:
-          claimName: headlamp
+        emptyDir: {}
     initContainers:
-      - command:
+      - name: headlamp-plugins
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
+        imagePullPolicy: Always
+        command:
           - /bin/sh
           - -c
           - mkdir -p /build/plugins && cp -r /plugins/* /build/plugins/
-        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
-        imagePullPolicy: Always
-        name: headlamp-plugins
         volumeMounts:
-          - mountPath: /build/plugins
-            name: headlamp-plugins
+          - name: headlamp-plugins
+            mountPath: /build/plugins
     config:
       pluginsDir: /build/plugins
     service:

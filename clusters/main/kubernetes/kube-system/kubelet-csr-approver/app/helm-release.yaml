@@ -2,20 +2,20 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-    name: kubelet-csr-approver
-    namespace: kube-system
+  name: kubelet-csr-approver
+  namespace: kube-system
 spec:
-    interval: 30m
-    chart:
-        spec:
-            chart: kubelet-csr-approver
-            version: 1.4.2
-            sourceRef:
-                kind: HelmRepository
-                name: truecharts
-                namespace: flux-system
-            interval: 30m
-    values:
-        workload:
-            main:
-                replicas: ${NUMBER_OF_NODES}
+  interval: 30m
+  chart:
+    spec:
+      chart: kubelet-csr-approver
+      version: 1.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 30m
+  values:
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}

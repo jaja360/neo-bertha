@@ -87,3 +87,6 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
+    metrics:
+      main:
+        enabled: false

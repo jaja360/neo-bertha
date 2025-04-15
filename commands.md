@@ -17,3 +17,4 @@
 - Show all resources: kubectl get all -A
 - Show events for an app: kubectl events -n [name] --watch
 - Redirect port: kubectl port-forward -n [namespace] service/[service_name] [local_port]:[pod_port]
+- Get a secret: kubectl get secret -n namespace secret-name -o jsonpath="{.data.token}" | base64 -d

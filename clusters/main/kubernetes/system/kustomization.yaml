@@ -8,7 +8,6 @@ resources:
   - longhorn/ks.yaml
   - metallb/ks.yaml
   - openebs/ks.yaml
-  - prometheus-operator/ks.yaml
   - snapshot-controller/ks.yaml
   - system-upgrade-controller/ks.yaml
   - traefik-crds/ks.yaml
@@ -17,3 +16,4 @@ resources:
   - nvidia-device-plugin/ks.yaml
   - spegel/ks.yaml
   - cloudflareddns/ks.yaml
+  - kube-prometheus-stack/ks.yaml

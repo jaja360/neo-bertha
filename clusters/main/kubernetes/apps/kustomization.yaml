@@ -17,3 +17,4 @@ resources:
   - plex-auto-languages/ks.yaml
   - archivebox/ks.yaml
   - pgadmin/ks.yaml
+  - immich/ks.yaml

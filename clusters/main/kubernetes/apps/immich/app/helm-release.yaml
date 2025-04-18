@@ -1,0 +1,126 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: immich
+      version: 17.54.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    cnpg:
+      main:
+        mode: recovery
+        password: ${CNPG_PASSWD}
+        hibernate: false
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          credentials: backblaze
+        recovery:
+          enabled: true
+          method: object_store
+          credentials: backblaze
+    persistence:
+      profile:
+        volsync:
+          - name: profile
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 14 * * *
+      thumbs:
+        volsync:
+          - name: thumbs
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 5 14 * * *
+      library:
+        type: nfs
+        path: ${NFS_MEDIAS_PATH}/photos/private
+        server: ${NFS_SERVER}
+      uploads:
+        type: nfs
+        path: ${NFS_MEDIAS_PATH}/photos/uploads
+        server: ${NFS_SERVER}
+    service:
+      main:
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "immich.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          traefik:
+            enabled: true
+            entrypoints:
+              - websecure
+            middlewares:
+              - name: auth
+                namespace: traefik
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Immich"
+            widget:
+              enabled: false
+              custom:
+                key: ${IMMICH_APIKEY}
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}
+        podSpec:
+          runtimeClassName: "nvidia"

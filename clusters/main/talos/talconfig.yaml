@@ -56,10 +56,10 @@ controlPlane:
                 officialExtensions:
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/qemu-guest-agent
                     - siderolabs/nonfree-kmod-nvidia-lts
                     - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware
+                    # - siderolabs/qemu-guest-agent
     machineFiles:
     - content: |
         [plugins."io.containerd.cri.v1.images"]
@@ -91,10 +91,10 @@ worker:
                 officialExtensions:
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/qemu-guest-agent
                     - siderolabs/nonfree-kmod-nvidia-lts
                     - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware
+                    # - siderolabs/qemu-guest-agent
     machineFiles:
     - content: |
         [plugins."io.containerd.cri.v1.images"]

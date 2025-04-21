@@ -28,10 +28,10 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    imagemaidImage:
-      repository: kometateam/imagemaid
-      tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
-      pullPolicy: IfNotPresent
+    # imagemaidImage:
+    #   repository: kometateam/imagemaid
+    #   tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
+    #   pullPolicy: IfNotPresent
 
     credentials:
       backblaze:
@@ -105,32 +105,32 @@ spec:
         replicas: ${NUMBER_OF_NODES}
         podSpec:
           runtimeClassName: "nvidia"
-      imagemaid:
-        enabled: true
-        primary: false
-        type: Deployment
-        podSpec:
-          containers:
-            main:
-              enabled: true
-              primary: true
-              imageSelector: imagemaidImage
-              env:
-                PLEX_PATH: /config/Library/Application Support/Plex Media Server
-                PLEX_URL: http://plex.plex.svc.cluster.local:32400
-                PLEX_TOKEN: ${PLEX_TOKEN}
-                MODE: remove
-                SCHEDULE: 22:00|daily
-                PHOTO_TRANSCODER: True
-                EMPTY_TRASH: True
-                CLEAN_BUNDLES: True
-                OPTIMIZE_DB: True
-                LOCAL_DB: False
-                TRACE: False
-              probes:
-                liveness:
-                  enabled: false
-                readiness:
-                  enabled: false
-                startup:
-                  enabled: false
+      # imagemaid:
+      #   enabled: true
+      #   primary: false
+      #   type: Deployment
+      #   podSpec:
+      #     containers:
+      #       main:
+      #         enabled: true
+      #         primary: true
+      #         imageSelector: imagemaidImage
+      #         env:
+      #           PLEX_PATH: /config/Library/Application Support/Plex Media Server
+      #           PLEX_URL: http://plex.plex.svc.cluster.local:32400
+      #           PLEX_TOKEN: ${PLEX_TOKEN}
+      #           MODE: remove
+      #           SCHEDULE: 22:00|daily
+      #           PHOTO_TRANSCODER: True
+      #           EMPTY_TRASH: True
+      #           CLEAN_BUNDLES: True
+      #           OPTIMIZE_DB: True
+      #           LOCAL_DB: False
+      #           TRACE: False
+      #         probes:
+      #           liveness:
+      #             enabled: false
+      #           readiness:
+      #             enabled: false
+      #           startup:
+      #             enabled: false

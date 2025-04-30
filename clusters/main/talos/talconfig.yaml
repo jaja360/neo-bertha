@@ -54,6 +54,7 @@ controlPlane:
                 - net.ifnames=0
             systemExtensions:
                 officialExtensions:
+                    - siderolabs/intel-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
                     - siderolabs/nonfree-kmod-nvidia-lts
@@ -89,6 +90,7 @@ worker:
         customization:
             systemExtensions:
                 officialExtensions:
+                    - siderolabs/intel-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
                     - siderolabs/nonfree-kmod-nvidia-lts

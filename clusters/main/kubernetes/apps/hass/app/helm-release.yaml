@@ -72,14 +72,18 @@ spec:
     cnpg:
       main:
         mode: recovery
+        password: ${CNPG_PASSWD}
+        hibernate: false
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
+          revision: "1"
           credentials: backblaze
         recovery:
           enabled: true
+          revision: ""
           method: object_store
           credentials: backblaze
     service:

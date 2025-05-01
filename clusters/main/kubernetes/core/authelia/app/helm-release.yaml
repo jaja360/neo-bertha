@@ -40,15 +40,15 @@ spec:
         url: "${BACKBLAZE_URL}"
     cnpg:
       main:
+        mode: recovery
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
-          revision: ""
+          revision: "1"
           credentials: backblaze
         recovery:
           enabled: true

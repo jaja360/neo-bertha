@@ -70,8 +70,6 @@ spec:
         server: ${NFS_SERVER}
     cnpg:
       main:
-        user: nextcloud
-        database: nextcloud
         password: ${CNPG_PASSWD}
         pgVersion: 15
         hibernate: false
@@ -81,7 +79,7 @@ spec:
           singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
           enabled: true

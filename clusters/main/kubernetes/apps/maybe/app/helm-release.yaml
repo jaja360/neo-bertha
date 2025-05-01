@@ -32,6 +32,16 @@ spec:
       repository: ghcr.io/maybe-finance/maybe
       pullPolicy: IfNotPresent
       tag: 0.5.0
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        path: ""
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     service:
       main:
         type: LoadBalancer
@@ -85,10 +95,19 @@ spec:
         database: maybe
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: standalone
+        mode: standalone  # recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          revision: ""
+          credentials: backblaze
+        recovery:
+          enabled: true
+          revision: ""
+          method: object_store
+          credentials: backblaze
     workload:
       main:
         podSpec:

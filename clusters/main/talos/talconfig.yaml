@@ -31,7 +31,7 @@ nodes:
       installDiskSelector:
         size: <= 1600GB
       networkInterfaces:
-        # suffix is the adapter mac adres.
+        # suffix is the adapter mac address.
         - interface: eth0
           addresses:
             - ${MASTER1IP_CIDR}
@@ -54,13 +54,12 @@ controlPlane:
                 - net.ifnames=0
             systemExtensions:
                 officialExtensions:
-                    - siderolabs/intel-ucode
+                    - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-lts
-                    - siderolabs/nvidia-container-toolkit-lts
+                    - siderolabs/nonfree-kmod-nvidia-production
+                    - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
-                    # - siderolabs/qemu-guest-agent
     machineFiles:
     - content: |
         [plugins."io.containerd.cri.v1.images"]
@@ -90,13 +89,12 @@ worker:
         customization:
             systemExtensions:
                 officialExtensions:
-                    - siderolabs/intel-ucode
+                    - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-lts
-                    - siderolabs/nvidia-container-toolkit-lts
+                    - siderolabs/nonfree-kmod-nvidia-production
+                    - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
-                    # - siderolabs/qemu-guest-agent
     machineFiles:
     - content: |
         [plugins."io.containerd.cri.v1.images"]

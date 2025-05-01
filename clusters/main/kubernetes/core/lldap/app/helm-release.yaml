@@ -38,18 +38,16 @@ spec:
         url: "${BACKBLAZE_URL}"
     cnpg:
       main:
-        user: lldap
-        database: lldap
+        mode: recovery
         password: ${CNPG_PASSWD}
         pgVersion: 15
         hibernate: false
-        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
           enabled: true

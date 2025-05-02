@@ -37,17 +37,6 @@ spec:
     runtimeClassName: nvidia
     gfd:
       enabled: true
-    nfd:
-      enabled: false
-    tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
-      - key: "nvidia.com/gpu"
-        operator: "Exists"
-        effect: "NoSchedule"
     config:
       map:
         default: |-

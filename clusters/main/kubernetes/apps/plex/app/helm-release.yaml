@@ -50,22 +50,18 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
-      config:
-        size: 301Gi
-        targetSelectAll: true
-        # volsync:
-        #   - name: config
-        #     type: restic
-        #     credentials: backblaze
-        #     cleanupCachePVC: true
-        #     dest:
-        #       enabled: true
-        #       cacheCapacity: 50Gi
-        #     src:
-        #       enabled: true
-        #       cacheCapacity: 50Gi
-        #       trigger:
-        #         schedule: 5 11 * * *
+      # config:
+      #   volsync:
+      #     - name: config
+      #       type: restic
+      #       credentials: backblaze
+      #       cleanupCachePVC: true
+      #       dest:
+      #         enabled: true
+      #       src:
+      #         enabled: true
+      #         trigger:
+      #           schedule: 5 11 * * *
     service:
       main:
         type: LoadBalancer
@@ -83,17 +79,15 @@ spec:
             enabled: true
             certificateIssuer: domain-0-le-prod
           traefik:
-            enabled: true
-            entrypoints:
-              - websecure
-          homepage:
-            enabled: true
-            group: Misc
-            name: "Plex"
-            widget:
-              enabled: true
-              custom:
-                key: ${PLEX_APIKEY}
+            enabled: false
+          # homepage:
+          #   enabled: true
+          #   group: Misc
+          #   name: "Plex"
+          #   widget:
+          #     enabled: true
+          #     custom:
+          #       key: ${PLEX_APIKEY}
     plex:
       serverIP: ${PLEX_IP}
       additionalAdvertiseURL: "http://plex.${DOMAIN_0}:32400,https://plex.${DOMAIN_0}"

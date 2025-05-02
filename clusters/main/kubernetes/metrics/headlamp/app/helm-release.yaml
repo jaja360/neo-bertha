@@ -58,13 +58,10 @@ spec:
               - path: /
                 type: Prefix
         tls:
-          - secretName: "headlamp-tls-0"
-            hosts:
+          - hosts:
               - headlamp.${DOMAIN_0}
+            secretName: "headlamp-tls-0"
         annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: websecure
-            traefik.ingress.kubernetes.io/router.middlewares: "traefik-chain-basic@kubernetescrd,traefik-auth@kubernetescrd"
-            traefik.ingress.kubernetes.io/router.tls: "true"
             cert-manager.io/cluster-issuer: domain-0-le-prod
             cert-manager.io/private-key-rotation-policy: Always
             gethomepage.dev/enabled: "true"

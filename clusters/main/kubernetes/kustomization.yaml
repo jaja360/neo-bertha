@@ -2,14 +2,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - apps
+  # - arrs
   - auth
   - core
+  - external
   - flux-entry.yaml
   - flux-system
   - kube-system
-  - system
   - metrics
   - networking
-  # - arrs
-  # - external
   # - server
+  - system

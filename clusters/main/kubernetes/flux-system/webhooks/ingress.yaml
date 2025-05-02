@@ -6,10 +6,6 @@ metadata:
   annotations:
       cert-manager.io/cluster-issuer: domain-0-le-prod
       cert-manager.io/private-key-rotation-policy: Always
-      kubernetes.io/ingress.class: "traefik"
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
-      traefik.ingress.kubernetes.io/router.middlewares: traefik-chain-basic@kubernetescrd
-      traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
   - host: flux-webhook.${DOMAIN_0}
@@ -26,7 +22,3 @@ spec:
     - hosts:
       - flux-webhook.${DOMAIN_0}
       secretName: flux-webhook-tls-0
-status:
-    loadBalancer:
-      ingress:
-      - ip: ${TRAEFIK_IP}

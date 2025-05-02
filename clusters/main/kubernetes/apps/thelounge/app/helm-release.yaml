@@ -58,22 +58,22 @@ spec:
     ingress:
       main:
         enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/auth-method: 'GET'
+          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
+          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
+          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
         hosts:
           - host: "lounge.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
         integrations:
+          traefik:
+            enabled: false
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
-            middlewares:
-              - name: auth
-                namespace: traefik
           homepage:
             enabled: true
             group: Misc

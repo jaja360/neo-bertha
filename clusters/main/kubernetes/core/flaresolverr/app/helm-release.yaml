@@ -45,14 +45,6 @@ spec:
             certificateIssuer: domain-0-le-prod
           traefik:
             enabled: true
-            entrypoints:
-              - websecure
             middlewares:
               - name: auth
                 namespace: traefik
-          homepage:
-            enabled: true
-            group: Misc
-            name: "FlareSolverr"
-            widget:
-              enabled: false

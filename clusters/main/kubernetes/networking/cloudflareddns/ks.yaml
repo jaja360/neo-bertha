@@ -5,9 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: clusters/main/kubernetes/system/cloudflareddns/app
+  path: clusters/main/kubernetes/networking/cloudflareddns/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: cluster
-

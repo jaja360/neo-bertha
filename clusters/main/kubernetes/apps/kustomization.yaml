@@ -10,7 +10,7 @@ resources:
   # - nextcloud/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
-  # - hass/ks.yaml
+  - hass/ks.yaml
   # - archivebox/ks.yaml
   # - pgadmin/ks.yaml
   # - immich/ks.yaml

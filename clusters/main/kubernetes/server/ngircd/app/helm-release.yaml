@@ -42,25 +42,6 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    ingress:
-      main:
-        enabled: true
-        hosts:
-          - host: "irc.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
-        integrations:
-          certManager:
-            enabled: true
-            certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
-            middlewares:
-              - name: auth
-                namespace: traefik
     persistence:
       config:
         volsync:
@@ -74,3 +55,22 @@ spec:
               enabled: true
               trigger:
                 schedule: 5 10 * * *
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/auth-method: 'GET'
+          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
+          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
+          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
+        hosts:
+          - host: "irc.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          traefik:
+            enabled: false
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod

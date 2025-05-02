@@ -11,5 +11,5 @@ resources:
   - kube-system
   - metrics
   - networking
-  # - server
+  - server
   - system

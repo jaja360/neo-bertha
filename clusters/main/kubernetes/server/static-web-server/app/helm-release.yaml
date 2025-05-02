@@ -44,13 +44,11 @@ spec:
             - path: /
               pathType: Prefix
         integrations:
+          traefik:
+            enabled: false
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
           homepage:
             enabled: true
             group: Misc
@@ -65,3 +63,11 @@ spec:
         mountPath: /public
         path: ${NFS_WEBSITE_PATH}
         server: ${NFS_SERVER}
+    # TODO: remove when better solution is found
+    securityContext:
+      container:
+        privileged: true
+        runAsUser: 0
+        runAsGroup: 0
+      pod:
+        fsGroupChangePolicy: OnRootMismatch

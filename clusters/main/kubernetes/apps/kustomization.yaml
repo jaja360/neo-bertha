@@ -6,13 +6,13 @@ resources:
   # - qbittorrent/ks.yaml
   # - qbitmanage/ks.yaml
   # - autobrr/ks.yaml
-  # - vaultwarden/ks.yaml
+  - vaultwarden/ks.yaml
   # - nextcloud/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
   - hass/ks.yaml
-  # - archivebox/ks.yaml
-  # - pgadmin/ks.yaml
+  - archivebox/ks.yaml
+  - pgadmin/ks.yaml
   # - immich/ks.yaml
   # - maybe/ks.yaml
   # - firefox/ks.yaml

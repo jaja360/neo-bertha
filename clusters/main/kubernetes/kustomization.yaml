@@ -6,3 +6,4 @@ resources:
   - flux-system
   - kube-system
   - system
+  - networking

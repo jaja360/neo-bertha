@@ -38,33 +38,6 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    service:
-      main:
-        type: LoadBalancer
-    ingress:
-      main:
-        enabled: true
-        hosts:
-          - host: "jellyseerr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
-        integrations:
-          certManager:
-            enabled: true
-            certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
-          homepage:
-            enabled: true
-            group: Arrs
-            name: "Jellyseerr"
-            widget:
-              enabled: true
-              custom:
-                key: ${JELLYSEERR_APIKEY}
     persistence:
       config:
         volsync:
@@ -78,3 +51,28 @@ spec:
               enabled: true
               trigger:
                 schedule: 10 10 * * *
+    service:
+      main:
+        type: LoadBalancer
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "jellyseerr.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          traefik:
+            enabled: false
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Arrs
+            name: "Jellyseerr"
+            widget:
+              enabled: true
+              custom:
+                key: ${JELLYSEERR_APIKEY}

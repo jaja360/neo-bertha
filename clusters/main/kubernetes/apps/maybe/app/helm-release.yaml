@@ -42,44 +42,22 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    service:
-      main:
-        type: LoadBalancer
-        ports:
-          main:
-            port: 3000
-    ingress:
-      main:
-        enabled: true
-        hosts:
-          - host: "maybe.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
-        integrations:
-          certManager:
-            enabled: true
-            certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
-            middlewares:
-              - name: auth
-                namespace: traefik
-          homepage:
-            enabled: true
-            group: Misc
-            name: "Maybe"
-            description: "The OS for your personal finances"
-            icon: "maybe.svg"
-            widget:
-              enabled: false
     persistence:
       app-storage:
         enabled: true
         type: pvc
         mountPath: /rails/storage
+        volsync:
+          - name: app-storage
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 10 55 * * *
       rails-tmp:
         enabled: true
         type: emptyDir
@@ -108,6 +86,39 @@ spec:
           revision: ""
           method: object_store
           credentials: backblaze
+    service:
+      main:
+        type: LoadBalancer
+        ports:
+          main:
+            port: 3000
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/auth-method: 'GET'
+          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
+          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
+          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
+        hosts:
+          - host: "maybe.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          traefik:
+            enabled: false
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Maybe"
+            description: "The OS for your personal finances"
+            icon: "maybe.svg"
+            widget:
+              enabled: false
     workload:
       main:
         podSpec:

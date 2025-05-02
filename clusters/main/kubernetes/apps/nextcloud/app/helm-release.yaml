@@ -98,13 +98,11 @@ spec:
             - path: /
               pathType: Prefix
         integrations:
+          traefik:
+            enabled: false
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: true
-            entrypoints:
-              - websecure
           homepage:
             enabled: true
             group: Misc

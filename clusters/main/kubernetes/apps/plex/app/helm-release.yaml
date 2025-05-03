@@ -75,30 +75,29 @@ spec:
             - path: /
               pathType: Prefix
         integrations:
+          traefik:
+            enabled: false
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
-          traefik:
-            enabled: false
-          # homepage:
-          #   enabled: true
-          #   group: Misc
-          #   name: "Plex"
-          #   widget:
-          #     enabled: true
-          #     custom:
-          #       key: ${PLEX_APIKEY}
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Plex"
+            widget:
+              enabled: true
+              custom:
+                key: ${PLEX_APIKEY}
     plex:
       serverIP: ${PLEX_IP}
       additionalAdvertiseURL: "http://plex.${DOMAIN_0}:32400,https://plex.${DOMAIN_0}"
-    resources:
-      limits:
-        nvidia.com/gpu: 1
-    workload:
-      main:
-        replicas: ${NUMBER_OF_NODES}
-        podSpec:
-          runtimeClassName: "nvidia"
+    # resources:
+    #   limits:
+    #     nvidia.com/gpu: 1
+    # workload:
+    #   main:
+    #     podSpec:
+    #       runtimeClassName: "nvidia"
       # imagemaid:
       #   enabled: true
       #   primary: false

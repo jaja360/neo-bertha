@@ -118,7 +118,7 @@ spec:
         initialAdminUser: ${NEXTCLOUD_ADMIN_USER}
         initialAdminPassword: ${NEXTCLOUD_ADMIN_PASSWD}
       general:
-        accessIP: ${TRAEFIK_IP}
+        accessIP: ${NGINX_EXTERNAL_IP}
         default_phone_region: CA
       previews:
         providers:

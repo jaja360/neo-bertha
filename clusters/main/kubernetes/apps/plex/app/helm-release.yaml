@@ -90,7 +90,6 @@ spec:
                 key: ${PLEX_APIKEY}
     plex:
       serverIP: ${PLEX_IP}
-      additionalAdvertiseURL: "http://plex.${DOMAIN_0}:32400,https://plex.${DOMAIN_0}"
     # resources:
     #   limits:
     #     nvidia.com/gpu: 1

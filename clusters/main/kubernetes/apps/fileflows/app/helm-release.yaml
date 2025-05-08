@@ -29,21 +29,21 @@ spec:
     keepHistory: false
   values:
     credentials:
-      backblaze:
-        name: backblaze
+      minio:
+        name: minio
         type: s3
         path: ""
-        accessKey: "${BACKBLAZE_ID}"
-        bucket: "${BACKBLAZE_BUCKET}"
-        encrKey: "${BACKBLAZE_ENCR_KEY}"
-        secretKey: "${BACKBLAZE_KEY}"
-        url: "${BACKBLAZE_URL}"
+        accessKey: "${MINIO_ID}"
+        bucket: "${MINIO_BUCKET}"
+        encrKey: "${MINIO_ENCR_KEY}"
+        secretKey: "${MINIO_KEY}"
+        url: "${MINIO_URL}"
     persistence:
       data:
         volsync:
           - name: data
             type: restic
-            credentials: backblaze
+            credentials: minio
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -85,11 +85,11 @@ spec:
             name: "FileFlows"
             widget:
               enabled: false
-    resources:
-      limits:
-        nvidia.com/gpu: 1
-    workload:
-      main:
-        replicas: ${NUMBER_OF_NODES}
-        podSpec:
-          runtimeClassName: "nvidia"
+    # resources:
+    #   limits:
+    #     nvidia.com/gpu: 1
+    # workload:
+    #   main:
+    #     replicas: ${NUMBER_OF_NODES}
+    #     podSpec:
+    #       runtimeClassName: "nvidia"

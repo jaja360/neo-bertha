@@ -29,21 +29,21 @@ spec:
     keepHistory: false
   values:
     credentials:
-      backblaze:
-        name: backblaze
+      minio:
+        name: minio
         type: s3
         path: ""
-        accessKey: "${BACKBLAZE_ID}"
-        bucket: "${BACKBLAZE_BUCKET}"
-        encrKey: "${BACKBLAZE_ENCR_KEY}"
-        secretKey: "${BACKBLAZE_KEY}"
-        url: "${BACKBLAZE_URL}"
+        accessKey: "${MINIO_ID}"
+        bucket: "${MINIO_BUCKET}"
+        encrKey: "${MINIO_ENCR_KEY}"
+        secretKey: "${MINIO_KEY}"
+        url: "${MINIO_URL}"
     persistence:
       config:
         volsync:
           - name: config
             type: restic
-            credentials: backblaze
+            credentials: minio
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -55,7 +55,7 @@ spec:
         volsync:
           - name: html
             type: restic
-            credentials: backblaze
+            credentials: minio
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -80,12 +80,12 @@ spec:
         backups:
           enabled: false
           revision: "2"
-          credentials: backblaze
+          credentials: minio
         recovery:
           enabled: true
           revision: "1"
           method: object_store
-          credentials: backblaze
+          credentials: minio
     service:
       main:
         type: LoadBalancer

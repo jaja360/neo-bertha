@@ -33,15 +33,15 @@ spec:
       pullPolicy: IfNotPresent
       tag: 0.5.0
     credentials:
-      backblaze:
-        name: backblaze
+      minio:
+        name: minio
         type: s3
         path: ""
-        accessKey: "${BACKBLAZE_ID}"
-        bucket: "${BACKBLAZE_BUCKET}"
-        encrKey: "${BACKBLAZE_ENCR_KEY}"
-        secretKey: "${BACKBLAZE_KEY}"
-        url: "${BACKBLAZE_URL}"
+        accessKey: "${MINIO_ID}"
+        bucket: "${MINIO_BUCKET}"
+        encrKey: "${MINIO_ENCR_KEY}"
+        secretKey: "${MINIO_KEY}"
+        url: "${MINIO_URL}"
     persistence:
       app-storage:
         enabled: true
@@ -50,7 +50,7 @@ spec:
         volsync:
           - name: app-storage
             type: restic
-            credentials: backblaze
+            credentials: minio
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -80,12 +80,12 @@ spec:
         backups:
           enabled: true
           revision: ""
-          credentials: backblaze
+          credentials: minio
         recovery:
           enabled: true
           revision: ""
           method: object_store
-          credentials: backblaze
+          credentials: minio
     service:
       main:
         type: LoadBalancer

@@ -32,40 +32,8 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${MOSQUITTO_IP}
-    credentials:
-      backblaze:
-        name: backblaze
-        type: s3
-        path: ""
-        accessKey: "${BACKBLAZE_ID}"
-        bucket: "${BACKBLAZE_BUCKET}"
-        encrKey: "${BACKBLAZE_ENCR_KEY}"
-        secretKey: "${BACKBLAZE_KEY}"
-        url: "${BACKBLAZE_URL}"
     persistence:
-      data:
-        volsync:
-          - name: data
-            type: restic
-            credentials: backblaze
-            cleanupCachePVC: true
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 50 10 * * *
       configinc:
-        volsync:
-          - name: configinc
-            type: restic
-            credentials: backblaze
-            cleanupCachePVC: true
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 50 10 * * *
+        type: emptyDir
     auth:
       enabled: false

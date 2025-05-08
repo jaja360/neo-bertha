@@ -34,15 +34,15 @@ spec:
     #   pullPolicy: IfNotPresent
 
     credentials:
-      backblaze:
-        name: backblaze
+      minio:
+        name: minio
         type: s3
         path: ""
-        accessKey: "${BACKBLAZE_ID}"
-        bucket: "${BACKBLAZE_BUCKET}"
-        encrKey: "${BACKBLAZE_ENCR_KEY}"
-        secretKey: "${BACKBLAZE_KEY}"
-        url: "${BACKBLAZE_URL}"
+        accessKey: "${MINIO_ID}"
+        bucket: "${MINIO_BUCKET}"
+        encrKey: "${MINIO_ENCR_KEY}"
+        secretKey: "${MINIO_KEY}"
+        url: "${MINIO_URL}"
     persistence:
       medias:
         enabled: true
@@ -54,7 +54,7 @@ spec:
       #   volsync:
       #     - name: config
       #       type: restic
-      #       credentials: backblaze
+      #       credentials: minio
       #       cleanupCachePVC: true
       #       dest:
       #         enabled: true

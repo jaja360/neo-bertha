@@ -4,12 +4,12 @@ resources:
   - archivebox/ks.yaml
   - autobrr/ks.yaml
   - firefox/ks.yaml
-  # - fileflows/ks.yaml
+  - fileflows/ks.yaml
   - hass/ks.yaml
   - homepage/ks.yaml
   - immich/ks.yaml
   - maybe/ks.yaml
-  # - nextcloud/ks.yaml
+  - nextcloud/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
   - pgadmin/ks.yaml

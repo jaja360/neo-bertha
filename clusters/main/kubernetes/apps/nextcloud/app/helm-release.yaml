@@ -78,7 +78,7 @@ spec:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
         backups:
-          enabled: true
+          enabled: false
           revision: "2"
           credentials: backblaze
         recovery:

@@ -43,7 +43,7 @@ nodes:
 controlPlane:
     patches:
         - '@./patches/controlplane.yaml'
-        - '@./patches/nvidia.yaml'
+        # - '@./patches/nvidia.yaml'
     kernelModules:
      - name: nvme_tcp
      - name: vfio_pci
@@ -57,8 +57,8 @@ controlPlane:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-production
-                    - siderolabs/nvidia-container-toolkit-production
+                    # - siderolabs/nonfree-kmod-nvidia-production
+                    # - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
     machineFiles:
     - content: |
@@ -80,7 +80,7 @@ controlPlane:
 worker:
     patches:
         - '@./patches/worker.yaml'
-        - '@./patches/nvidia.yaml'
+        # - '@./patches/nvidia.yaml'
     kernelModules:
      - name: nvme_tcp
      - name: vfio_pci
@@ -92,8 +92,8 @@ worker:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-production
-                    - siderolabs/nvidia-container-toolkit-production
+                    # - siderolabs/nonfree-kmod-nvidia-production
+                    # - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
     machineFiles:
     - content: |

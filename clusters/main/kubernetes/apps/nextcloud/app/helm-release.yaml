@@ -83,7 +83,7 @@ spec:
           credentials: backblaze
         recovery:
           enabled: true
-          revision: "1"
+          revision: "2"
           method: object_store
           credentials: backblaze
     service:

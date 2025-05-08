@@ -9,7 +9,7 @@ resources:
   - homepage/ks.yaml
   - immich/ks.yaml
   - maybe/ks.yaml
-  - nextcloud/ks.yaml
+  # - nextcloud/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
   - pgadmin/ks.yaml

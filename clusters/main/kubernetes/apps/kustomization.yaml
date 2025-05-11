@@ -18,3 +18,4 @@ resources:
   - sabnzbd/ks.yaml
   - thelounge/ks.yaml
   - vaultwarden/ks.yaml
+  - slskd/ks.yaml

@@ -125,6 +125,7 @@ spec:
               env:
                 SLSKD_NO_AUTH: true
                 SLSKD_REMOTE_CONFIGURATION: true
+                SLSKD_SLSK_LISTEN_PORT: 50300
                 SLSKD_SLSK_USERNAME: ${SLSKD_USERNAME}
                 SLSKD_SLSK_PASSWORD: ${SLSKD_PASSWORD}
                 SLSKD_SHARED_DIR: "/medias/downloads/shared"

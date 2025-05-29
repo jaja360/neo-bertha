@@ -37,8 +37,8 @@ spec:
     runtimeClassName: nvidia
     gfd:
       enabled: true
-    nfd:
-      enabled: false
+    # nfd:
+    #   enabled: false
     config:
       map:
         default: |-

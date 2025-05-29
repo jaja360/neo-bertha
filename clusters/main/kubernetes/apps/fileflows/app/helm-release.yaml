@@ -85,11 +85,11 @@ spec:
             name: "FileFlows"
             widget:
               enabled: false
-    # resources:
-    #   limits:
-    #     nvidia.com/gpu: 1
-    # workload:
-    #   main:
-    #     replicas: ${NUMBER_OF_NODES}
-    #     podSpec:
-    #       runtimeClassName: "nvidia"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    workload:
+      main:
+        replicas: ${NUMBER_OF_NODES}
+        podSpec:
+          runtimeClassName: "nvidia"

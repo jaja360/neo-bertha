@@ -92,13 +92,13 @@ spec:
                 key: ${PLEX_APIKEY}
     plex:
       serverIP: ${PLEX_IP}
-    # resources:
-    #   limits:
-    #     nvidia.com/gpu: 1
+    resources:
+      limits:
+        nvidia.com/gpu: 1
     workload:
-      # main:
-      #   podSpec:
-      #     runtimeClassName: "nvidia"
+      main:
+        podSpec:
+          runtimeClassName: "nvidia"
       imagemaid:
         enabled: true
         primary: false

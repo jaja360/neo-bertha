@@ -56,6 +56,8 @@ spec:
             name: "Static Web Server"
             widget:
               enabled: false
+    podOptions:
+      hostUsers: true
     persistence:
       config:
         enabled: true
@@ -63,11 +65,3 @@ spec:
         mountPath: /public
         path: ${NFS_WEBSITE_PATH}
         server: ${NFS_SERVER}
-    # TODO: remove when better solution is found
-    securityContext:
-      container:
-        privileged: true
-        runAsUser: 0
-        runAsGroup: 0
-      pod:
-        fsGroupChangePolicy: OnRootMismatch

@@ -39,12 +39,12 @@ spec:
           main:
             enable: true
             port: 8080
-          osrm:
-            enable: true
-            port: 5001
-          veplan:
-            enable: true
-            port: 5002
+          # veplan:
+          #   enable: true
+          #   port: 5001
+          # osrm:
+          #   enable: true
+          #   port: 5002
     ingress:
       main:
         enabled: true
@@ -67,11 +67,13 @@ spec:
             icon: "https://gitlab.info.uqam.ca/uploads/-/system/project/avatar/903/EiX7I9rIh3uwR1d8gD9PTFsi_CidZQ3vsxvqgWgQnDieagy-.png"
             widget:
               enabled: false
+    podOptions:
+      hostUsers: true
     persistence:
-      config:
+      data:
         enabled: true
         type: nfs
-        mountPath: /data
+        mountPath: /opt/data
         path: ${NFS_VEPLAN_DATA_PATH}
         server: ${NFS_SERVER}
     securityContext:
@@ -79,21 +81,27 @@ spec:
         PUID: 1000
         runAsUser: 1000
         runAsGroup: 1000
+        readOnlyRootFilesystem: false
     workload:
       main:
         podSpec:
           containers:
             main:
               env:
-                WEBSERVER_PORT: "{{ .Values.service.main.ports.main.targetPort }}"
-                OSRM_PORT: "{{ .Values.service.main.ports.osrm.targetPort }}"
-                VEPLAN_PORT: "{{ .Values.service.main.ports.veplan.targetPort }}"
+                CLUSTER_SIZE: 0
+                GUNICORN_PORT: "8080"
+                # VEPLAN_PORT: "5001"
+                # OSRM_PORT: "5002"
+                VEPLAN_MAP_FILE: province.txt
+                STATION_FILE: rapides.txt
+                OSRM_MAP_FILE: quebec-latest.osrm
+                MAPQUEST_API_KEY: ${MAPQUEST_API_KEY}
               probes:
                 startup:
                   enabled: true
                   type: exec
                   command:
-                    - /usr/local/bin/health-check.sh
+                    - /usr/local/bin/healthCheck.sh
                   spec:
                     initialDelaySeconds: 60
                     periodSeconds: 60
@@ -102,7 +110,7 @@ spec:
                   enabled: true
                   type: exec
                   command:
-                    - /usr/local/bin/health-check.sh
+                    - /usr/local/bin/healthCheck.sh
                   spec:
                     initialDelaySeconds: 10
                     periodSeconds: 15
@@ -111,7 +119,7 @@ spec:
                   enabled: true
                   type: exec
                   command:
-                    - /usr/local/bin/health-check.sh
+                    - /usr/local/bin/healthCheck.sh
                   spec:
                     initialDelaySeconds: 900
                     periodSeconds: 60

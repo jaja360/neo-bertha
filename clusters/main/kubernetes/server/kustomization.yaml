@@ -5,4 +5,4 @@ resources:
   - static-web-server/ks.yaml
   - mosquitto/ks.yaml
   - hydroqc/ks.yaml
-  # - veplan/ks.yaml
+  - veplan/ks.yaml

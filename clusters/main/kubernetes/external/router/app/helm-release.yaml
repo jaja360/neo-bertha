@@ -33,7 +33,6 @@ spec:
         enabled: true
         type: ExternalIP
         externalIP: ${GATEWAY}
-        externalTrafficPolicy: Local
         ports:
           main:
             enabled: true

@@ -30,7 +30,7 @@ spec:
   values:
     image:
       repository: registry.gitlab.info.uqam.ca/champagne_gareau.jael/veplan
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
       tag: latest
     service:
       main:
@@ -39,12 +39,6 @@ spec:
           main:
             enable: true
             port: 8080
-          # veplan:
-          #   enable: true
-          #   port: 5001
-          # osrm:
-          #   enable: true
-          #   port: 5002
     ingress:
       main:
         enabled: true
@@ -86,13 +80,9 @@ spec:
         podSpec:
           containers:
             main:
-              securityContext:
-                readOnlyRootFilesystem: false
               env:
                 CLUSTER_SIZE: 0
                 GUNICORN_PORT: "8080"
-                # VEPLAN_PORT: "5001"
-                # OSRM_PORT: "5002"
                 VEPLAN_MAP_FILE: province.txt
                 STATION_FILE: rapides.txt
                 OSRM_MAP_FILE: quebec-latest.osrm

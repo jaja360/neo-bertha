@@ -6,3 +6,4 @@ resources:
   - mosquitto/ks.yaml
   - hydroqc/ks.yaml
   - veplan/ks.yaml
+  - tileserver-gl/ks.yaml

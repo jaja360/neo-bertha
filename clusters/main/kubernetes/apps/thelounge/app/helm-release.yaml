@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: thelounge
-      version: 15.5.13
+      version: 16.0.4
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -58,19 +58,18 @@ spec:
     ingress:
       main:
         enabled: true
-        annotations:
-          nginx.ingress.kubernetes.io/auth-method: 'GET'
-          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
-          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
-          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
         hosts:
           - host: "lounge.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
         integrations:
-          traefik:
-            enabled: false
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

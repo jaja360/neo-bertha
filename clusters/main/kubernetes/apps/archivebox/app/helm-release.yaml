@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: archivebox
-      version: 4.5.1
+      version: 5.0.4
       sourceRef:
         kind: HelmRepository
         name: truecharts

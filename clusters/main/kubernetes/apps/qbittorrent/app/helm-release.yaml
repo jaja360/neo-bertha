@@ -8,22 +8,11 @@ spec:
   chart:
     spec:
       chart: qbittorrent
-      version: 22.5.5
+      version: 23.0.8
       sourceRef:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  postRenderers:
-  - kustomize:
-      patches:
-        - target:
-            version: v1
-            kind: Deployment
-            name: qbittorrent
-          patch: |
-            - op: add
-              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
-              value: 1
   timeout: 20m
   maxHistory: 3
   driftDetection:
@@ -40,20 +29,23 @@ spec:
     keepHistory: false
   values:
     addons:
-      vpn:
-        type: gluetun
-        killSwitch: true
-        excludedNetworks_IPv4:
-          - 192.168.0.0/24
-        env:
-          VPN_TYPE: wireguard
-          VPN_SERVICE_PROVIDER: custom
-          WIREGUARD_ENDPOINT_PORT: ${WG_ENDPOINT_PORT}
-          WIREGUARD_ENDPOINT_IP: ${WG_QBIT_ENDPOINT_IP}
-          WIREGUARD_ADDRESSES: ${WG_QBIT_ADDRESSES}
-          WIREGUARD_PRIVATE_KEY: ${WG_QBIT_PRIVATE_KEY}
-          WIREGUARD_PUBLIC_KEY: ${WG_QBIT_PUBLIC_KEY}
-          FIREWALL_VPN_INPUT_PORTS: ${WG_QBIT_INPUT_PORT}
+      gluetun:
+        enabled: true
+        container:
+          resources:
+            limits:
+              truecharts.org/tun: 1
+          env:
+            FIREWALL: "on"
+            FIREWALL_OUTBOUND_SUBNETS: "192.168.0.0/24"
+            VPN_TYPE: wireguard
+            VPN_SERVICE_PROVIDER: custom
+            WIREGUARD_ENDPOINT_PORT: ${WG_ENDPOINT_PORT}
+            WIREGUARD_ENDPOINT_IP: ${WG_QBIT_ENDPOINT_IP}
+            WIREGUARD_ADDRESSES: ${WG_QBIT_ADDRESSES}
+            WIREGUARD_PRIVATE_KEY: ${WG_QBIT_PRIVATE_KEY}
+            WIREGUARD_PUBLIC_KEY: ${WG_QBIT_PUBLIC_KEY}
+            FIREWALL_VPN_INPUT_PORTS: ${WG_QBIT_INPUT_PORT}
     credentials:
       minio:
         name: minio
@@ -96,19 +88,18 @@ spec:
     ingress:
       main:
         enabled: true
-        annotations:
-          nginx.ingress.kubernetes.io/auth-method: 'GET'
-          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
-          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
-          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
         hosts:
           - host: "qbit.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
         integrations:
-          traefik:
-            enabled: false
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

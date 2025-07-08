@@ -29,7 +29,7 @@ spec:
     keepHistory: false
   values:
     addons:
-      glueton:
+      gluetun:
         enabled: true
         container:
           resources:

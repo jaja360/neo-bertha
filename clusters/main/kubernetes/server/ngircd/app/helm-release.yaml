@@ -32,6 +32,9 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${NGIRCD_IP}
+        integrations:
+          metallb:
+            enabled: true
     credentials:
       minio:
         name: minio

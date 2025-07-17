@@ -90,6 +90,9 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${HASS_IP}
+        integrations:
+          metallb:
+            enabled: true
     ingress:
       main:
         enabled: true

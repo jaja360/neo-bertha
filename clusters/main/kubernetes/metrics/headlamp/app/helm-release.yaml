@@ -50,23 +50,30 @@ spec:
     service:
       type: LoadBalancer
       loadBalancerIP: ${DASHBOARD_IP}
+      integrations:
+        metallb:
+          enabled: true
     ingress:
-        enabled: true
-        hosts:
-          - host: headlamp.${DOMAIN_0}
-            paths:
-              - path: /
-                type: Prefix
-        tls:
-          - hosts:
-              - headlamp.${DOMAIN_0}
-            secretName: "headlamp-tls-0"
-        annotations:
-            cert-manager.io/cluster-issuer: domain-0-le-prod
-            cert-manager.io/private-key-rotation-policy: Always
-            gethomepage.dev/enabled: "true"
-            gethomepage.dev/href: "https://headlamp.${DOMAIN_0}"
-            gethomepage.dev/description: "View and manage the Kubernetes cluster"
-            gethomepage.dev/group: Admin
-            gethomepage.dev/icon: https://raw.githubusercontent.com/headlamp-k8s/headlamp/d8260857d16d28daedfbe8d6f53e1c165a4e4b05/frontend/public/android-chrome-512x512.png
-            gethomepage.dev/name: "Headlamp"
+      enabled: true
+      hosts:
+        - host: headlamp.${DOMAIN_0}
+          paths:
+          - path: /
+            type: Prefix
+      tls:
+        - hosts:
+            - headlamp.${DOMAIN_0}
+          secretName: "headlamp-tls-0"
+      annotations:
+        nginx.ingress.kubernetes.io/auth-method: 'GET'
+        nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
+        nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
+        nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
+        cert-manager.io/cluster-issuer: domain-0-le-prod
+        cert-manager.io/private-key-rotation-policy: Always
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/href: "https://headlamp.${DOMAIN_0}"
+        gethomepage.dev/description: "View and manage the Kubernetes cluster"
+        gethomepage.dev/group: Admin
+        gethomepage.dev/icon: https://raw.githubusercontent.com/headlamp-k8s/headlamp/d8260857d16d28daedfbe8d6f53e1c165a4e4b05/frontend/public/android-chrome-512x512.png
+        gethomepage.dev/name: "Headlamp"

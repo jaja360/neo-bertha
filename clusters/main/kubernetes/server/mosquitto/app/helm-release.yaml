@@ -32,6 +32,9 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${MOSQUITTO_IP}
+        integrations:
+          metallb:
+            enabled: true
     persistence:
       configinc:
         type: emptyDir

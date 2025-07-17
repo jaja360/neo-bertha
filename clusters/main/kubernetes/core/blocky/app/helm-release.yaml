@@ -37,8 +37,11 @@ spec:
     service:
       dns:
         externalTrafficPolicy: Local
-        loadBalancerIP: ${BLOCKY_IP}
         type: LoadBalancer
+        loadBalancerIP: ${BLOCKY_IP}
+        integrations:
+          metallb:
+            enabled: true
     defaultUpstreams:
       # Cloudflare (udp)
       # - 1.1.1.1

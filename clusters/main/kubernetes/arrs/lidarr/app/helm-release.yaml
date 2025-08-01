@@ -25,9 +25,26 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+    force: true
   uninstall:
     keepHistory: false
   values:
+    image:
+      repository: ghcr.io/hotio/lidarr
+      pullPolicy: IfNotPresent
+      tag: pr-plugins-2.13.1.4678
+    env:
+      PUID: 568
+      PGID: 568
+      UMASK: 002
+    securityContext:
+      container:
+        runAsUser: 0  # Start as root so s6 can do its thing
+        runAsGroup: 0
+        fsGroup: 568  # Ensures mounted PVCs are writable by group 568
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: true
+
     credentials:
       minio:
         name: minio
@@ -46,7 +63,7 @@ spec:
             credentials: minio
             cleanupCachePVC: true
             dest:
-              enabled: true
+              enabled: false
             src:
               enabled: true
               trigger:

@@ -1,6 +1,8 @@
 # Neo Bertha Kubernetes Cluster
 
-Welcome to the configuration repository for **Neo Bertha**, a Kubernetes cluster managed with [TrueCharts ClusterTool](https://truecharts.org) and [Flux](https://fluxcd.io).
+Welcome to the configuration repository for **Neo Bertha**, a Kubernetes cluster
+managed with [TrueCharts ClusterTool](https://truecharts.org) and
+[Flux](https://fluxcd.io).
 
 ```text
          _                   _               _                           _                 _               _             _                _       _           _          

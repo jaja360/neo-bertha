@@ -73,7 +73,7 @@ spec:
         database: maybe
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: standalone  # recovery
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}

@@ -28,6 +28,12 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    securityContext:
+      container:
+        PUID: 568
+        PGID: 568
+        runAsUser: 568
+        runAsGroup: 568
     addons:
       gluetun:
         enabled: true
@@ -122,3 +128,4 @@ spec:
                 SLSKD_SHARED_DIR: "/medias/downloads/shared"
                 SLSKD_DOWNLOADS_DIR: "/medias/downloads/complete/-lidarr"
                 SLSKD_INCOMPLETE_DIR: "/medias/downloads/incomplete/lidarr"
+                SLSKD_UMASK: 002

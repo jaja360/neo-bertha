@@ -3,5 +3,26 @@
   "extends": [
     "config:recommended",
     "github>truecharts/public//.github/renovate/main.json5"
+  ],
+  "regexManagers": [
+    {
+      // Target HelmRelease files
+      "fileMatch": ["^.*\\.yaml$"],
+      "matchStrings": [
+        // Match the tag like: tag: pr-plugins-2.13.1.4678
+        // But only if it's inside an image block with this specific repo
+        "repository:\\s*ghcr\\.io/hotio/lidarr[\\s\\S]*?tag:\\s*pr-plugins-(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/hotio/lidarr",
+      "versioningTemplate": "docker",
+      "extractVersionTemplate": "pr-plugins-(?<version>.*)"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["ghcr.io/hotio/lidarr"],
+      "groupName": "Lidarr image (hotio)"
+    }
   ]
 }

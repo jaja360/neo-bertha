@@ -1,28 +1,30 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    "github>truecharts/public//.github/renovate/main.json5"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'github>truecharts/public//.github/renovate/main.json5',
   ],
-  "regexManagers": [
+  customManagers: [
     {
-      // Target HelmRelease files
-      "fileMatch": ["^.*\\.yaml$"],
-      "matchStrings": [
-        // Match the tag like: tag: pr-plugins-2.13.1.4678
-        // But only if it's inside an image block with this specific repo
-        "repository:\\s*ghcr\\.io/hotio/lidarr[\\s\\S]*?tag:\\s*pr-plugins-(?<currentValue>[^\\s]+)"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^.*\\.yaml$/',
       ],
-      "datasourceTemplate": "docker",
-      "depNameTemplate": "ghcr.io/hotio/lidarr",
-      "versioningTemplate": "docker",
-      "extractVersionTemplate": "pr-plugins-(?<version>.*)"
-    }
+      matchStrings: [
+        'repository:\\s*ghcr\\.io/hotio/lidarr[\\s\\S]*?tag:\\s*pr-plugins-(?<currentValue>[^\\s]+)',
+      ],
+      datasourceTemplate: 'docker',
+      depNameTemplate: 'ghcr.io/hotio/lidarr',
+      versioningTemplate: 'docker',
+      extractVersionTemplate: 'pr-plugins-(?<version>.*)',
+    },
   ],
-  "packageRules": [
+  packageRules: [
     {
-      "matchPackageNames": ["ghcr.io/hotio/lidarr"],
-      "groupName": "Lidarr image (hotio)"
-    }
-  ]
+      matchPackageNames: [
+        'ghcr.io/hotio/lidarr',
+      ],
+      groupName: 'Lidarr image (hotio)',
+    },
+  ],
 }

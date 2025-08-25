@@ -1,0 +1,64 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-service-hass
+  namespace: external-service
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: external-service
+      version: 16.3.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    service:
+      main:
+        enabled: true
+        type: ExternalIP
+        externalIP: ${HASS_IP}
+        ports:
+          main:
+            enabled: true
+            port: 8123
+            protocol: http
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "truenas.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Misc
+            name: "Home Assistant"
+            widget:
+              enabled: true
+              type: homeassistant
+              url: http://${HASS_IP}:8123
+              custom:
+                key: ${HASS_HOMEPAGE_TOKEN}

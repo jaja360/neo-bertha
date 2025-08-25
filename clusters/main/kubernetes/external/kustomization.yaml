@@ -6,3 +6,4 @@ resources:
   - router/ks.yaml
   - antminer/ks.yaml
   - jetkvm/ks.yaml
+  - hass/ks.yaml

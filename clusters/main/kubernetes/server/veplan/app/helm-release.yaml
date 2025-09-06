@@ -80,6 +80,11 @@ spec:
         podSpec:
           containers:
             main:
+              resources:
+                limits:
+                  memory: 8Gi
+                requests:
+                  memory: 4Gi
               env:
                 CLUSTER_SIZE: 0
                 GUNICORN_PORT: "8080"

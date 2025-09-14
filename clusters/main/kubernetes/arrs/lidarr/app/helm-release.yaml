@@ -32,7 +32,7 @@ spec:
     image:
       repository: ghcr.io/hotio/lidarr
       pullPolicy: IfNotPresent
-      tag: pr-plugins-2.14.2.4773
+      tag: pr-plugins-2.14.2.4786
     env:
       PUID: 568
       PGID: 568

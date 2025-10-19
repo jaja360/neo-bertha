@@ -30,20 +30,9 @@ spec:
     keepHistory: false
   values:
     image:
-      repository: ghcr.io/hotio/lidarr
+      repository: ghcr.io/trueforge-org/lidarr
       pullPolicy: IfNotPresent
-      tag: pr-plugins-3.0.0.4856
-    env:
-      PUID: 568
-      PGID: 568
-      UMASK: 002
-    securityContext:
-      container:
-        runAsUser: 0  # Start as root so s6 can do its thing
-        runAsGroup: 0
-        fsGroup: 568  # Ensures mounted PVCs are writable by group 568
-        readOnlyRootFilesystem: false
-        allowPrivilegeEscalation: true
+      tag: 3.0.0@sha256:71ca9e3147d7b9acb402ae73da222b5b0147ab0793da3ed5a7eb76f3dbf4d7f9
 
     credentials:
       minio:

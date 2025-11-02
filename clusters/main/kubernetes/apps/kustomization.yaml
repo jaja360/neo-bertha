@@ -6,7 +6,6 @@ resources:
   - firefox/ks.yaml
   - fileflows/ks.yaml
   - homepage/ks.yaml
-  - immich/ks.yaml
   - maybe/ks.yaml
   - nextcloud/ks.yaml
   - plex/ks.yaml

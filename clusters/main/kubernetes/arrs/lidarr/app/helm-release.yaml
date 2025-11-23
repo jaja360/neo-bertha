@@ -32,7 +32,7 @@ spec:
     image:
       repository: ghcr.io/trueforge-org/lidarr
       pullPolicy: IfNotPresent
-      tag: 3.1.1@sha256:f4930f5313452cdf39c8348dbf61c2f37cbd0a617b0f7c1a81d90a55ecdb5267
+      tag: 3.1.1@sha256:bbc284f288784f88e749c652d125f24919d1320cf0ef338010864d683f53d805
 
     credentials:
       minio:

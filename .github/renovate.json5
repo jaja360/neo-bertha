@@ -4,27 +4,4 @@
     'config:recommended',
     'github>truecharts/public//.github/renovate/main.json5',
   ],
-  customManagers: [
-    {
-      customType: 'regex',
-      managerFilePatterns: [
-        '/^.*\\.yaml$/',
-      ],
-      matchStrings: [
-        'repository:\\s*ghcr\\.io/hotio/lidarr[\\s\\S]*?tag:\\s*pr-plugins-(?<currentValue>[^\\s]+)',
-      ],
-      datasourceTemplate: 'docker',
-      depNameTemplate: 'ghcr.io/hotio/lidarr',
-      versioningTemplate: 'docker',
-      extractVersionTemplate: 'pr-plugins-(?<version>.*)',
-    },
-  ],
-  packageRules: [
-    {
-      matchPackageNames: [
-        'ghcr.io/hotio/lidarr',
-      ],
-      groupName: 'Lidarr image (hotio)',
-    },
-  ],
 }

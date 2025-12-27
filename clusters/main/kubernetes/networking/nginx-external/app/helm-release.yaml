@@ -30,7 +30,7 @@ spec:
     keepHistory: false
   values:
     controller:
-      replicaCount: 2
+      replicaCount: ${NUMBER_OF_NODES}
       service:
         externalTrafficPolicy: Local
         annotations:
@@ -75,7 +75,8 @@ spec:
       resources:
         requests:
           cpu: 100m
+          memory: 512Mi
         limits:
-          memory: 500Mi
+          memory: 1Gi
     defaultBackend:
       enabled: false

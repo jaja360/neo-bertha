@@ -58,7 +58,9 @@ spec:
         keep-alive-requests: 10000
         keep-alive: 120
         proxy-body-size: 0
+        proxy-buffers: "4 16k"
         proxy-buffer-size: 16k
+        proxy-busy-buffers-size: 32k
         ssl-protocols: TLSv1.3 TLSv1.2
         forwarded-for-header: "CF-Connecting-IP"
         use-forwarded-headers: "true"

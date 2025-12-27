@@ -11,5 +11,4 @@ resources:
   - volsync/ks.yaml
   - generic-device-plugin/ks.yaml
   - nvidia-device-plugin/ks.yaml
-  - spegel/ks.yaml
   - kube-prometheus-stack/ks.yaml

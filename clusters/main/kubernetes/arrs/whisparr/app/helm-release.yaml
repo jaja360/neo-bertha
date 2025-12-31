@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: whisparr
-      version: 13.14.72
+      version: 13.14.73
       sourceRef:
         kind: HelmRepository
         name: truecharts

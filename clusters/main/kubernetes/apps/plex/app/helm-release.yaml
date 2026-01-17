@@ -92,7 +92,7 @@ spec:
             widget:
               enabled: true
               custom:
-                key: ${PLEX_APIKEY}
+                key: ${PLEX_TOKEN}
     plex:
       serverIP: ${PLEX_IP}
     resources:

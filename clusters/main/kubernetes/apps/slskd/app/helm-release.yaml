@@ -34,23 +34,6 @@ spec:
         PGID: 568
         runAsUser: 568
         runAsGroup: 568
-    addons:
-      gluetun:
-        enabled: true
-        container:
-          resources:
-            limits:
-              truecharts.org/tun: 1
-          env:
-            FIREWALL: "on"
-            FIREWALL_OUTBOUND_SUBNETS: "192.168.0.0/24"
-            VPN_TYPE: wireguard
-            VPN_SERVICE_PROVIDER: custom
-            WIREGUARD_ENDPOINT_PORT: ${WG_ENDPOINT_PORT}
-            WIREGUARD_ENDPOINT_IP: ${WG_SLSKD_ENDPOINT_IP}
-            WIREGUARD_ADDRESSES: ${WG_SLSKD_ADDRESSES}
-            WIREGUARD_PRIVATE_KEY: ${WG_SLSKD_PRIVATE_KEY}
-            WIREGUARD_PUBLIC_KEY: ${WG_SLSKD_PUBLIC_KEY}
     credentials:
       minio:
         name: minio

@@ -28,6 +28,8 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    global:
+      stopAll: false
     addons:
       gluetun:
         enabled: true

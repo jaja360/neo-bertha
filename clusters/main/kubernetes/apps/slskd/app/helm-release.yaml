@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: slskd
-      version: 4.15.18
+      version: 4.15.19
       sourceRef:
         kind: HelmRepository
         name: truecharts

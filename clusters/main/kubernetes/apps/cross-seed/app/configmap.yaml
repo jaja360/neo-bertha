@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cross-seed-config
+  namespace: cross-seed
+data:
+  config.js: |
+    // https://www.cross-seed.org
+    const torznabIndexerIds = [
+      25, 26, 27, 28, 29, 30, 31, 32, 33, 37, 38, 39, 41, 42, 43, 44, 45, 48,
+      49, 51, 52, 53, 55, 56, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+      73, 77, 78, 80, 81, 83, 84, 85, 87, 91, 92, 93, 94, 96, 97, 98, 101, 102,
+      103, 104, 105, 107, 108, 109, 110, 112, 113, 114, 115, 116,
+    ];
+
+    const prowlarrUrl =
+      process.env.PROWLARR_URL ?? "http://prowlarr.prowlarr.svc.cluster.local:9696";
+    const prowlarrApiKey = process.env.PROWLARR_APIKEY;
+
+    const qbitUrl =
+      process.env.QBIT_URL ?? "http://qbittorrent.qbittorrent.svc.cluster.local:10095";
+    const qbitUsername = process.env.QBIT_USERNAME ?? "";
+    const qbitPassword = process.env.QBIT_PASSWORD ?? "";
+
+    if (!prowlarrApiKey) {
+      throw new Error("PROWLARR_APIKEY is required");
+    }
+
+    if (!qbitUsername || !qbitPassword) {
+      throw new Error("QBIT_USERNAME and QBIT_PASSWORD are required");
+    }
+
+    const qbitAuthUrl = qbitUrl.replace(
+      "://",
+      `://${encodeURIComponent(qbitUsername)}:${encodeURIComponent(qbitPassword)}@`,
+    );
+
+    module.exports = {
+      torznab: torznabIndexerIds.map(
+        (id) => `${prowlarrUrl}/${id}/api?apikey=${prowlarrApiKey}`,
+      ),
+      sonarr: [],
+      radarr: [],
+      torrentClients: [`qbittorrent:${qbitAuthUrl}`],
+      useClientTorrents: true,
+      delay: 30,
+      dataDirs: [],
+      linkCategory: "cross-seed-link",
+      linkDirs: ["/medias/downloads/complete/-cross-seed-link"],
+      linkType: "hardlink",
+      flatLinking: false,
+      matchMode: "strict",
+      skipRecheck: true,
+      autoResumeMaxDownload: 52428800,
+      ignoreNonRelevantFilesToResume: false,
+      includeSingleEpisodes: true,
+      includeNonVideos: true,
+      seasonFromEpisodes: 1,
+      fuzzySizeThreshold: 0.01,
+      excludeOlder: "2 weeks",
+      excludeRecentSearch: "3 days",
+      action: "inject",
+      // With linking enabled qBittorrent category is controlled by linkCategory.
+      duplicateCategories: false,
+      rssCadence: "30 minutes",
+      searchCadence: "1 day",
+      snatchTimeout: "30 seconds",
+      searchTimeout: "2 minutes",
+      searchLimit: null,
+      blockList: [],
+    };

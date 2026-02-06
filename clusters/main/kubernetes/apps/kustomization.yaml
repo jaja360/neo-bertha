@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - archivebox/ks.yaml
   - autobrr/ks.yaml
+  - cross-seed/ks.yaml
   - firefox/ks.yaml
   - fileflows/ks.yaml
   - homepage/ks.yaml

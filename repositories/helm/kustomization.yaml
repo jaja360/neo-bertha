@@ -8,6 +8,7 @@ resources:
   - cloudnative-pg.yaml
   - home-ops-mirror.yaml
   - jetstack.yaml
+  - metallb.yaml
   - postfinance.yaml
   - prometheus-community.yaml
   - spegel.yaml

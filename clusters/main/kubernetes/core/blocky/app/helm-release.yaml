@@ -86,7 +86,7 @@ spec:
       # The bundled valkey chart now uses REDIS_PASSWORD while still defaulting
       # to ALLOW_EMPTY_PASSWORD=yes. Force non-empty auth mode to keep blocky
       # and valkey behavior consistent across image updates.
-      password: "PLACEHOLDERPASSWORD"
+      password: ${CNPG_PASSWD}
       workload:
         main:
           podSpec:
@@ -94,7 +94,7 @@ spec:
               main:
                 env:
                   ALLOW_EMPTY_PASSWORD: "no"
-                  VALKEY_PASSWORD: "PLACEHOLDERPASSWORD"
+                  VALKEY_PASSWORD: ${CNPG_PASSWD}
     configmap:
       dashboard:
         enabled: false

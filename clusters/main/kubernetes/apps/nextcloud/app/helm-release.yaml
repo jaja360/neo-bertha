@@ -85,6 +85,16 @@ spec:
           revision: "1"
           method: object_store
           credentials: minio
+    redis:
+      password: ${CNPG_PASSWD}
+      workload:
+        main:
+          podSpec:
+            containers:
+              main:
+                env:
+                  ALLOW_EMPTY_PASSWORD: "no"
+                  VALKEY_PASSWORD: ${CNPG_PASSWD}
     service:
       main:
         type: LoadBalancer

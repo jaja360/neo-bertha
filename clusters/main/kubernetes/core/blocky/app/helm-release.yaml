@@ -83,9 +83,6 @@ spec:
       # optional one of: mysql, postgresql, csv, csv-client. If empty, log to console only
       type: ""
     redis:
-      # The bundled valkey chart now uses REDIS_PASSWORD while still defaulting
-      # to ALLOW_EMPTY_PASSWORD=yes. Force non-empty auth mode to keep blocky
-      # and valkey behavior consistent across image updates.
       password: ${CNPG_PASSWD}
       workload:
         main:
@@ -95,6 +92,7 @@ spec:
                 env:
                   ALLOW_EMPTY_PASSWORD: "no"
                   VALKEY_PASSWORD: ${CNPG_PASSWD}
+
     configmap:
       dashboard:
         enabled: false

@@ -57,7 +57,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 10 55 * * *
+                schedule: 0 11 * * *
       rails-tmp:
         enabled: true
         type: emptyDir

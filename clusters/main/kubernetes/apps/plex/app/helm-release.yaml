@@ -102,6 +102,22 @@ spec:
       main:
         podSpec:
           runtimeClassName: "nvidia"
+          containers:
+            main:
+              probes:
+                liveness:
+                  spec:
+                    initialDelaySeconds: 30
+                    periodSeconds: 30
+                    timeoutSeconds: 10
+                    failureThreshold: 10
+                readiness:
+                  spec:
+                    initialDelaySeconds: 20
+                    periodSeconds: 20
+                    timeoutSeconds: 10
+                    failureThreshold: 6
+                    successThreshold: 1
       imagemaid:
         enabled: true
         primary: false

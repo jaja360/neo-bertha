@@ -8,6 +8,7 @@ resources:
   - fileflows/ks.yaml
   - homepage/ks.yaml
   - maybe/ks.yaml
+  - nemorosa/ks.yaml
   - nextcloud/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml

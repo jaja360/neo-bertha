@@ -1,0 +1,82 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nemorosa
+  namespace: nemorosa
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 15.38.6
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    image:
+      repository: ghcr.io/kyokomiki/nemorosa
+      pullPolicy: IfNotPresent
+      tag: 0.4.3
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 8256
+    persistence:
+      config:
+        enabled: true
+        mountPath: /app/data
+      medias:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}
+      bootstrap-script:
+        enabled: true
+        type: configmap
+        objectName: nemorosa-bootstrap
+        expandObjectName: false
+        defaultMode: "0755"
+        mountPath: /bootstrap/render-and-start.sh
+        subPath: render-and-start.sh
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              command:
+                - /bin/sh
+              args:
+                - /bootstrap/render-and-start.sh
+              env:
+                QBIT_HOST: qbittorrent.qbittorrent.svc.cluster.local
+                QBIT_PORT: "10095"
+                QBIT_USERNAME: ${QBIT_USERNAME}
+                QBIT_PASSWORD: ${QBIT_PASSWORD}
+                RED_APIKEY: ${RED_APIKEY}
+                OPS_APIKEY: ${OPS_APIKEY}
+                DIC_SESSION: ${DIC_SESSION}
+              probes:
+                startup:
+                  enabled: false
+                readiness:
+                  enabled: false
+                liveness:
+                  enabled: false

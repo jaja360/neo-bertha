@@ -28,6 +28,38 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            enabled: true
+            port: 8080
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "qbitmanage.${DOMAIN_0}"
+            paths:
+              - path: /
+                pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+            auth:
+              type: authelia
+              internalHost: authelia.authelia.svc.cluster.local:9091
+              externalHost: auth.${DOMAIN_0}
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Downloads
+            name: qBit Manage
+            description: qBittorrent automation manager
+            widget:
+              enabled: false
     credentials:
       minio:
         name: minio
@@ -63,5 +95,8 @@ spec:
           containers:
             main:
               env:
+                QBT_WEB_SERVER: "true"
+                QBT_HOST: 0.0.0.0
+                QBT_PORT: 8080
                 QBT_SCHEDULE: 1440
                 QBT_CONFIG: /config/config.yml

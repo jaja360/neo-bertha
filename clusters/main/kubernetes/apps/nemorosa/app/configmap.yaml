@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nemorosa-bootstrap
+  namespace: nemorosa
+data:
+  render-and-start.sh: |
+    #!/bin/sh
+    set -eu
+
+    python -c '
+    import os
+    import textwrap
+    from pathlib import Path
+    from urllib.parse import quote
+
+    qbit_username = os.environ["QBIT_USERNAME"]
+    qbit_password = os.environ["QBIT_PASSWORD"]
+    qbit_host = os.environ.get("QBIT_HOST", "qbittorrent.qbittorrent.svc.cluster.local")
+    qbit_port = os.environ.get("QBIT_PORT", "10095")
+    api_key = os.environ.get("NEMOROSA_APIKEY", "").strip()
+    red_apikey = os.environ["RED_APIKEY"]
+    ops_apikey = os.environ["OPS_APIKEY"]
+    dic_session = os.environ["DIC_SESSION"]
+    if "=" not in dic_session:
+        dic_session = f"session={dic_session}"
+
+    config_dir = Path("/app/data/nemorosa")
+    config_dir.mkdir(parents=True, exist_ok=True)
+
+    qbit_username = quote(qbit_username, safe="")
+    qbit_password = quote(qbit_password, safe="")
+    client_url = (
+        "qbittorrent+http://"
+        f"{qbit_username}:{qbit_password}@{qbit_host}:{qbit_port}/"
+    )
+    server_api_key = "null" if not api_key else f"\"{api_key}\""
+
+    config = textwrap.dedent(
+        f"""
+        global:
+          loglevel: info
+          no_download: false
+          exclude_mp3: true
+          check_trackers:
+            - "flacsfor.me"
+            - "home.opsfet.ch"
+            - "52dic.vip"
+          check_music_only: true
+          auto_start_torrents: true
+          notification_urls: []
+
+        linking:
+          enable_linking: true
+          link_dirs:
+            - "/medias/downloads/complete/-nemorosa-link"
+          link_type: "hardlink"
+          dir_mode: 775
+
+        server:
+          host: null
+          port: 8256
+          api_key: {server_api_key}
+          search_cadence: "1 day"
+          cleanup_cadence: "1 day"
+
+        downloader:
+          client: "{client_url}"
+          torrents_dir: ""
+          label: "nemorosa-link"
+          tags:
+            - "nemorosa-link"
+          use_unified_labels: true
+          duplicate_categories: false
+
+        target_site: []
+        """
+    ).lstrip()
+
+    target_sites = textwrap.dedent(
+        f"""
+        target_site:
+          - server: "https://redacted.sh"
+            api_key: "{red_apikey}"
+          - server: "https://orpheus.network"
+            api_key: "{ops_apikey}"
+          - server: "https://dicmusic.com"
+            cookie: "{dic_session}"
+        """
+    )
+
+    (config_dir / "config.yml").write_text(config.replace("target_site: []", target_sites), encoding="utf-8")
+    '
+
+    exec nemorosa --server --config /app/data/nemorosa/config.yml

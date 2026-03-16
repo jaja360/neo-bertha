@@ -22,11 +22,16 @@ data:
     red_apikey = os.environ["RED_APIKEY"]
     ops_apikey = os.environ["OPS_APIKEY"]
     dic_session = os.environ["DIC_SESSION"]
+    lztr_session = os.environ["LZTR_SESSION"]
+    ggn_apikey = os.environ["GGN_APIKEY"]
     if "=" not in dic_session:
         dic_session = f"session={dic_session}"
+    if "=" not in lztr_session:
+        lztr_session = f"session={lztr_session}"
 
     config_dir = Path("/app/data/nemorosa")
     config_dir.mkdir(parents=True, exist_ok=True)
+    Path("/medias/downloads/complete/-nemorosa-link").mkdir(parents=True, exist_ok=True)
 
     qbit_username = quote(qbit_username, safe="")
     qbit_password = quote(qbit_password, safe="")
@@ -46,6 +51,8 @@ data:
             - "flacsfor.me"
             - "home.opsfet.ch"
             - "52dic.vip"
+            - "tracker.lztr.me"
+            - "tracker.gazellegames.net"
           check_music_only: true
           auto_start_torrents: true
           notification_urls: []
@@ -86,10 +93,15 @@ data:
             api_key: "{ops_apikey}"
           - server: "https://dicmusic.com"
             cookie: "{dic_session}"
+          - server: "https://lztr.me"
+            cookie: "{lztr_session}"
+          - server: "https://gazellegames.net"
+            api_key: "{ggn_apikey}"
         """
     )
 
     (config_dir / "config.yml").write_text(config.replace("target_site: []", target_sites), encoding="utf-8")
     '
 
+    nemorosa --config /app/data/nemorosa/config.yml
     exec nemorosa --server --config /app/data/nemorosa/config.yml

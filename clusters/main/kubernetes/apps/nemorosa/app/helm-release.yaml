@@ -73,6 +73,8 @@ spec:
                 RED_APIKEY: ${RED_APIKEY}
                 OPS_APIKEY: ${OPS_APIKEY}
                 DIC_SESSION: ${DIC_SESSION}
+                LZTR_SESSION: ${LZTR_SESSION}
+                GGN_APIKEY: ${GGN_APIKEY}
               probes:
                 startup:
                   enabled: false

@@ -20,6 +20,9 @@ cniConfig:
     name: none
 patches:
     - '@./patches/all.yaml'
+    - '@./patches/containerd.yaml'
+    - '@./patches/nfs.yaml'
+    - '@./patches/gc.yaml'
 nodes:
     # We would advise to always stick to a "k8s-something-1" style naming scheme
     - hostname: k8s-control-1
@@ -60,23 +63,6 @@ controlPlane:
                     - siderolabs/nonfree-kmod-nvidia-production
                     - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
-    machineFiles:
-    - content: |
-        [plugins."io.containerd.cri.v1.images"]
-          discard_unpacked_layers = false
-      permissions: 0
-      path: /etc/cri/conf.d/20-customization.part
-      op: create
-    - content: |
-        [ NFSMount_Global_Options ]
-        nfsvers=4.2
-        hard=True
-        nconnect=16
-        noatime=True
-      permissions: 420
-      path: /etc/nfsmount.conf
-      op: overwrite
-
 worker:
     patches:
         - '@./patches/worker.yaml'
@@ -95,19 +81,3 @@ worker:
                     - siderolabs/nonfree-kmod-nvidia-production
                     - siderolabs/nvidia-container-toolkit-production
                     - siderolabs/realtek-firmware
-    machineFiles:
-    - content: |
-        [plugins."io.containerd.cri.v1.images"]
-          discard_unpacked_layers = false
-      permissions: 0
-      path: /etc/cri/conf.d/20-customization.part
-      op: create
-    - content: |
-        [ NFSMount_Global_Options ]
-        nfsvers=4.2
-        hard=True
-        nconnect=16
-        noatime=True
-      permissions: 420
-      path: /etc/nfsmount.conf
-      op: overwrite

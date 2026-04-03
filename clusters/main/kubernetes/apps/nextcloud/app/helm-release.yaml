@@ -76,6 +76,8 @@ spec:
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
+          postgresql:
+            max_connections: "250"
         backups:
           enabled: false
           revision: "2"

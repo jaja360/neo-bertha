@@ -31,7 +31,7 @@ spec:
     image:
       repository: ghcr.io/kyokomiki/nemorosa
       pullPolicy: IfNotPresent
-      tag: 0.4.3
+      tag: 0.5.0
     service:
       main:
         enabled: true

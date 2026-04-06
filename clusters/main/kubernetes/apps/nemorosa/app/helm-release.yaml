@@ -75,6 +75,7 @@ spec:
                 DIC_SESSION: ${DIC_SESSION}
                 LZTR_SESSION: ${LZTR_SESSION}
                 GGN_APIKEY: ${GGN_APIKEY}
+                JPOP_SESSION: ${JPOP_SESSION}
               probes:
                 startup:
                   enabled: false

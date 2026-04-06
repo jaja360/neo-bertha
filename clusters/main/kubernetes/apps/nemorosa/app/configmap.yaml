@@ -12,7 +12,6 @@ data:
     import os
     import textwrap
     from pathlib import Path
-    from urllib.parse import quote
 
     qbit_username = os.environ["QBIT_USERNAME"]
     qbit_password = os.environ["QBIT_PASSWORD"]
@@ -24,6 +23,7 @@ data:
     dic_session = os.environ["DIC_SESSION"]
     lztr_session = os.environ["LZTR_SESSION"]
     ggn_apikey = os.environ["GGN_APIKEY"]
+    jpop_cookie = os.environ["JPOP_SESSION"]
     if "=" not in dic_session:
         dic_session = f"session={dic_session}"
     if "=" not in lztr_session:
@@ -33,14 +33,13 @@ data:
     config_dir.mkdir(parents=True, exist_ok=True)
     Path("/medias/downloads/complete/-nemorosa-link").mkdir(parents=True, exist_ok=True)
 
-    qbit_username = quote(qbit_username, safe="")
-    qbit_password = quote(qbit_password, safe="")
-    client_url = (
-        "qbittorrent+http://"
-        f"{qbit_username}:{qbit_password}@{qbit_host}:{qbit_port}/"
-    )
-    server_api_key = "null" if not api_key else f"\"{api_key}\""
+    schema_marker = config_dir / ".db-schema-0.5.0"
+    if not schema_marker.exists():
+        for db_path in (config_dir / "nemorosa.db", config_dir / "nemorosa.db-shm", config_dir / "nemorosa.db-wal"):
+            db_path.unlink(missing_ok=True)
+        schema_marker.write_text("0.5.0\n", encoding="utf-8")
 
+    server_api_key = "null" if not api_key else f"\"{api_key}\""
     config = textwrap.dedent(
         f"""
         global:
@@ -53,6 +52,7 @@ data:
             - "52dic.vip"
             - "tracker.lztr.me"
             - "tracker.gazellegames.net"
+            - "jpopsuki.eu"
           check_music_only: true
           auto_start_torrents: true
           notification_urls: []
@@ -62,7 +62,6 @@ data:
           link_dirs:
             - "/medias/downloads/complete/-nemorosa-link"
           link_type: "hardlink"
-          dir_mode: 775
 
         server:
           host: null
@@ -72,13 +71,16 @@ data:
           cleanup_cadence: "1 day"
 
         downloader:
-          client: "{client_url}"
-          torrents_dir: ""
-          label: "nemorosa-link"
-          tags:
-            - "nemorosa-link"
-          use_unified_labels: true
-          duplicate_categories: false
+          - type: "qbittorrent"
+            url: "http://{qbit_host}:{qbit_port}/"
+            username: "{qbit_username}"
+            password: "{qbit_password}"
+            torrents_dir: ""
+            label: "nemorosa-link"
+            tags:
+              - "nemorosa-link"
+            use_unified_labels: true
+            duplicate_categories: false
 
         target_site: []
         """
@@ -97,6 +99,8 @@ data:
             cookie: "{lztr_session}"
           - server: "https://gazellegames.net"
             api_key: "{ggn_apikey}"
+          - server: "https://jpopsuki.eu"
+            cookie: "{jpop_cookie}"
         """
     )
 

@@ -47,7 +47,7 @@ spec:
             credentials: minio
             cleanupCachePVC: true
             dest:
-              enabled: false
+              enabled: true
             src:
               enabled: true
               trigger:

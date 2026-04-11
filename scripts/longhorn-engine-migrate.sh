@@ -4,9 +4,6 @@ set -euo pipefail
 NAMESPACE="longhorn-system"
 TARGET_IMAGE=""
 MODE="report"
-SET_DEFAULT="true"
-WAIT_FOR_CONVERGENCE="false"
-CLEANUP_UNUSED="false"
 ASSUME_YES="false"
 LIMIT="0"
 
@@ -15,18 +12,12 @@ usage() {
 Migrate Longhorn volumes to a single engine image.
 
 Usage:
-  scripts/longhorn-engine-migrate.sh --target IMAGE [options]
-
-Required:
-  --target IMAGE                 Example: docker.io/longhornio/longhorn-engine:v1.11.0
+  scripts/longhorn-engine-migrate.sh [options]
 
 Options:
   --namespace NS                 Default: longhorn-system
   --mode MODE                    One of: report, detached, attached, all (default: report)
   --limit N                      Max volumes to patch per phase/run (0 = no limit, default: 0)
-  --set-default true|false       Update Longhorn default-engine-image (default: true)
-  --wait                         Wait until all volumes converge to target image
-  --cleanup-unused               Delete old engineimages with refcount=0 (never deletes target image)
   --yes                          Skip confirmation prompts for attached upgrade and cleanup
   -h, --help                     Show this help
 
@@ -34,15 +25,13 @@ Recommended rollout:
   1) report
   2) detached
   3) attached (low-traffic window)
-  4) report --wait
-  5) cleanup-unused
 
 Examples:
-  scripts/longhorn-engine-migrate.sh --target docker.io/longhornio/longhorn-engine:v1.11.0 --mode report
-  scripts/longhorn-engine-migrate.sh --target docker.io/longhornio/longhorn-engine:v1.11.0 --mode detached
-  scripts/longhorn-engine-migrate.sh --target docker.io/longhornio/longhorn-engine:v1.11.0 --mode detached --limit 20
-  scripts/longhorn-engine-migrate.sh --target docker.io/longhornio/longhorn-engine:v1.11.0 --mode attached --yes
-  scripts/longhorn-engine-migrate.sh --target docker.io/longhornio/longhorn-engine:v1.11.0 --mode all --yes --wait --cleanup-unused
+  scripts/longhorn-engine-migrate.sh --mode report
+  scripts/longhorn-engine-migrate.sh --mode detached
+  scripts/longhorn-engine-migrate.sh --mode detached --limit 20
+  scripts/longhorn-engine-migrate.sh --mode attached --yes
+  scripts/longhorn-engine-migrate.sh --mode all --yes
 EOF
 }
 
@@ -69,10 +58,6 @@ confirm_or_exit() {
 parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --target)
-        TARGET_IMAGE="$2"
-        shift 2
-        ;;
       --namespace)
         NAMESPACE="$2"
         shift 2
@@ -81,21 +66,9 @@ parse_args() {
         MODE="$2"
         shift 2
         ;;
-      --set-default)
-        SET_DEFAULT="$2"
-        shift 2
-        ;;
       --limit)
         LIMIT="$2"
         shift 2
-        ;;
-      --wait)
-        WAIT_FOR_CONVERGENCE="true"
-        shift
-        ;;
-      --cleanup-unused)
-        CLEANUP_UNUSED="true"
-        shift
         ;;
       --yes)
         ASSUME_YES="true"
@@ -113,12 +86,6 @@ parse_args() {
     esac
   done
 
-  if [[ -z "$TARGET_IMAGE" ]]; then
-    echo "--target is required" >&2
-    usage
-    exit 1
-  fi
-
   case "$MODE" in
     report|detached|attached|all) ;;
     *)
@@ -131,6 +98,62 @@ parse_args() {
     echo "--limit must be a non-negative integer" >&2
     exit 1
   fi
+}
+
+select_latest_image() {
+  awk '
+    NF {
+      image=$0
+      sub(/@.*/, "", image)
+      tag=image
+      sub(/.*:/, "", tag)
+      print tag "\t" $0
+    }
+  ' | sort -k1,1V | tail -n 1 | cut -f2-
+}
+
+resolve_target_image() {
+  TARGET_IMAGE="$(
+    kubectl -n "$NAMESPACE" get volumes.longhorn.io \
+      -o jsonpath='{range .items[*]}{.status.currentImage}{"\n"}{end}' \
+    | sed '/^$/d' \
+    | sort -u \
+    | select_latest_image
+  )"
+
+  if [[ -n "$TARGET_IMAGE" ]]; then
+    log "Resolved target engine image from running volumes: $TARGET_IMAGE"
+    return 0
+  fi
+
+  TARGET_IMAGE="$(
+    kubectl -n "$NAMESPACE" get volumes.longhorn.io \
+      -o jsonpath='{range .items[*]}{.spec.image}{"\n"}{end}' \
+    | sed '/^$/d' \
+    | sort -u \
+    | select_latest_image
+  )"
+
+  if [[ -n "$TARGET_IMAGE" ]]; then
+    log "Resolved target engine image from volume spec.image: $TARGET_IMAGE"
+    return 0
+  fi
+
+  TARGET_IMAGE="$(
+    kubectl -n "$NAMESPACE" get engineimages.longhorn.io \
+      -o jsonpath='{range .items[*]}{.spec.image}{"\t"}{.status.state}{"\n"}{end}' \
+    | awk '$2=="deployed" {print $1}' \
+    | sort -u \
+    | select_latest_image
+  )"
+
+  if [[ -n "$TARGET_IMAGE" ]]; then
+    log "Resolved target engine image from deployed engine images: $TARGET_IMAGE"
+    return 0
+  fi
+
+  echo "Unable to determine target engine image automatically" >&2
+  exit 1
 }
 
 show_engineimages() {
@@ -174,10 +197,6 @@ ensure_target_engine_deployed() {
 }
 
 set_default_engine_image() {
-  if [[ "$SET_DEFAULT" != "true" ]]; then
-    return 0
-  fi
-
   local current
   current="$(
     kubectl -n "$NAMESPACE" get settings.longhorn.io default-engine-image \
@@ -235,32 +254,24 @@ upgrade_by_state() {
 }
 
 wait_for_convergence() {
-  if [[ "$WAIT_FOR_CONVERGENCE" != "true" ]]; then
-    return 0
-  fi
-
   log "Waiting for all volumes to converge to $TARGET_IMAGE"
   while true; do
     local remaining
     remaining="$(
       kubectl -n "$NAMESPACE" get volumes.longhorn.io \
-        -o jsonpath='{range .items[*]}{.spec.image}{"\n"}{end}' \
-      | awk -v t="$TARGET_IMAGE" '$0 != t && $0 != "" {count++} END {print count+0}'
+        -o jsonpath='{range .items[*]}{.spec.image}{"\t"}{.status.currentImage}{"\n"}{end}' \
+      | awk -v t="$TARGET_IMAGE" '$1 != t || $2 != t {count++} END {print count+0}'
     )"
     if [[ "$remaining" -eq 0 ]]; then
       break
     fi
-    log "Volumes still on non-target image: $remaining"
+    log "Volumes not yet converged to target image: $remaining"
     sleep 10
   done
   log "All volumes now target $TARGET_IMAGE"
 }
 
 cleanup_unused_engineimages() {
-  if [[ "$CLEANUP_UNUSED" != "true" ]]; then
-    return 0
-  fi
-
   local candidates
   candidates="$(
     kubectl -n "$NAMESPACE" get engineimages.longhorn.io \
@@ -284,17 +295,19 @@ cleanup_unused_engineimages() {
 main() {
   require_cmd kubectl
   require_cmd awk
+  require_cmd cut
   require_cmd sort
   require_cmd uniq
   require_cmd sed
+  require_cmd tail
   require_cmd date
 
   parse_args "$@"
+  resolve_target_image
   ensure_target_engine_deployed
-  local ran_actions="false"
 
   # Pure report mode should print a single snapshot.
-  if [[ "$MODE" == "report" && "$WAIT_FOR_CONVERGENCE" != "true" && "$CLEANUP_UNUSED" != "true" ]]; then
+  if [[ "$MODE" == "report" ]]; then
     show_engineimages
     show_volume_counts
     return 0
@@ -310,27 +323,22 @@ main() {
     detached)
       set_default_engine_image
       upgrade_by_state detached
-      ran_actions="true"
       ;;
     attached)
       set_default_engine_image
       upgrade_by_state attached
-      ran_actions="true"
       ;;
     all)
       set_default_engine_image
       upgrade_by_state detached
       upgrade_by_state attached
-      ran_actions="true"
       ;;
   esac
 
   wait_for_convergence
   cleanup_unused_engineimages
 
-  if [[ "$ran_actions" == "true" || "$WAIT_FOR_CONVERGENCE" == "true" || "$CLEANUP_UNUSED" == "true" ]]; then
-    log "Post-run snapshot"
-  fi
+  log "Post-run snapshot"
   show_volume_counts
 }
 

@@ -32,11 +32,6 @@ spec:
       repository: ghcr.io/calibrain/shelfmark
       pullPolicy: IfNotPresent
       tag: v1.2.1
-    securityContext:
-      container:
-        runAsNonRoot: true
-        runAsUser: 568
-        runAsGroup: 568
     credentials:
       minio:
         name: minio
@@ -104,7 +99,32 @@ spec:
         podSpec:
           containers:
             main:
+              command:
+                - gunicorn
+              args:
+                - --access-logfile=-
+                - --error-logfile=-
+                - --worker-class=geventwebsocket.gunicorn.workers.GeventWebSocketWorker
+                - --workers=1
+                - -t
+                - "300"
+                - -b
+                - 0.0.0.0:8084
+                - shelfmark.main:app
               env:
                 DOCKERMODE: "true"
                 LOG_ROOT: /var/logs
                 INGEST_DIR: /medias/downloads/watch_books
+              probes:
+                liveness:
+                  type: http
+                  path: /api/health
+                  port: 8084
+                readiness:
+                  type: http
+                  path: /api/health
+                  port: 8084
+                startup:
+                  type: http
+                  path: /api/health
+                  port: 8084

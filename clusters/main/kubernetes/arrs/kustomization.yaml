@@ -9,6 +9,7 @@ resources:
   - prowlarr/ks.yaml
   - recyclarr/ks.yaml
   - seerr/ks.yaml
+  - shelfmark/ks.yaml
   - sonarr/ks.yaml
   - radarr/ks.yaml
   - whisparr/ks.yaml

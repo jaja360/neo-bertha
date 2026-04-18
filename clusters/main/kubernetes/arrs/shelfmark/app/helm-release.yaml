@@ -1,0 +1,104 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: shelfmark
+  namespace: shelfmark
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 17.0.8
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    image:
+      repository: ghcr.io/calibrain/shelfmark
+      pullPolicy: IfNotPresent
+      tag: v1.2.1
+    credentials:
+      minio:
+        name: minio
+        type: s3
+        path: ""
+        accessKey: "${MINIO_ID}"
+        bucket: "${MINIO_BUCKET}"
+        encrKey: "${MINIO_ENCR_KEY}"
+        secretKey: "${MINIO_KEY}"
+        url: "${MINIO_URL}"
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        volsync:
+          - name: config
+            type: restic
+            credentials: minio
+            cleanupCachePVC: true
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 10 15 * * *
+      medias:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          main:
+            port: 8084
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "shelfmark.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Arrs
+            name: "Shelfmark"
+            widget:
+              enabled: false
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                DOCKERMODE: "true"
+                INGEST_DIR: /medias/downloads/watch_books

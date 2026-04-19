@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: firefox
-      version: 37.0.1
+      version: 37.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts

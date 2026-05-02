@@ -60,8 +60,8 @@ controlPlane:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-production
-                    - siderolabs/nvidia-container-toolkit-production
+                    - siderolabs/nonfree-kmod-nvidia-lts
+                    - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware
 worker:
     patches:
@@ -78,6 +78,6 @@ worker:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-production
-                    - siderolabs/nvidia-container-toolkit-production
+                    - siderolabs/nonfree-kmod-nvidia-lts
+                    - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware

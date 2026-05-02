@@ -9,6 +9,7 @@ resources:
   - home-ops-mirror.yaml
   - jetstack.yaml
   - metallb.yaml
+  - nvidia.yaml
   - postfinance.yaml
   - prometheus-community.yaml
   - spegel.yaml

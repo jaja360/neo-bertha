@@ -29,7 +29,7 @@ spec:
     keepHistory: false
   values:
     global:
-      stopAll: false
+      stopAll: true
     imagemaidImage:
       repository: kometateam/imagemaid
       tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
@@ -100,24 +100,22 @@ spec:
         nvidia.com/gpu: 1
     workload:
       main:
-        podSpec:
-          runtimeClassName: "nvidia"
-          containers:
-            main:
-              probes:
-                liveness:
-                  spec:
-                    initialDelaySeconds: 30
-                    periodSeconds: 30
-                    timeoutSeconds: 10
-                    failureThreshold: 10
-                readiness:
-                  spec:
-                    initialDelaySeconds: 20
-                    periodSeconds: 20
-                    timeoutSeconds: 10
-                    failureThreshold: 6
-                    successThreshold: 1
+        containers:
+          main:
+            probes:
+              liveness:
+                spec:
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 10
+              readiness:
+                spec:
+                  initialDelaySeconds: 20
+                  periodSeconds: 20
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+                  successThreshold: 1
       imagemaid:
         enabled: true
         primary: false

@@ -28,6 +28,8 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    global:
+      stopAll: true
     credentials:
       minio:
         name: minio
@@ -90,5 +92,3 @@ spec:
     workload:
       main:
         replicas: ${NUMBER_OF_NODES}
-        podSpec:
-          runtimeClassName: "nvidia"

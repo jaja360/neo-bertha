@@ -28,7 +28,7 @@ spec:
       enabled: false
     cdi:
       enabled: true
-      nriPluginEnabled: true
+      nriPluginEnabled: false
     hostPaths:
       driverInstallDir: /usr/local
     driver:

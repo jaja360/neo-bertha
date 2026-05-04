@@ -31,7 +31,7 @@ spec:
     image:
       repository: ghcr.io/cross-seed/cross-seed
       pullPolicy: IfNotPresent
-      tag: 6.13.6
+      tag: 6.13.7
     service:
       main:
         enabled: false

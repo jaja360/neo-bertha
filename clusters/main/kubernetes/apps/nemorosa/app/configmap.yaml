@@ -13,8 +13,9 @@ data:
     import textwrap
     from pathlib import Path
 
-    qbit_username = os.environ["QBIT_USERNAME"]
-    qbit_password = os.environ["QBIT_PASSWORD"]
+    qbit_skip_auth = os.environ.get("QBIT_SKIP_AUTH", "false").lower() == "true"
+    qbit_username = "" if qbit_skip_auth else os.environ["QBIT_USERNAME"]
+    qbit_password = "" if qbit_skip_auth else os.environ["QBIT_PASSWORD"]
     qbit_host = os.environ.get("QBIT_HOST", "qbittorrent.qbittorrent.svc.cluster.local")
     qbit_port = os.environ.get("QBIT_PORT", "10095")
     api_key = os.environ.get("NEMOROSA_APIKEY", "").strip()

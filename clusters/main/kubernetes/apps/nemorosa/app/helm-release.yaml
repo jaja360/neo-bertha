@@ -68,6 +68,7 @@ spec:
               env:
                 QBIT_HOST: qbittorrent.qbittorrent.svc.cluster.local
                 QBIT_PORT: "10095"
+                QBIT_SKIP_AUTH: "true"
                 QBIT_USERNAME: ${QBIT_USERNAME}
                 QBIT_PASSWORD: ${QBIT_PASSWORD}
                 RED_APIKEY: ${RED_APIKEY}

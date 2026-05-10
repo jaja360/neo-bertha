@@ -92,6 +92,10 @@ spec:
     ingress:
       main:
         enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header X-Forwarded-For $server_addr;
+            proxy_set_header X-Real-IP $server_addr;
         hosts:
           - host: "qbit.${DOMAIN_0}"
             paths:
@@ -116,6 +120,20 @@ spec:
               enableLeechProgress: true
               username: ${QBIT_USERNAME}
               password: ${QBIT_PASSWORD}
+      api:
+        enabled: true
+        primary: false
+        targetSelector:
+          main: main
+        hosts:
+          - host: "qbit-api.${DOMAIN_0}"
+            paths:
+            - path: /api/v2
+              pathType: Prefix
+        integrations:
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
     workload:
       qbitportforward:
         enabled: false

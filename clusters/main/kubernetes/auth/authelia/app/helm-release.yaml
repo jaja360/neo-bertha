@@ -129,19 +129,25 @@ spec:
         default_policy: deny
         rules:
         - domain:
-          - "*.${DOMAIN_0}"
+          - qbit.${DOMAIN_0}
+          policy: two_factor
+          subject:
+            - group:all_access
+        - domain:
+          - sonarr.${DOMAIN_0}
+          - radarr.${DOMAIN_0}
+          - lidarr.${DOMAIN_0}
+          - prowlarr.${DOMAIN_0}
+          - whisparr.${DOMAIN_0}
+          - bazarr.${DOMAIN_0}
+          - sabnzbd.${DOMAIN_0}
           policy: bypass
           resources:
             - ^/api([/?].*)?$
-            - ^/identity.*$
-            - ^/triggers.*$
-            - ^/meshagents.*$
-            - ^/meshsettings.*$
-            - ^/agent.*$
-            - ^/control.*$
-            - ^/meshrelay.*$
-            - ^/wl.*$
-            - ^(/[0-9]*)?/api([/?].*)?$
+        - domain:
+          - lounge.${DOMAIN_0}
+          policy: bypass
+          resources:
             - ^/uploads/.*$
         - domain:
           - nextcloud.${DOMAIN_0}

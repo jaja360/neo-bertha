@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
     name: upgrade-settings
     namespace: flux-system
+    labels:
+        reconcile.fluxcd.io/watch: Enabled
 data:
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
   TALOS_VERSION: v1.13.0

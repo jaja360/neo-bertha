@@ -5,4 +5,6 @@ kind: Kustomization
 resources:
   # - schematics.yaml
   - kubernetes.yaml
-  - talos.yaml
+  # Disabled: current Talos plan reboots/retries without applying v1.13.2.
+  # Re-enable after fixing tnu target/upgrade semantics.
+  # - talos.yaml

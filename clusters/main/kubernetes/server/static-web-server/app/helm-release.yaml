@@ -65,3 +65,20 @@ spec:
               enabled: false
     podOptions:
       hostUsers: true
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                SERVER_LOG_LEVEL: "info"
+                SERVER_LOG_WITH_ANSI: "true"
+                SERVER_LOG_X_REAL_IP: "true"
+                SERVER_HEALTH: "true"
+              probes:
+                startup:
+                  path: /health
+                readiness:
+                  path: /health
+                liveness:
+                  path: /health

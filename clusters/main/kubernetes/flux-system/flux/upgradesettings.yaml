@@ -7,6 +7,6 @@ metadata:
         reconcile.fluxcd.io/watch: Enabled
 data:
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-  TALOS_VERSION: v1.13.2
+  TALOS_VERSION: v1.13.5
   # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
   KUBERNETES_VERSION: v1.35.6

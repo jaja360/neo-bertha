@@ -76,3 +76,18 @@ spec:
               enabled: true
               custom:
                 key: ${SEERR_APIKEY}
+    cnpg:
+      main:
+        enabled: false
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                DB_TYPE: sqlite
+                DB_HOST: ""
+                DB_PASS: ""
+                DB_USER: ""
+                DB_NAME: ""
+                DB_PORT: ""

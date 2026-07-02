@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upgrade-settings
+  namespace: flux-system
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
+data:
+  # Legacy substitutions kept temporarily while existing Flux Kustomizations
+  # reconcile away their old postBuild reference to this ConfigMap.
+  # Active Talos/Kubernetes upgrade versions now live in Tuppr resources.
+  TALOS_VERSION: v1.13.5
+  KUBERNETES_VERSION: v1.35.6

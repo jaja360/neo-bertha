@@ -86,9 +86,10 @@ spec:
             name: "FileFlows"
             widget:
               enabled: false
-    resources:
-      limits:
-        nvidia.com/gpu: 1
+    # Temporarily disabled while Talos is upgraded without NVIDIA extensions.
+    # resources:
+    #   limits:
+    #     nvidia.com/gpu: 1
     workload:
       main:
         replicas: ${NUMBER_OF_NODES}

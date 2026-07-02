@@ -46,7 +46,8 @@ nodes:
 controlPlane:
     patches:
         - '@./patches/controlplane.yaml'
-        - '@./patches/nvidia.yaml'
+        # Temporarily disabled while Talos is upgraded with a smaller UKI.
+        # - '@./patches/nvidia.yaml'
     kernelModules:
      - name: nvme_tcp
      - name: vfio_pci
@@ -60,13 +61,15 @@ controlPlane:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-lts
-                    - siderolabs/nvidia-container-toolkit-lts
+                    # Temporarily disabled while Talos is upgraded with a smaller UKI.
+                    # - siderolabs/nonfree-kmod-nvidia-lts
+                    # - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware
 worker:
     patches:
         - '@./patches/worker.yaml'
-        - '@./patches/nvidia.yaml'
+        # Temporarily disabled while Talos is upgraded with a smaller UKI.
+        # - '@./patches/nvidia.yaml'
     kernelModules:
      - name: nvme_tcp
      - name: vfio_pci
@@ -78,6 +81,7 @@ worker:
                     - siderolabs/amd-ucode
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
-                    - siderolabs/nonfree-kmod-nvidia-lts
-                    - siderolabs/nvidia-container-toolkit-lts
+                    # Temporarily disabled while Talos is upgraded with a smaller UKI.
+                    # - siderolabs/nonfree-kmod-nvidia-lts
+                    # - siderolabs/nvidia-container-toolkit-lts
                     - siderolabs/realtek-firmware

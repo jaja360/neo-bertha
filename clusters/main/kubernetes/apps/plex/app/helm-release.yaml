@@ -95,9 +95,10 @@ spec:
                 key: ${PLEX_TOKEN}
     plex:
       serverIP: ${PLEX_IP}
-    resources:
-      limits:
-        nvidia.com/gpu: 1
+    # Temporarily disabled while Talos is upgraded without NVIDIA extensions.
+    # resources:
+    #   limits:
+    #     nvidia.com/gpu: 1
     workload:
       main:
         containers:

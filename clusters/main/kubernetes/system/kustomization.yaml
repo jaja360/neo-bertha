@@ -11,4 +11,5 @@ resources:
   - volsync/ks.yaml
   - generic-device-plugin/ks.yaml
   - kube-prometheus-stack/ks.yaml
-  - gpu-operator/ks.yaml
+  # Temporarily disabled while Talos is upgraded without NVIDIA extensions.
+  # - gpu-operator/ks.yaml

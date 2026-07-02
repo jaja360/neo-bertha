@@ -1,0 +1,15 @@
+apiVersion: tuppr.home-operations.com/v1alpha1
+kind: TalosUpgrade
+metadata:
+  name: talos
+  namespace: system-upgrade
+spec:
+  talos:
+    # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+    version: v1.13.5
+
+  policy:
+    debug: true
+    force: false
+    rebootMode: default
+    placement: soft

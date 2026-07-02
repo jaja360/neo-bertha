@@ -3,6 +3,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # - schematics.yaml
-  - kubernetes.yaml
-  - talos.yaml
+  - namespace.yaml
+  - tuppr/ks.yaml
+  - tuppr-plans/ks.yaml

@@ -1,7 +1,7 @@
 # (Re)bootstrapping a cluster
 
-- `forgetool talos bootstrap`
-- `forgetool flux bootstrap`
+- `clustertool talos bootstrap`
+- `clustertool flux bootstrap`
 
 # Claiming a Plex server
 

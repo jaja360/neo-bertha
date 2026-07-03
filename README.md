@@ -1,7 +1,7 @@
 # Neo Bertha Kubernetes Cluster
 
 Welcome to the configuration repository for **Neo Bertha**, a Kubernetes cluster
-managed with [Forgetool](https://github.com/trueforge-org/forgetool) and [Flux](https://fluxcd.io).
+managed with [clustertool](https://github.com/trueforge-org/clustertool) and [Flux](https://fluxcd.io).
 
 ```text
      __                   ___           _   _
@@ -34,20 +34,20 @@ notes.md      # bootstrap & operational notes
 
 ## Bootstrapping
 
-1. Install [Forgetool](https://github.com/trueforge-org/forgetool). Make sure you have a
+1. Install [clustertool](https://github.com/trueforge-org/clustertool). Make sure you have a
    valid `age` key for decrypting secrets.
 2. Initialize and generate cluster config:
 
 ```bash
-forgetool cluster init
-forgetool cluster genconfig
+clustertool cluster init
+clustertool cluster genconfig
 ```
 
 3. Bootstrap Talos and Flux:
 
 ```bash
-forgetool talos bootstrap
-forgetool flux bootstrap
+clustertool talos bootstrap
+clustertool flux bootstrap
 ```
 
 These commands set up the base Talos nodes and install Flux, which then

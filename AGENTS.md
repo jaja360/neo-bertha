@@ -12,11 +12,11 @@ This repository is a GitOps source of truth for the `main` cluster.
 ## Build, Test, and Development Commands
 There is no Makefile; use CLI tools directly.
 
-- Forgetool project: `https://github.com/trueforge-org/forgetool`
-- `forgetool cluster init`: initialize required cluster file/folder layout.
-- `forgetool cluster genconfig`: generate Talos and cluster config artifacts.
-- `forgetool talos bootstrap`: bootstrap Talos control plane.
-- `forgetool flux bootstrap`: install Flux controllers and wire GitOps.
+- clustertool project: `https://github.com/trueforge-org/clustertool`
+- `clustertool cluster init`: initialize required cluster file/folder layout.
+- `clustertool cluster genconfig`: generate Talos and cluster config artifacts.
+- `clustertool talos bootstrap`: bootstrap Talos control plane.
+- `clustertool flux bootstrap`: install Flux controllers and wire GitOps.
 - `flux reconcile source git cluster -n flux-system`: force source refresh.
 - `flux get kustomizations --watch`: watch reconciliation status.
 - `kubectl get all -A`: quick cluster-wide health snapshot.

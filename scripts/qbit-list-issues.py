@@ -34,7 +34,7 @@ def load_qbit_credentials(path):
 
     if not username or not password or any(value.startswith("ENC[") for value in encrypted_values):
         print(
-            f"{path} is still encrypted. Run `forgetool decrypt` first, then rerun this script.",
+            f"{path} is still encrypted. Run `clustertool decrypt` first, then rerun this script.",
             file=sys.stderr,
         )
         sys.exit(1)

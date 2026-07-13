@@ -28,6 +28,13 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                PASSWORD: null
     credentials:
       minio:
         name: minio

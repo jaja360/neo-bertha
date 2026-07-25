@@ -3,5 +3,21 @@
   "extends": [
     "config:recommended",
     "github>trueforge-org/renovate-config"
-  ]
+  ],
+  "ignorePaths": [
+    "**/*.sops.*",
+    "**/.archive/**",
+    "**/archive/**",
+    "**/misc/**",
+    "**/archive/**",
+    "**/resources/**",
+    "**common/test-chart/tests/**",
+    "**common/test-chart/**",
+    "charts/library/common/test-chart/tests/**"
+  ],
+  "flux": {
+    "managerFilePatterns": [
+      "/(?:^|/)repositories/oci/.+\\.ya?ml$/"
+    ]
+  }
 }

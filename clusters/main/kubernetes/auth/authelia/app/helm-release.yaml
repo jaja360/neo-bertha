@@ -121,6 +121,7 @@ spec:
           password: ${EMAIL_GMAIL_PASSWD}
           sender: ${EMAIL_GMAIL}
           startup_check_address: test@${DOMAIN_0}
+          timeout: 20s
           tls:
             server_name: smtp.gmail.com
             minimum_version: TLS1.2

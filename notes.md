@@ -3,6 +3,11 @@
 - `clustertool talos bootstrap`
 - `clustertool flux bootstrap`
 
+# Configure kubectl and talosctl after changing PC
+
+- `clustertool talos kubeconfig`
+- `talosctl config merge clusters/main/talos/generated/talosconfig`
+
 # Claiming a Plex server
 
 - [Get the claim token](https://account.plex.tv/fr/claim)

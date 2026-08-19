@@ -31,7 +31,7 @@ spec:
     image:
       repository: ghcr.io/calibrain/shelfmark
       pullPolicy: IfNotPresent
-      tag: v1.3.9
+      tag: v1.3.10
     credentials:
       minio:
         name: minio

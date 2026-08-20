@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: maintainerr
-      version: 7.26.1
+      version: 7.27.0
       sourceRef:
         kind: HelmRepository
         name: truecharts

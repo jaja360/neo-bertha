@@ -146,6 +146,11 @@ spec:
           resources:
             - ^/api([/?].*)?$
         - domain:
+          - tautulli.${DOMAIN_0}
+          policy: bypass
+          resources:
+            - ^/api/v2([/?].*)?$
+        - domain:
           - lounge.${DOMAIN_0}
           policy: bypass
           resources:

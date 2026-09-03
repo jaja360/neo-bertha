@@ -4,6 +4,8 @@
     "config:recommended",
     "github>trueforge-org/renovate-config"
   ],
+  "platformAutomerge": true,
+  "automergeType": "pr",
   "ignorePaths": [
     "**/*.sops.*",
     "**/.archive/**",

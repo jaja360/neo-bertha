@@ -22,7 +22,7 @@ patches:
     - '@./patches/all.yaml'
     - '@./patches/containerd.yaml'
     - '@./patches/nfs.yaml'
-    - '@./patches/gc.yaml'
+    - '@./patches/garbagecollection.yaml'
 nodes:
     # We would advise to always stick to a "k8s-something-1" style naming scheme
     - hostname: k8s-control-1

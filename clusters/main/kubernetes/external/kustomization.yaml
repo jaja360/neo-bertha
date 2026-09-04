@@ -5,5 +5,6 @@ resources:
   - truenas/ks.yaml
   - router/ks.yaml
   - antminer/ks.yaml
-  - jetkvm/ks.yaml
+  - bertha/ks.yaml
+  - zen5/ks.yaml
   - hass/ks.yaml

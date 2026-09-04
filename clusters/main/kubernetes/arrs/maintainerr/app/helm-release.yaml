@@ -40,6 +40,8 @@ spec:
         url: "${MINIO_URL}"
     persistence:
       data:
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
         volsync:
           - name: data
             type: restic
@@ -50,7 +52,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 0 13 * * *
+                schedule: 0 9 * * *
     service:
       main:
         type: LoadBalancer

@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: volsync-queue
+  namespace: volsync
+spec:
+  schedule: "5 9 * * *"
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 100
+            runAsGroup: 101
+            fsGroup: 101
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: volsync-queue
+          containers:
+            - name: volsync-queue
+              image: alpine/kubectl:1.37.0
+              command: ["/bin/sh", "-eu", "/scripts/volsync-queue.sh"]
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                runAsUser: 100
+                runAsGroup: 101
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: script
+              configMap:
+                name: volsync-queue-script
+                defaultMode: 0755
+            - name: tmp
+              emptyDir: {}

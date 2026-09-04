@@ -55,6 +55,8 @@ spec:
           credentials: minio
     persistence:
       data:
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
         volsync:
           - name: config
             type: restic
@@ -65,7 +67,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 0 10 * * *
+                schedule: 0 9 * * *
     service:
       ldap:
         type: LoadBalancer

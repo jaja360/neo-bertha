@@ -57,7 +57,7 @@ spec:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
-            enabled: false
+            enabled: true
             group: Admin
             description: Network Assisted Storage Operating System
             icon: "truenas.svg"
@@ -65,7 +65,8 @@ spec:
             widget:
               enabled: true
               type: truenas
-              url: http://${TRUENAS_IP}:81
+              url: https://${TRUENAS_IP}:444
+              version: 2
               custom:
                 key: ${TRUENAS_HOMEPAGE_TOKEN}
                 enablePools: true

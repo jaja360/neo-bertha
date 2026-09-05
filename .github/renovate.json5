@@ -21,5 +21,13 @@
     "managerFilePatterns": [
       "/(?:^|/)repositories/oci/.+\\.ya?ml$/"
     ]
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Custom CNPG image base: stay on PG 16.x - major bumps would require a data migration and are not supported by the chart",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql"],
+      "allowedVersions": "<17"
+    }
+  ]
 }

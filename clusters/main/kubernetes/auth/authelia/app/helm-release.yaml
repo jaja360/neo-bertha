@@ -142,26 +142,10 @@ spec:
           - whisparr.${DOMAIN_0}
           - bazarr.${DOMAIN_0}
           - sabnzbd.${DOMAIN_0}
-          policy: bypass
-          resources:
-            - ^/api([/?].*)?$
-        - domain:
-          - tautulli.${DOMAIN_0}
-          policy: bypass
-          resources:
-            - ^/api/v2([/?].*)?$
-        - domain:
           - tracearr.${DOMAIN_0}
           policy: bypass
           resources:
-            - ^/api/v1/public/health$
-            - ^/api/v1/public/stats$
-            - ^/api/v1/public/stats/today$
-            - ^/api/v1/public/activity$
-            - ^/api/v1/public/streams$
-            - ^/api/v1/public/users$
-            - ^/api/v1/public/violations$
-            - ^/api/v1/public/history$
+            - ^/api([/?].*)?$
         - domain:
           - lounge.${DOMAIN_0}
           policy: bypass

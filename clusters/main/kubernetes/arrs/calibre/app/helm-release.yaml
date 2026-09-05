@@ -25,8 +25,6 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  uninstall:
-    keepHistory: false
   values:
     workload:
       main:
@@ -36,15 +34,14 @@ spec:
               env:
                 PASSWORD: null
     credentials:
-      minio:
-        name: minio
+      backblaze:
+        name: backblaze
         type: s3
-        path: ""
-        accessKey: "${MINIO_ID}"
-        bucket: "${MINIO_BUCKET}"
-        encrKey: "${MINIO_ENCR_KEY}"
-        secretKey: "${MINIO_KEY}"
-        url: "${MINIO_URL}"
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     persistence:
       config:
         annotations:
@@ -52,10 +49,10 @@ spec:
         volsync:
           - name: config
             type: restic
-            credentials: minio
+            credentials: backblaze
             cleanupCachePVC: true
             dest:
-              enabled: true
+              enabled: ${RESTORE_PVCS}
             src:
               enabled: true
               trigger:

@@ -25,23 +25,20 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  uninstall:
-    keepHistory: false
   values:
     image:
       repository: ghcr.io/maybe-finance/maybe
       pullPolicy: IfNotPresent
       tag: 0.6.0
     credentials:
-      minio:
-        name: minio
+      backblaze:
+        name: backblaze
         type: s3
-        path: ""
-        accessKey: "${MINIO_ID}"
-        bucket: "${MINIO_BUCKET}"
-        encrKey: "${MINIO_ENCR_KEY}"
-        secretKey: "${MINIO_KEY}"
-        url: "${MINIO_URL}"
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     persistence:
       app-storage:
         enabled: true
@@ -52,10 +49,10 @@ spec:
         volsync:
           - name: app-storage
             type: restic
-            credentials: minio
+            credentials: backblaze
             cleanupCachePVC: true
             dest:
-              enabled: true
+              enabled: ${RESTORE_PVCS}
             src:
               enabled: true
               trigger:
@@ -81,13 +78,10 @@ spec:
           singleNode: ${SINGLE_NODE}
         backups:
           enabled: true
-          revision: ""
-          credentials: minio
+          credentials: backblaze
         recovery:
           enabled: true
-          revision: ""
-          method: object_store
-          credentials: minio
+          credentials: backblaze
     service:
       main:
         type: LoadBalancer

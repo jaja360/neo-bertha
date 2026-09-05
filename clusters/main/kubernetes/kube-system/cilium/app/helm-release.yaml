@@ -31,8 +31,6 @@ spec:
     remediation:
       retries: 3
       remediateLastFailure: true
-  uninstall:
-    keepHistory: false
   values:
     hubble:
       enabled: false

@@ -13,14 +13,21 @@ This repository is a GitOps source of truth for the `main` cluster.
 There is no Makefile; use CLI tools directly.
 
 - clustertool project: `https://github.com/trueforge-org/clustertool`
-- `clustertool cluster init`: initialize required cluster file/folder layout.
-- `clustertool cluster genconfig`: generate Talos and cluster config artifacts.
+- `clustertool init`: initialize required cluster file/folder layout.
+- `clustertool genconfig`: generate Talos and cluster config artifacts, SOPS-encrypt `clusterenv.yaml`, and regenerate the derived secret files (see "Secrets & Config Generation Workflow" below).
 - `clustertool talos bootstrap`: bootstrap Talos control plane.
 - `clustertool flux bootstrap`: install Flux controllers and wire GitOps.
 - `flux reconcile source git cluster -n flux-system`: force source refresh.
 - `flux get kustomizations --watch`: watch reconciliation status.
 - `kubectl get all -A`: quick cluster-wide health snapshot.
 - `talosctl etcd snapshot db.snapshot`: create etcd backup before risky infra changes.
+
+## Secrets & Config Generation Workflow
+`clusters/main/clusterenv.yaml` is the single source of truth for all cluster settings, secrets, and `${VAR}` substitution values. **The user edits it exclusively — the AI must never read, decrypt, or modify it**, nor the generated secret files (`clustersettings.secret.yaml`, `deploykey.secret.yaml`, `talsecret.yaml`).
+
+- User workflow: edit `clusterenv.yaml`, then run `clustertool cluster genconfig`, which SOPS-encrypts it and regenerates the derived files — notably `clusters/main/kubernetes/flux-system/flux/clustersettings.secret.yaml` (the `cluster-config` ConfigMap Flux uses for `postBuild.substituteFrom`), plus `deploykey.secret.yaml` and `talsecret.yaml`.
+- When a change requires new or updated secret/setting values, the AI tells the user exactly which keys to add or change in `clusterenv.yaml`; the user applies them and runs `genconfig`. The AI never touches those files itself (no `sops -d`, no `sops --set`, no edits).
+- The AI may freely edit non-secret manifests. App manifests reference these values with unquoted `${VAR}` placeholders (e.g. `enabled: ${RESTORE_PVCS}`). Booleans are stored as strings in clusterenv (`RESTORE_PVCS: "false"`) and render as proper YAML booleans after Flux substitution.
 
 ## Coding Style & Naming Conventions
 Use Kubernetes YAML with consistent two-space indentation and lowercase keys.

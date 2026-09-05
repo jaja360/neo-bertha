@@ -64,3 +64,4 @@ spec:
         gethomepage.dev/group: Admin
         gethomepage.dev/icon: longhorn.svg
         gethomepage.dev/name: "Longhorn UI"
+        gethomepage.dev/pod-selector: "app=longhorn-ui"

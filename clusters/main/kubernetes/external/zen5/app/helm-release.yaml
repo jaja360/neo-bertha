@@ -42,6 +42,9 @@ spec:
       main:
         enabled: true
         annotations:
+          gethomepage.dev/external: "true"
+          gethomepage.dev/ping: "${JETKVM_ZEN5_IP}"
+          gethomepage.dev/statusStyle: "dot"
           nginx.ingress.kubernetes.io/proxy-http-version:  "1.1"
           nginx.ingress.kubernetes.io/proxy-read-timeout:  "3600"
           nginx.ingress.kubernetes.io/proxy-send-timeout:  "3600"

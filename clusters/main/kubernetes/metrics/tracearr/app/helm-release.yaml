@@ -82,4 +82,5 @@ spec:
             name: "tracearr"
             widget:
               enabled: true
-              key: ${TRACEARR_APIKEY}
+              custom:
+                key: ${TRACEARR_APIKEY}

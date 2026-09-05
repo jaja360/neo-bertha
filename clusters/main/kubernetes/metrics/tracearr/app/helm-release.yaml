@@ -38,21 +38,23 @@ spec:
         encrKey: "${MINIO_ENCR_KEY}"
         secretKey: "${MINIO_KEY}"
         url: "${MINIO_URL}"
-    persistence:
-      config:
-        annotations:
-          volsync.backube/use-copy-trigger: "true"
-        volsync:
-          - name: config
-            type: restic
-            credentials: minio
-            cleanupCachePVC: true
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 9 * * *
+    cnpg:
+      main:
+        password: ${CNPG_PASSWD}
+        hibernate: false
+        # mode: recovery
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: minio
+        recovery:
+          enabled: true
+          revision: "1"
+          method: object_store
+          credentials: minio
     service:
       main:
         type: LoadBalancer

@@ -11,11 +11,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Derive image tag from Dockerfile base
+        id: tag
+        run: |
+          base="$(sed -nE 's|^FROM ghcr.io/cloudnative-pg/postgresql:([0-9.]+).*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
+          if [ -z "$base" ]; then
+            echo "::error::Could not parse base version from Dockerfile"
+            exit 1
+          fi
+          echo "base=$base"
+          echo "tag=${base}-ts2.29" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
@@ -33,4 +44,31 @@ jobs:
           context: .github/cnpg-timescaledb
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:16.15-ts2.29
+            ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${{ steps.tag.outputs.tag }}
+
+      # Only on main, AFTER the image has been pushed: point the HelmRelease at
+      # the new tag so Flux/CNPG can never try to pull an image that does not
+      # exist yet.
+      - name: Roll HelmRelease to freshly built image
+        if: github.ref == 'refs/heads/main'
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          file="clusters/main/kubernetes/metrics/tracearr/app/helm-release.yaml"
+          new="ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${TAG}"
+          old="$(sed -nE 's|^(\s+)imageName:\s*ghcr.io/.*/cnpg-postgresql-timescale:(.*)$|\2|p' "$file" | head -1 | tr -d '[:space:]')"
+          if [ -n "$old" ] && [ "$old" != "${TAG}" ]; then
+            sed -i "s|ghcr.io/.*/cnpg-postgresql-timescale:.*|${new}|" "$file"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$file"
+            git commit -m "chore(tracearr): roll cnpg timescaledb image to ${TAG}"
+            for i in 1 2 3; do
+              git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && exit 0
+              sleep 5
+            done
+            echo "::error::Failed to push imageName update after 3 attempts"
+            exit 1
+          else
+            echo "imageName already at ${TAG} (or not found) - nothing to commit"
+          fi

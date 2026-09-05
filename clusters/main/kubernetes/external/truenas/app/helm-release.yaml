@@ -41,6 +41,10 @@ spec:
     ingress:
       main:
         enabled: true
+        annotations:
+          gethomepage.dev/external: "true"
+          gethomepage.dev/ping: "${TRUENAS_IP}"
+          gethomepage.dev/statusStyle: "dot"
         hosts:
           - host: "truenas.${DOMAIN_0}"
             paths:

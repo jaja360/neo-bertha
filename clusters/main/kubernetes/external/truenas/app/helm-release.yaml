@@ -69,5 +69,5 @@ spec:
               version: 2
               custom:
                 key: ${TRUENAS_HOMEPAGE_TOKEN}
-                enablePools: true
+                enablePools: "true"
                 nasType: scale

@@ -20,4 +20,3 @@ resources:
   - vaultwarden/ks.yaml
   - slskd/ks.yaml
   - stirling-pdf/ks.yaml
-  - librespeed/ks.yaml

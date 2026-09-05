@@ -49,6 +49,8 @@ spec:
           imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.29
           preloadLibraries:
             - timescaledb
+          postgresql:
+            max_locks_per_transaction: "256"
         backups:
           enabled: true
           revision: "1"

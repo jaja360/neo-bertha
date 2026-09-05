@@ -63,6 +63,21 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
+      metadata:
+        enabled: true
+        type: pvc
+        targetSelectAll: true
+        mountPath: "/config/Library/Application Support/Plex Media Server/Metadata"
+      media:
+        enabled: true
+        type: pvc
+        targetSelectAll: true
+        mountPath: "/config/Library/Application Support/Plex Media Server/Media"
+      cache:
+        enabled: true
+        type: pvc
+        targetSelectAll: true
+        mountPath: "/config/Library/Application Support/Plex Media Server/Cache"
     service:
       main:
         type: LoadBalancer

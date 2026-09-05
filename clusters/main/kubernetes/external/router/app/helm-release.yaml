@@ -44,6 +44,9 @@ spec:
         enabled: true
         annotations:
           nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          gethomepage.dev/external: "true"
+          gethomepage.dev/ping: "${GATEWAY}"
+          gethomepage.dev/statusStyle: "dot"
         hosts:
           - host: "router.${DOMAIN_0}"
             paths:
@@ -62,9 +65,9 @@ spec:
           homepage:
             enabled: true
             group: Admin
-            icon: "router.svg"
-            description: "Home router WebUI"
-            name: "Router"
+            icon: "unifi.png"
+            description: "WAN, LAN and WLAN status"
+            name: "UniFi Gateway"
             widget:
               enabled: true
               type: unifi

@@ -21,44 +21,5 @@
     "managerFilePatterns": [
       "/(?:^|/)repositories/oci/.+\\.ya?ml$/"
     ]
-  },
-  "customManagers": [
-    {
-      "customType": "regex",
-      "description": "TimescaleDB apt pin in the custom CNPG image",
-      "fileMatch": ["^\\.github/cnpg-timescaledb/Dockerfile$"],
-      "matchStrings": ["timescaledb-2-postgresql-16=(?<currentValue>\\d+\\.\\d+\\.\\d+)\\*"],
-      "replacementTemplate": "timescaledb-2-postgresql-16={{newValue}}*",
-      "depNameTemplate": "timescale/timescaledb",
-      "datasourceTemplate": "github-tags",
-      "versioningTemplate": "semver"
-    },
-    {
-      "customType": "regex",
-      "description": "TimescaleDB Toolkit apt pin in the custom CNPG image",
-      "fileMatch": ["^\\.github/cnpg-timescaledb/Dockerfile$"],
-      "matchStrings": ["timescaledb-toolkit-postgresql-16=1:(?<currentValue>\\d+\\.\\d+\\.\\d+)\\*"],
-      "replacementTemplate": "timescaledb-toolkit-postgresql-16=1:{{newValue}}*",
-      "depNameTemplate": "timescale/timescaledb-toolkit",
-      "datasourceTemplate": "github-tags",
-      "versioningTemplate": "semver"
-    }
-  ],
-  "packageRules": [
-    {
-      "description": "Auto-merge TimescaleDB pin bumps",
-      "matchPackageNames": ["timescale/timescaledb", "timescale/timescaledb-toolkit"],
-      "automerge": true
-    },
-    {
-      "description": "Bullseye apt repo ceiling - lift when the CNPG base image moves to bookworm",
-      "matchPackageNames": ["timescale/timescaledb"],
-      "allowedVersions": "<=2.26.4"
-    },
-    {
-      "description": "Bullseye apt repo ceiling for the toolkit package",
-      "matchPackageNames": ["timescale/timescaledb-toolkit"],
-      "allowedVersions": "<=1.26.0"
-    }
-  ]
+  }
 }

@@ -89,10 +89,3 @@ spec:
               enabled: true
               custom:
                 key: ${TRACEARR_APIKEY}
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                TIMESCALEDB_AUTO_UPDATE: "true"

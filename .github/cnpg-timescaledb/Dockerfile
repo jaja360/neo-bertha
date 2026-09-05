@@ -17,9 +17,9 @@ RUN set -eux; \
       > /etc/apt/sources.list.d/timescaledb.list; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-      timescaledb-2-postgresql-16 \
+      timescaledb-2-postgresql-16=2.26.4* \
       timescaledb-2-loader-postgresql-16 \
-      timescaledb-toolkit-postgresql-16; \
+      timescaledb-toolkit-postgresql-16=1:1.26.0*; \
     apt-get autoremove -y; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/*

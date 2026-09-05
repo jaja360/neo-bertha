@@ -46,7 +46,7 @@ spec:
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
-          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.29
+          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.26.4
           preloadLibraries:
             - timescaledb
           postgresql:
@@ -89,3 +89,10 @@ spec:
               enabled: true
               custom:
                 key: ${TRACEARR_APIKEY}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                TIMESCALEDB_AUTO_UPDATE: "true"

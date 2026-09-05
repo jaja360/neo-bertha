@@ -21,12 +21,14 @@ jobs:
         id: tag
         run: |
           base="$(sed -nE 's|^FROM ghcr.io/cloudnative-pg/postgresql:([0-9.]+).*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
-          if [ -z "$base" ]; then
-            echo "::error::Could not parse base version from Dockerfile"
+          tsver="$(sed -nE 's|.*timescaledb-2-postgresql-16=([0-9.]+)\*.*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
+          if [ -z "$base" ] || [ -z "$tsver" ]; then
+            echo "::error::Could not parse base or timescale version from Dockerfile"
             exit 1
           fi
           echo "base=$base"
-          echo "tag=${base}-ts2.29" >> "$GITHUB_OUTPUT"
+          echo "tsver=$tsver"
+          echo "tag=${base}-ts${tsver}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3

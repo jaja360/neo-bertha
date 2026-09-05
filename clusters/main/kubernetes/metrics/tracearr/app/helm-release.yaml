@@ -46,6 +46,9 @@ spec:
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
+          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.29
+          preloadLibraries:
+            - timescaledb
         backups:
           enabled: true
           revision: "1"

@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - headlamp/ks.yaml
   - tautulli/ks.yaml
+  # - tracearr/ks.yaml

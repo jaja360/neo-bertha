@@ -36,11 +36,14 @@ spec:
         ports:
           main:
             enabled: true
-            port: 80
-            protocol: http
+            port: 443
+            targetPort: 443
+            protocol: https
     ingress:
       main:
         enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         hosts:
           - host: "router.${DOMAIN_0}"
             paths:
@@ -63,4 +66,7 @@ spec:
             description: "Home router WebUI"
             name: "Router"
             widget:
-              enabled: false
+              enabled: true
+              type: unifi
+              custom:
+                key: "${UNIFI_APIKEY}"

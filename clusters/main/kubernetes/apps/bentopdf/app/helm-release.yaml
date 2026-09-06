@@ -41,6 +41,10 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /var/cache/nginx
+      nginx-tmp:
+        enabled: true
+        type: emptyDir
+        mountPath: /etc/nginx/tmp
     ingress:
       main:
         enabled: true

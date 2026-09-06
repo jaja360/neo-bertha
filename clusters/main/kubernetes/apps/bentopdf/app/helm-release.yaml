@@ -1,0 +1,64 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bentopdf
+  namespace: bentopdf
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.20.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/alam00000/bentopdf-simple
+      pullPolicy: IfNotPresent
+      tag: 2.8.8
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 8080
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "bento.${DOMAIN_0}"
+            paths:
+              - path: /
+                pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Misc
+            name: "BentoPDF"
+            description: "Browser-based PDF editing & signing"
+            icon: https://raw.githubusercontent.com/alam00000/bentopdf/main/public/images/favicon-no-bg.svg
+            widget:
+              enabled: false

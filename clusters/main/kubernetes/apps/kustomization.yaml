@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - archivebox/ks.yaml
   - autobrr/ks.yaml
+  - bentopdf/ks.yaml
   - cross-seed/ks.yaml
   - firefox/ks.yaml
   - fileflows/ks.yaml
@@ -18,4 +19,3 @@ resources:
   - thelounge/ks.yaml
   - vaultwarden/ks.yaml
   - slskd/ks.yaml
-  - stirling-pdf/ks.yaml

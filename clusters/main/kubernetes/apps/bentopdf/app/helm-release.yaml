@@ -36,6 +36,11 @@ spec:
         ports:
           main:
             port: 8080
+    persistence:
+      nginx-cache:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/cache/nginx
     ingress:
       main:
         enabled: true

@@ -76,9 +76,11 @@ spec:
                 GGN_APIKEY: ${GGN_APIKEY}
                 JPOP_SESSION: ${JPOP_SESSION}
               probes:
-                startup:
-                  enabled: false
+                liveness:
+                  enabled: true
+                  type: tcp
+                  port: 8256
                 readiness:
                   enabled: false
-                liveness:
+                startup:
                   enabled: false

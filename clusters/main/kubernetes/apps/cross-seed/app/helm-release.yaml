@@ -67,9 +67,11 @@ spec:
                 QBIT_USERNAME: ${QBIT_USERNAME}
                 QBIT_PASSWORD: ${QBIT_PASSWORD}
               probes:
-                startup:
-                  enabled: false
+                liveness:
+                  enabled: true
+                  type: tcp
+                  port: 2468
                 readiness:
                   enabled: false
-                liveness:
+                startup:
                   enabled: false

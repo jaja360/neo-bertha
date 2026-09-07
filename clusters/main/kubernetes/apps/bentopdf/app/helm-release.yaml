@@ -7,8 +7,8 @@ spec:
   interval: 15m
   chart:
     spec:
-      chart: app-template
-      version: 18.20.4
+      chart: bentopdf
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,26 +26,9 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: ghcr.io/alam00000/bentopdf-simple
-      pullPolicy: IfNotPresent
-      tag: 2.8.8
     service:
       main:
-        enabled: true
         type: LoadBalancer
-        ports:
-          main:
-            port: 8080
-    persistence:
-      nginx-cache:
-        enabled: true
-        type: emptyDir
-        mountPath: /var/cache/nginx
-      nginx-tmp:
-        enabled: true
-        type: emptyDir
-        mountPath: /etc/nginx/tmp
     ingress:
       main:
         enabled: true

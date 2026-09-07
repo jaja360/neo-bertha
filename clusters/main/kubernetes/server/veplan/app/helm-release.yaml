@@ -90,6 +90,8 @@ spec:
                 STATION_FILE: rapides.txt
                 OSRM_MAP_FILE: quebec-latest.osrm
                 MAPQUEST_API_KEY: ${MAPQUEST_API_KEY}
+                VEPLAN_TILE_URL: "https://tileserver-gl.jaelgareau.com/data/v3/{z}/{x}/{y}.pbf"
+                VEPLAN_MAP_STYLE_URL: "https://tileserver-gl.jaelgareau.com/styles/protomaps/style.json"
               probes:
                 startup:
                   enabled: true

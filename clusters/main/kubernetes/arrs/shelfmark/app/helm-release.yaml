@@ -7,8 +7,8 @@ spec:
   interval: 15m
   chart:
     spec:
-      chart: app-template
-      version: 18.20.4
+      chart: shelfmark
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,10 +26,6 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: ghcr.io/calibrain/shelfmark
-      pullPolicy: IfNotPresent
-      tag: v1.3.15
     credentials:
       backblaze:
         name: backblaze
@@ -41,8 +37,6 @@ spec:
         url: "${BACKBLAZE_URL}"
     persistence:
       config:
-        enabled: true
-        mountPath: /config
         annotations:
           volsync.backube/use-copy-trigger: "true"
         volsync:
@@ -64,11 +58,7 @@ spec:
         server: ${NFS_SERVER}
     service:
       main:
-        enabled: true
         type: LoadBalancer
-        ports:
-          main:
-            port: 8084
     ingress:
       main:
         enabled: true
@@ -99,15 +89,4 @@ spec:
           containers:
             main:
               env:
-                LOG_ROOT: /var/logs
                 INGEST_DIR: /medias/downloads/watch_books
-              probes:
-                liveness:
-                  type: http
-                  path: /api/health
-                readiness:
-                  type: http
-                  path: /api/health
-                startup:
-                  type: http
-                  path: /api/health

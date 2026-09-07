@@ -26,8 +26,6 @@ spec:
     remediation:
       retries: 3
   values:
-    global:
-      stopAll: false
     credentials:
       backblaze:
         name: backblaze

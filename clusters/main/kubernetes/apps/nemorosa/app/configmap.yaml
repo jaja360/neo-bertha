@@ -96,8 +96,6 @@ data:
             api_key: "{ops_apikey}"
           - server: "https://dicmusic.com"
             cookie: "{dic_session}"
-          - server: "https://lztr.me"
-            cookie: "{lztr_session}"
           - server: "https://gazellegames.net"
             api_key: "{ggn_apikey}"
           - server: "https://jpopsuki.eu"

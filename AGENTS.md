@@ -35,6 +35,7 @@ Use Kubernetes YAML with consistent two-space indentation and lowercase keys.
 - Keep app directories and resource names lowercase and hyphenated (example: `static-web-server`, `kube-prometheus-stack`).
 - Use the established layout: `ks.yaml` at app root, `app/helm-release.yaml`, `app/namespace.yaml`, `app/kustomization.yaml` when needed.
 - Prefer focused, small manifest changes; avoid mixing unrelated apps in one commit.
+- Web apps deliberately use `service.main.type: LoadBalancer` so they stay reachable via a direct LAN IP if nginx ingress is down. Do not remove or flag this.
 
 ## Testing Guidelines
 CI currently contains a placeholder workflow only; validation is operational.

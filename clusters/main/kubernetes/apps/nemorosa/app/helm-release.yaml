@@ -33,6 +33,7 @@ spec:
     service:
       main:
         enabled: true
+        type: LoadBalancer
         ports:
           main:
             port: 8256

@@ -29,7 +29,7 @@ spec:
     image:
       repository: maptiler/tileserver-gl
       pullPolicy: IfNotPresent
-      tag: latest
+      tag: 5.6.0
     podOptions:
       hostUsers: true
     persistence:

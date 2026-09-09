@@ -11,6 +11,7 @@
 - Reconcile: `flux reconcile source git cluster -n flux-system`
 - Show kustomizations: `flux get kustomizations --watch`
 - Show everything: `flux get all -A`
+- Force-retry latest version after rollback: `flux reconcile helmrelease <app> -n <ns> --with-source --force --reset`
 
 ## Kubernetes
 

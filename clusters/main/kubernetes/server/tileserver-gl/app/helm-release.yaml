@@ -26,25 +26,16 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: maptiler/tileserver-gl
-      pullPolicy: IfNotPresent
-      tag: v5.6.0
     podOptions:
       hostUsers: true
     persistence:
       data:
-        enabled: true
         type: nfs
-        mountPath: /data
-        path: ${NFS_OSMTILES_DATA_PATH}
         server: ${NFS_SERVER}
+        path: ${NFS_OSMTILES_DATA_PATH}
     service:
       main:
         type: LoadBalancer
-        ports:
-          main:
-            port: 8080
     ingress:
       main:
         enabled: true

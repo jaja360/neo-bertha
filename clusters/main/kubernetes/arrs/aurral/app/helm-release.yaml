@@ -1,0 +1,73 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: aurral
+  namespace: aurral
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.22.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/lklynet/aurral
+      pullPolicy: IfNotPresent
+      tag: 2.8.0
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+      medias:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}
+    service:
+      main:
+        type: LoadBalancer
+        ports:
+          main:
+            enable: true
+            port: 3001
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: "aurral.${DOMAIN_0}"
+            paths:
+            - path: /
+              pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Arrs
+            name: "Aurral"
+            widget:
+              enabled: false

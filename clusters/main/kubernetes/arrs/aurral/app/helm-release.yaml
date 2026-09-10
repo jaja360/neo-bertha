@@ -40,6 +40,10 @@ spec:
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
     persistence:
+      cache:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/cache
       config:
         enabled: true
         mountPath: /config
@@ -91,5 +95,7 @@ spec:
             enabled: true
             group: Arrs
             name: "Aurral"
+            description: "Music discovery and request management"
+            icon: "https://raw.githubusercontent.com/lklynet/aurral/ece9c3be3b394fcd106f9627300bbb399e972a4a/frontend/public/arralogo.svg"
             widget:
               enabled: false

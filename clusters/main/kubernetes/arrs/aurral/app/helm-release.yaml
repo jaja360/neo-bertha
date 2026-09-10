@@ -30,10 +30,32 @@ spec:
       repository: ghcr.io/lklynet/aurral
       pullPolicy: IfNotPresent
       tag: 2.8.0
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
     persistence:
       config:
         enabled: true
         mountPath: /config
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
+        volsync:
+          - name: config
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: ${RESTORE_PVCS}
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 9 * * *
       medias:
         enabled: true
         type: nfs

@@ -56,6 +56,12 @@ spec:
         recovery:
           enabled: true
           credentials: backblaze
+    secret:
+      cnpg-main-user:
+        enabled: false
+        data:
+          username: ""
+          password: ""
     persistence:
       config:
         enabled: true
@@ -176,15 +182,13 @@ spec:
                 DB_PORT: "5432"
                 DB_NAME: romm
                 DB_USER:
-                  valueFrom:
-                    secretKeyRef:
-                      name: romm-app-template-cnpg-main-user
-                      key: username
+                  secretKeyRef:
+                    name: cnpg-main-user
+                    key: username
                 DB_PASSWD:
-                  valueFrom:
-                    secretKeyRef:
-                      name: romm-app-template-cnpg-main-user
-                      key: password
+                  secretKeyRef:
+                    name: cnpg-main-user
+                    key: password
                 ROMM_BASE_URL: "https://romm.${DOMAIN_0}"
                 ROMM_SESSION_SECURE_COOKIE: "true"
                 ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY}

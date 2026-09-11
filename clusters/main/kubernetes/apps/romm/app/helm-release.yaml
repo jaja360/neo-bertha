@@ -41,11 +41,13 @@ spec:
         url: ${BACKBLAZE_URL}
     cnpg:
       main:
+        enabled: true
+        type: postgres
         user: romm
         database: romm
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: recovery
+        mode: standalone
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
@@ -54,7 +56,7 @@ spec:
           enabled: true
           credentials: backblaze
         recovery:
-          enabled: true
+          enabled: false
           credentials: backblaze
     secret:
       cnpg-main-user:

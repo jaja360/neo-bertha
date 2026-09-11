@@ -40,7 +40,7 @@ spec:
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
     persistence:
-      cache:
+      varcache:
         enabled: true
         type: emptyDir
         mountPath: /var/cache

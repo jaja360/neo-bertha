@@ -1,0 +1,158 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: poznote
+  namespace: poznote
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.22.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/timothepoznanski/poznote
+      pullPolicy: IfNotPresent
+      tag: 6.84.3-rootless
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        accessKey: ${BACKBLAZE_ID}
+        bucket: ${BACKBLAZE_BUCKET}
+        encrKey: ${BACKBLAZE_ENCR_KEY}
+        secretKey: ${BACKBLAZE_KEY}
+        url: ${BACKBLAZE_URL}
+    initContainers:
+      - name: fix-data-permissions
+        image: alpine:3.22
+        command:
+          - /bin/sh
+          - -c
+          - chown -R 1000:1000 /var/www/html/data
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - CHOWN
+              - FOWNER
+              - DAC_OVERRIDE
+          readOnlyRootFilesystem: false
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+          - name: data
+            mountPath: /var/www/html/data
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/www/html/data
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
+        volsync:
+          - name: data
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: ${RESTORE_PVCS}
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 9 * * *
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          main:
+            enabled: true
+            port: 8080
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: poznote.${DOMAIN_0}
+            paths:
+              - path: /
+                pathType: Prefix
+        integrations:
+          nginx:
+            enabled: true
+            auth:
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
+              externalHost: "auth.${DOMAIN_0}"
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Apps
+            name: "Poznote"
+            description: "Self-hosted notes and knowledge base"
+            icon: "https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg"
+            widget:
+              enabled: false
+    securityContext:
+      container:
+        readOnlyRootFilesystem: false
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      pod:
+        fsGroup: 1000
+    workload:
+      main:
+        podSpec:
+          enableServiceLinks: false
+          containers:
+            main:
+              probes:
+                liveness:
+                  enabled: true
+                  type: http
+                  path: /api/health
+                  port: 8080
+                  spec:
+                    periodSeconds: 30
+                    timeoutSeconds: 10
+                    failureThreshold: 3
+                readiness:
+                  enabled: true
+                  type: http
+                  path: /api/health
+                  port: 8080
+                  spec:
+                    periodSeconds: 30
+                    timeoutSeconds: 10
+                    failureThreshold: 3
+                startup:
+                  enabled: true
+                  type: http
+                  path: /api/health
+                  port: 8080
+                  spec:
+                    initialDelaySeconds: 10
+                    periodSeconds: 30
+                    timeoutSeconds: 10
+                    failureThreshold: 3

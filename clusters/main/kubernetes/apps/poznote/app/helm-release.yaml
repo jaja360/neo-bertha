@@ -41,7 +41,7 @@ spec:
         url: ${BACKBLAZE_URL}
     initContainers:
       - name: fix-data-permissions
-        image: alpine:3.22
+        image: alpine:3.24
         command:
           - /bin/sh
           - -c

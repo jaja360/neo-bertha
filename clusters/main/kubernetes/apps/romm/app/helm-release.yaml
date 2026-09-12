@@ -47,7 +47,7 @@ spec:
         database: romm
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: standalone
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
@@ -56,14 +56,8 @@ spec:
           enabled: true
           credentials: backblaze
         recovery:
-          enabled: false
+          enabled: true
           credentials: backblaze
-    secret:
-      cnpg-main-user:
-        enabled: false
-        data:
-          username: ""
-          password: ""
     persistence:
       config:
         enabled: true
@@ -180,17 +174,27 @@ spec:
             main:
               env:
                 ROMM_DB_DRIVER: postgresql
-                DB_HOST: romm-app-template-cnpg-main-rw
-                DB_PORT: "5432"
-                DB_NAME: romm
-                DB_USER:
+                DB_HOST:
                   secretKeyRef:
-                    name: cnpg-main-user
-                    key: username
+                    name: cnpg-main-urls
+                    key: host
+                DB_PORT: "5432"
+                DB_NAME: "{{ .Values.cnpg.main.database }}"
+                DB_USER: "{{ .Values.cnpg.main.user }}"
                 DB_PASSWD:
                   secretKeyRef:
                     name: cnpg-main-user
                     key: password
                 ROMM_BASE_URL: "https://romm.${DOMAIN_0}"
-                ROMM_SESSION_SECURE_COOKIE: "true"
+                ROMM_SESSION_SECURE_COOKIE: true
                 ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY}
+                SCREENSCRAPER_USER: ${SCREENSCRAPER_USER}
+                SCREENSCRAPER_PASSWORD: ${SCREENSCRAPER_PASSWORD}
+                IGDB_CLIENT_ID: ${IGDB_CLIENT_ID}
+                IGDB_CLIENT_SECRET: ${IGDB_CLIENT_SECRET}
+                RETROACHIEVEMENTS_API_KEY: ${RETROACHIEVEMENTS_API_KEY}
+                STEAMGRIDDB_API_KEY: ${STEAMGRIDDB_API_KEY}
+                HASHEOUS_API_ENABLED: true
+                PLAYMATCH_API_ENABLED: true
+                HLTB_API_ENABLED: true
+                FLASHPOINT_API_ENABLED: true

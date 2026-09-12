@@ -42,7 +42,7 @@ spec:
         database: romm
         password: ${CNPG_PASSWD}
         hibernate: false
-        mode: standalone
+        mode: recovery
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
@@ -50,7 +50,7 @@ spec:
           enabled: true
           credentials: backblaze
         recovery:
-          enabled: false
+          enabled: true
           credentials: backblaze
     persistence:
       config:
@@ -97,7 +97,7 @@ spec:
                 schedule: 0 9 * * *
       library:
         type: nfs
-        path: ${NFS_MEDIAS_PATH}
+        path: ${NFS_MEDIAS_PATH}/romm
         server: ${NFS_SERVER}
     service:
       main:

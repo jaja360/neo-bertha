@@ -60,6 +60,30 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
+      run:
+        enabled: true
+        type: emptyDir
+        mountPath: /run
+        targetSelector:
+          main:
+            main: {}
+            fix-data-permissions: {}
+      nginx:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/lib/nginx
+        targetSelector:
+          main:
+            main: {}
+            fix-data-permissions: {}
+      supervisor-logs:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/log/supervisor
+        targetSelector:
+          main:
+            main: {}
+            fix-data-permissions: {}
     service:
       main:
         enabled: true
@@ -113,8 +137,10 @@ spec:
               imageSelector: alpineImage
               command:
                 - /bin/sh
-                - -c
-                - chown 1000:1000 /var/www/html/data
+                - -ec
+                - |
+                  mkdir -p /run/nginx /var/lib/nginx /var/log/supervisor
+                  chown -R 1000:1000 /var/www/html/data /run /var/lib/nginx /var/log/supervisor
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
@@ -135,6 +161,12 @@ spec:
               volumeMounts:
                 - name: data
                   mountPath: /var/www/html/data
+                - name: run
+                  mountPath: /run
+                - name: nginx
+                  mountPath: /var/lib/nginx
+                - name: supervisor-logs
+                  mountPath: /var/log/supervisor
           containers:
             main:
               probes:

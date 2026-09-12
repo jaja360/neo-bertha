@@ -39,33 +39,14 @@ spec:
         encrKey: ${BACKBLAZE_ENCR_KEY}
         secretKey: ${BACKBLAZE_KEY}
         url: ${BACKBLAZE_URL}
-    initContainers:
-      - name: fix-data-permissions
-        image: alpine:3.24
-        command:
-          - /bin/sh
-          - -c
-          - chown -R 1000:1000 /var/www/html/data
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
-            add:
-              - CHOWN
-              - FOWNER
-              - DAC_OVERRIDE
-          readOnlyRootFilesystem: false
-          runAsGroup: 0
-          runAsNonRoot: false
-          runAsUser: 0
-        volumeMounts:
-          - name: data
-            mountPath: /var/www/html/data
     persistence:
       data:
         enabled: true
         mountPath: /var/www/html/data
+        targetSelector:
+          main:
+            main: {}
+            fix-data-permissions: {}
         annotations:
           volsync.backube/use-copy-trigger: "true"
         volsync:
@@ -125,6 +106,35 @@ spec:
       main:
         podSpec:
           enableServiceLinks: false
+          initContainers:
+            fix-data-permissions:
+              enabled: true
+              type: init
+              imageSelector: alpineImage
+              command:
+                - /bin/sh
+                - -c
+                - chown 1000:1000 /var/www/html/data
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  disableS6Caps: true
+                  drop:
+                    - ALL
+                  add:
+                    - CHOWN
+                    - FOWNER
+                    - DAC_OVERRIDE
+                privileged: false
+                readOnlyRootFilesystem: false
+                runAsGroup: 0
+                runAsNonRoot: false
+                runAsUser: 0
+              resources:
+                excludeExtra: true
+              volumeMounts:
+                - name: data
+                  mountPath: /var/www/html/data
           containers:
             main:
               probes:

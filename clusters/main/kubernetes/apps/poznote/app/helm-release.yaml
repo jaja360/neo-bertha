@@ -40,6 +40,16 @@ spec:
         secretKey: ${BACKBLAZE_KEY}
         url: ${BACKBLAZE_URL}
     persistence:
+      shared:
+        targetSelectAll: false
+        targetSelector:
+          main:
+            main: {}
+      varlogs:
+        targetSelectAll: false
+        targetSelector:
+          main:
+            main: {}
       data:
         enabled: true
         mountPath: /var/www/html/data
@@ -60,30 +70,18 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-      run:
-        enabled: true
-        type: emptyDir
-        mountPath: /run
+      varrun:
+        enabled: false
+      tmp:
+        targetSelectAll: false
         targetSelector:
           main:
             main: {}
-            fix-data-permissions: {}
-      nginx:
-        enabled: true
-        type: emptyDir
-        mountPath: /var/lib/nginx
+      devshm:
+        targetSelectAll: false
         targetSelector:
           main:
             main: {}
-            fix-data-permissions: {}
-      supervisor-logs:
-        enabled: true
-        type: emptyDir
-        mountPath: /var/log/supervisor
-        targetSelector:
-          main:
-            main: {}
-            fix-data-permissions: {}
     service:
       main:
         enabled: true
@@ -135,20 +133,7 @@ spec:
               enabled: true
               type: init
               imageSelector: alpineImage
-              command:
-                - /bin/sh
-                - -ec
-                - |
-                  mkdir -p \
-                    /run/nginx \
-                    /var/lib/nginx/logs \
-                    /var/lib/nginx/tmp/client_body \
-                    /var/lib/nginx/tmp/proxy \
-                    /var/lib/nginx/tmp/fastcgi \
-                    /var/lib/nginx/tmp/uwsgi \
-                    /var/lib/nginx/tmp/scgi \
-                    /var/log/supervisor
-                  chown -R 1000:1000 /var/www/html/data /run /var/lib/nginx /var/log/supervisor
+              command: ["/bin/sh", "-c", "chown -R 1000:1000 /var/www/html/data"]
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
@@ -157,10 +142,9 @@ spec:
                     - ALL
                   add:
                     - CHOWN
-                    - FOWNER
                     - DAC_OVERRIDE
                 privileged: false
-                readOnlyRootFilesystem: false
+                readOnlyRootFilesystem: true
                 runAsGroup: 0
                 runAsNonRoot: false
                 runAsUser: 0
@@ -169,12 +153,6 @@ spec:
               volumeMounts:
                 - name: data
                   mountPath: /var/www/html/data
-                - name: run
-                  mountPath: /run
-                - name: nginx
-                  mountPath: /var/lib/nginx
-                - name: supervisor-logs
-                  mountPath: /var/log/supervisor
           containers:
             main:
               probes:
@@ -183,19 +161,11 @@ spec:
                   type: http
                   path: /api/health
                   port: 8080
-                  spec:
-                    periodSeconds: 30
-                    timeoutSeconds: 10
-                    failureThreshold: 3
                 readiness:
                   enabled: true
                   type: http
                   path: /api/health
                   port: 8080
-                  spec:
-                    periodSeconds: 30
-                    timeoutSeconds: 10
-                    failureThreshold: 3
                 startup:
                   enabled: true
                   type: http
@@ -203,6 +173,6 @@ spec:
                   port: 8080
                   spec:
                     initialDelaySeconds: 10
-                    periodSeconds: 30
-                    timeoutSeconds: 10
-                    failureThreshold: 3
+                    periodSeconds: 10
+                    timeoutSeconds: 5
+                    failureThreshold: 60

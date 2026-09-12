@@ -7,8 +7,8 @@ spec:
   interval: 15m
   chart:
     spec:
-      chart: app-template
-      version: 18.22.0
+      chart: poznote
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,10 +26,6 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: ghcr.io/timothepoznanski/poznote
-      pullPolicy: IfNotPresent
-      tag: 6.84.3-rootless
     credentials:
       backblaze:
         name: backblaze
@@ -40,23 +36,7 @@ spec:
         secretKey: ${BACKBLAZE_KEY}
         url: ${BACKBLAZE_URL}
     persistence:
-      shared:
-        targetSelectAll: false
-        targetSelector:
-          main:
-            main: {}
-      varlogs:
-        targetSelectAll: false
-        targetSelector:
-          main:
-            main: {}
       data:
-        enabled: true
-        mountPath: /var/www/html/data
-        targetSelector:
-          main:
-            main: {}
-            fix-data-permissions: {}
         annotations:
           volsync.backube/use-copy-trigger: "true"
         volsync:
@@ -70,26 +50,9 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-      varrun:
-        enabled: false
-      tmp:
-        targetSelectAll: false
-        targetSelector:
-          main:
-            main: {}
-      devshm:
-        targetSelectAll: false
-        targetSelector:
-          main:
-            main: {}
     service:
       main:
-        enabled: true
         type: LoadBalancer
-        ports:
-          main:
-            enabled: true
-            port: 8080
     ingress:
       main:
         enabled: true
@@ -116,63 +79,3 @@ spec:
             icon: "https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg"
             widget:
               enabled: false
-    securityContext:
-      container:
-        readOnlyRootFilesystem: false
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-      pod:
-        fsGroup: 1000
-    workload:
-      main:
-        podSpec:
-          enableServiceLinks: false
-          initContainers:
-            fix-data-permissions:
-              enabled: true
-              type: init
-              imageSelector: alpineImage
-              command: ["/bin/sh", "-c", "chown -R 1000:1000 /var/www/html/data"]
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities:
-                  disableS6Caps: true
-                  drop:
-                    - ALL
-                  add:
-                    - CHOWN
-                    - DAC_OVERRIDE
-                privileged: false
-                readOnlyRootFilesystem: true
-                runAsGroup: 0
-                runAsNonRoot: false
-                runAsUser: 0
-              resources:
-                excludeExtra: true
-              volumeMounts:
-                - name: data
-                  mountPath: /var/www/html/data
-          containers:
-            main:
-              probes:
-                liveness:
-                  enabled: true
-                  type: http
-                  path: /api/health
-                  port: 8080
-                readiness:
-                  enabled: true
-                  type: http
-                  path: /api/health
-                  port: 8080
-                startup:
-                  enabled: true
-                  type: http
-                  path: /api/health
-                  port: 8080
-                  spec:
-                    initialDelaySeconds: 10
-                    periodSeconds: 10
-                    timeoutSeconds: 5
-                    failureThreshold: 60

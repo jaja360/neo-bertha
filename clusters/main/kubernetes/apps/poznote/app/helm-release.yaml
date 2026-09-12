@@ -139,7 +139,15 @@ spec:
                 - /bin/sh
                 - -ec
                 - |
-                  mkdir -p /run/nginx /var/lib/nginx /var/log/supervisor
+                  mkdir -p \
+                    /run/nginx \
+                    /var/lib/nginx/logs \
+                    /var/lib/nginx/tmp/client_body \
+                    /var/lib/nginx/tmp/proxy \
+                    /var/lib/nginx/tmp/fastcgi \
+                    /var/lib/nginx/tmp/uwsgi \
+                    /var/lib/nginx/tmp/scgi \
+                    /var/log/supervisor
                   chown -R 1000:1000 /var/www/html/data /run /var/lib/nginx /var/log/supervisor
               securityContext:
                 allowPrivilegeEscalation: false

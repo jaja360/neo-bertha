@@ -122,6 +122,13 @@ spec:
         podSpec:
           containers:
             main:
+              resources:
+                limits:
+                  cpu: 4000m
+                  memory: 6Gi
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
               env:
                 ROMM_BASE_URL: "https://romm.${DOMAIN_0}"
                 ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY}
@@ -137,3 +144,4 @@ spec:
                 FLASHPOINT_API_ENABLED: true
                 ENABLE_SCHEDULED_CONVERT_IMAGES_TO_WEBP: true
                 ENABLE_SCHEDULED_CLEANUP_ORPHANED_RESOURCES: true
+                SCAN_WORKERS: 6

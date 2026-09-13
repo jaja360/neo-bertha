@@ -113,22 +113,16 @@ spec:
     #     nvidia.com/gpu: 1
     workload:
       main:
-        containers:
-          main:
-            probes:
-              liveness:
-                spec:
-                  initialDelaySeconds: 30
-                  periodSeconds: 30
-                  timeoutSeconds: 10
-                  failureThreshold: 10
-              readiness:
-                spec:
-                  initialDelaySeconds: 20
-                  periodSeconds: 20
-                  timeoutSeconds: 10
-                  failureThreshold: 6
-                  successThreshold: 1
+        podSpec:
+          containers:
+            main:
+              resources:
+                limits:
+                  cpu: 24000m
+                  memory: 8Gi
+                requests:
+                  cpu: 4000m
+                  memory: 1Gi
       imagemaid:
         enabled: true
         primary: false

@@ -1,11 +1,5 @@
 age.agekey
-db.snapshot
-^clustertool.exe
-^clustertool*
-^clustertool
-*clustertool.exe
-clustertool.exe
-clustertool
+etcd.backup
 sopssecret.yaml
 sopssecret*
 *sopssecret*

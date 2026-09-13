@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kubernetes": {
+      "enabled": true
+    },
+    "truenas": {
+      "enabled": true
+    },
+    "homeassistant": {
+      "enabled": true
+    },
+    "arr": {
+      "enabled": true
+    }
+  }
+}

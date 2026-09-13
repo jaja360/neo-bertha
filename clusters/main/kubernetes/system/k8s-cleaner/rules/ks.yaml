@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: k8s-cleaner-rules
+  namespace: flux-system
+spec:
+  # The Cleaner CRD is installed by the k8s-cleaner HelmRelease in the
+  # `k8s-cleaner` Kustomization. Without this dependsOn, applying the Cleaner
+  # CRs fails with `no matches for kind "Cleaner"` and never converges, because
+  # Flux aborts the whole apply and therefore never installs the chart.
+  dependsOn:
+    - name: k8s-cleaner
+  interval: 10m
+  path: clusters/main/kubernetes/system/k8s-cleaner/rules/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster
+  wait: false

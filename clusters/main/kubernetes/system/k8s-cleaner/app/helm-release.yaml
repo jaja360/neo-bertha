@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: k8s-cleaner
+  namespace: k8s-cleaner
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: k8s-cleaner
+      version: 0.23.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-cleaner
+        namespace: flux-system
+      interval: 2h
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    crds:
+      install: true
+    rbac:
+      create: true
+    web:
+      enabled: true
+      readOnly: true
+      port: 9080
+      ingress:
+        enabled: true
+        className: nginx
+        host: cleaner.${DOMAIN_0}
+        tls:
+          - hosts:
+              - cleaner.${DOMAIN_0}
+            secretName: k8s-cleaner-tls-0
+        annotations:
+          nginx.ingress.kubernetes.io/auth-method: 'GET'
+          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
+          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
+          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
+          cert-manager.io/cluster-issuer: domain-0-le-prod
+          cert-manager.io/private-key-rotation-policy: Always
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://cleaner.${DOMAIN_0}"
+          gethomepage.dev/description: "Prune stale Kubernetes resources"
+          gethomepage.dev/group: Admin
+          gethomepage.dev/icon: https://raw.githubusercontent.com/gianlucam76/k8s-cleaner/main/assets/logo.png
+          gethomepage.dev/name: "k8s-cleaner"

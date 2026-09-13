@@ -1,0 +1,147 @@
+---
+# k8s-cleaner runs each resourceSelector's Lua in an isolated interpreter, so the
+# ageSeconds() helper has to be repeated per selector. Keep the copies in sync.
+apiVersion: apps.projectsveltos.io/v1alpha1
+kind: Cleaner
+metadata:
+  name: old-zero-replica-replicasets
+spec:
+  schedule: "0 3 * * *"
+  action: Delete
+  notifications:
+    - name: cleaner-report
+      type: CleanerReport
+  resourcePolicySet:
+    resourceSelectors:
+      - group: apps
+        version: v1
+        kind: ReplicaSet
+        evaluate: |
+          -- RFC3339 ("2026-01-31T09:35:56Z") -> age in seconds
+          function ageSeconds(timestampStr)
+            local epoch = tonumber(string.gsub(timestampStr, '(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)Z',
+              function(y, mo, d, h, mi, s)
+                return os.time({year=tonumber(y), month=tonumber(mo), day=tonumber(d), hour=tonumber(h), min=tonumber(mi), sec=tonumber(s)})
+              end))
+            return os.difftime(os.time(), epoch)
+          end
+
+          function evaluate()
+            hs = {}
+            hs.matching = false
+            if obj.spec ~= nil and obj.spec.replicas == 0
+              and obj.metadata ~= nil and obj.metadata.creationTimestamp ~= nil
+              and obj.metadata.ownerReferences ~= nil then
+              for _, owner in ipairs(obj.metadata.ownerReferences) do
+                if owner.kind == "Deployment" and owner.apiVersion == "apps/v1" then
+                  if ageSeconds(obj.metadata.creationTimestamp) > 30 * 24 * 60 * 60 then
+                    hs.matching = true
+                    hs.message = "zero-replica Deployment ReplicaSet older than 30 days"
+                  end
+                  break
+                end
+              end
+            end
+            return hs
+          end
+---
+apiVersion: apps.projectsveltos.io/v1alpha1
+kind: Cleaner
+metadata:
+  name: old-finished-jobs
+spec:
+  schedule: "0 4 * * *"
+  action: Delete
+  notifications:
+    - name: cleaner-report
+      type: CleanerReport
+  resourcePolicySet:
+    resourceSelectors:
+      - group: batch
+        version: v1
+        kind: Job
+        evaluate: |
+          function ageSeconds(timestampStr)
+            local epoch = tonumber(string.gsub(timestampStr, '(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)Z',
+              function(y, mo, d, h, mi, s)
+                return os.time({year=tonumber(y), month=tonumber(mo), day=tonumber(d), hour=tonumber(h), min=tonumber(mi), sec=tonumber(s)})
+              end))
+            return os.difftime(os.time(), epoch)
+          end
+
+          function evaluate()
+            hs = {}
+            hs.matching = false
+            if obj.status == nil then
+              return hs
+            end
+            local finishedAt = obj.status.completionTime
+            local finished = finishedAt ~= nil
+            if not finished and obj.status.conditions ~= nil then
+              for _, condition in ipairs(obj.status.conditions) do
+                if condition.status == "True"
+                  and (condition.type == "Complete" or condition.type == "Failed") then
+                  finished = true
+                  finishedAt = condition.lastTransitionTime
+                end
+              end
+            end
+            if finished and finishedAt ~= nil then
+              if ageSeconds(finishedAt) > 30 * 24 * 60 * 60 then
+                hs.matching = true
+                hs.message = "finished Job older than 30 days"
+              end
+            end
+            return hs
+          end
+---
+apiVersion: apps.projectsveltos.io/v1alpha1
+kind: Cleaner
+metadata:
+  name: unhealthy-workloads
+spec:
+  schedule: "0 * * * *"
+  action: Scan
+  notifications:
+    - name: cleaner-report
+      type: CleanerReport
+    - name: discord
+      type: Discord
+      notificationRef:
+        apiVersion: v1
+        kind: Secret
+        name: discord
+        namespace: k8s-cleaner
+  resourcePolicySet:
+    resourceSelectors:
+      - group: ""
+        version: v1
+        kind: Pod
+        evaluate: |
+          function evaluate()
+            hs = {}
+            hs.matching = false
+            local waitingReasons = {
+              CrashLoopBackOff = true,
+              ImagePullBackOff = true,
+              ErrImagePull = true,
+              CreateContainerConfigError = true,
+              CreateContainerError = true,
+              InvalidImageName = true,
+            }
+            if obj.status ~= nil and obj.status.containerStatuses ~= nil then
+              for _, c in ipairs(obj.status.containerStatuses) do
+                if c.state ~= nil and c.state.waiting ~= nil and waitingReasons[c.state.waiting.reason] then
+                  hs.matching = true
+                  hs.message = "container " .. c.name .. " is " .. c.state.waiting.reason
+                  break
+                end
+                if c.lastState ~= nil and c.lastState.terminated ~= nil and c.lastState.terminated.reason == "OOMKilled" then
+                  hs.matching = true
+                  hs.message = "container " .. c.name .. " was OOMKilled"
+                  break
+                end
+              end
+            end
+            return hs
+          end

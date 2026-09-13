@@ -39,6 +39,9 @@ spec:
       data:
         annotations:
           volsync.backube/use-copy-trigger: "true"
+        targetSelector:
+          main:
+            mcp: {}
         volsync:
           - name: data
             type: restic
@@ -53,6 +56,14 @@ spec:
     service:
       main:
         type: LoadBalancer
+        ports:
+          mcp:
+            enabled: true
+            port: 8045
+    mcpImage:
+      repository: ghcr.io/timothepoznanski/poznote-mcp
+      tag: "6"
+      pullPolicy: IfNotPresent
     ingress:
       main:
         enabled: true
@@ -79,3 +90,36 @@ spec:
             icon: "https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg"
             widget:
               enabled: false
+    # MCP server sidecar: shares the data volume to read .mcp_token and talks
+    # to the Poznote REST API on localhost. Reachable on the LoadBalancer at :8045.
+    workload:
+      main:
+        podSpec:
+          containers:
+            mcp:
+              enabled: true
+              imageSelector: mcpImage
+              env:
+                POZNOTE_API_URL: http://127.0.0.1:8080/api/v1
+                POZNOTE_USER_ID: "1"
+                POZNOTE_DEBUG: "false"
+                MCP_HOST: "0.0.0.0"
+                POZNOTE_MCP_AUTH_TOKEN: ${POZNOTE_MCP_AUTH_TOKEN}
+              ports:
+                mcp:
+                  enabled: true
+                  port: 8045
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: false
+              securityContext:
+                runAsUser: 0
+                runAsGroup: 0
+                runAsNonRoot: false
+                readOnlyRootFilesystem: false
+              resources:
+                excludeExtra: true

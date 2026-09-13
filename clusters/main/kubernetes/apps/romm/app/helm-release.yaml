@@ -67,20 +67,6 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-      resources:
-        annotations:
-          volsync.backube/use-copy-trigger: "true"
-        volsync:
-          - name: resources
-            type: restic
-            credentials: backblaze
-            cleanupCachePVC: true
-            dest:
-              enabled: ${RESTORE_PVCS}
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 9 * * *
       assets:
         annotations:
           volsync.backube/use-copy-trigger: "true"
@@ -99,6 +85,8 @@ spec:
         type: nfs
         path: ${NFS_MEDIAS_PATH}/romm
         server: ${NFS_SERVER}
+      resources:
+        size: 200Gi
     service:
       main:
         type: LoadBalancer
@@ -147,3 +135,5 @@ spec:
                 PLAYMATCH_API_ENABLED: true
                 HLTB_API_ENABLED: true
                 FLASHPOINT_API_ENABLED: true
+                ENABLE_SCHEDULED_CONVERT_IMAGES_TO_WEBP: true
+                ENABLE_SCHEDULED_CLEANUP_ORPHANED_RESOURCES: true

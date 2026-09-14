@@ -29,7 +29,7 @@ spec:
     image:
       repository: ghcr.io/lklynet/aurral
       pullPolicy: IfNotPresent
-      tag: 2.8.0
+      tag: 2.9.0
     credentials:
       backblaze:
         name: backblaze

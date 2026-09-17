@@ -1,14 +1,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: slskd
-  namespace: slskd
+  name: dispatcharr
+  namespace: dispatcharr
 spec:
   interval: 15m
   chart:
     spec:
-      chart: slskd
-      version: 5.11.0
+      chart: dispatcharr
+      version: 2.21.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,12 +26,24 @@ spec:
     remediation:
       retries: 3
   values:
-    securityContext:
-      container:
-        PUID: 568
-        PGID: 568
-        runAsUser: 568
-        runAsGroup: 568
+    addons:
+      gluetun:
+        enabled: true
+        container:
+          resources:
+            limits:
+              truecharts.org/tun: 1
+          env:
+            FIREWALL: "on"
+            FIREWALL_OUTBOUND_SUBNETS: "192.168.0.0/24"
+            VPN_TYPE: wireguard
+            VPN_SERVICE_PROVIDER: custom
+            WIREGUARD_ENDPOINT_PORT: ${WG_ENDPOINT_PORT}
+            WIREGUARD_ENDPOINT_IP: ${WG_QBIT_ENDPOINT_IP}
+            WIREGUARD_ADDRESSES: ${WG_QBIT_ADDRESSES}
+            WIREGUARD_PRIVATE_KEY: ${WG_QBIT_PRIVATE_KEY}
+            WIREGUARD_PUBLIC_KEY: ${WG_QBIT_PUBLIC_KEY}
+            FIREWALL_VPN_INPUT_PORTS: ${WG_QBIT_INPUT_PORT}
     credentials:
       backblaze:
         name: backblaze
@@ -56,18 +68,6 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-      share:
-        enabled: false
-      incomplete:
-        enabled: false
-      complete:
-        enabled: false
-      medias:
-        enabled: true
-        type: nfs
-        mountPath: /medias
-        path: ${NFS_MEDIAS_PATH}
-        server: ${NFS_SERVER}
     service:
       main:
         type: LoadBalancer
@@ -75,7 +75,7 @@ spec:
       main:
         enabled: true
         hosts:
-          - host: "slskd.${DOMAIN_0}"
+          - host: "dispatcharr.${DOMAIN_0}"
             paths:
             - path: /
               pathType: Prefix
@@ -91,23 +91,10 @@ spec:
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
-            group: Downloads
-            name: "slskd"
+            group: Arrs
+            name: "dispatcharr"
             widget:
               enabled: true
-              key: ${SLSKD_API_KEY}
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                SLSKD_NO_AUTH: true
-                SLSKD_REMOTE_CONFIGURATION: true
-                SLSKD_SLSK_LISTEN_PORT: 50300
-                SLSKD_SLSK_USERNAME: ${SLSKD_USERNAME}
-                SLSKD_SLSK_PASSWORD: ${SLSKD_PASSWORD}
-                SLSKD_SHARED_DIR: "/medias/downloads/shared"
-                SLSKD_DOWNLOADS_DIR: "/medias/downloads/complete/-lidarr"
-                SLSKD_INCOMPLETE_DIR: "/medias/downloads/incomplete/lidarr"
-                SLSKD_UMASK: 002
+              enableActiveStreams: true
+              username: "${DISPATCHARR_USERNAME}"
+              password: "${DISPATCHARR_PASSWORD}"

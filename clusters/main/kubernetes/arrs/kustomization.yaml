@@ -14,3 +14,4 @@ resources:
   - sonarr/ks.yaml
   - radarr/ks.yaml
   - whisparr/ks.yaml
+  - dispatcharr/ks.yaml

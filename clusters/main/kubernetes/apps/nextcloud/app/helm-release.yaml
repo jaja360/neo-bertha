@@ -118,11 +118,9 @@ spec:
             group: Misc
             name: "Nextcloud"
             widget:
-              enabled: false
-              key: ${NEXTCLOUD_NC_TOKEN}
-              username: ${NEXTCLOUD_ADMIN_USER}
-              password: ${NEXTCLOUD_ADMIN_PASSWD}
-
+              enabled: true
+              custom:
+                key: ${NEXTCLOUD_NC_TOKEN}
     nextcloud:
       credentials:
         initialAdminUser: ${NEXTCLOUD_ADMIN_USER}

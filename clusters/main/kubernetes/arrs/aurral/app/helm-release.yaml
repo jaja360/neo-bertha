@@ -7,8 +7,8 @@ spec:
   interval: 15m
   chart:
     spec:
-      chart: app-template
-      version: 18.23.3
+      chart: aurral
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,10 +26,6 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: ghcr.io/lklynet/aurral
-      pullPolicy: IfNotPresent
-      tag: 2.9.0
     credentials:
       backblaze:
         name: backblaze
@@ -40,13 +36,7 @@ spec:
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
     persistence:
-      varcache:
-        enabled: true
-        type: emptyDir
-        mountPath: /var/cache
       config:
-        enabled: true
-        mountPath: /config
         annotations:
           volsync.backube/use-copy-trigger: "true"
         volsync:
@@ -55,7 +45,7 @@ spec:
             credentials: backblaze
             cleanupCachePVC: true
             dest:
-              enabled: ${RESTORE_PVCS}
+              enabled: true
             src:
               enabled: true
               trigger:
@@ -69,10 +59,6 @@ spec:
     service:
       main:
         type: LoadBalancer
-        ports:
-          main:
-            enable: true
-            port: 3001
     ingress:
       main:
         enabled: true

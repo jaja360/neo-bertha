@@ -28,6 +28,12 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql"],
       "allowedVersions": "<17"
+    },
+    {
+      "description": "aio-talk only publishes date-stamped tags (YYYYMMDD_HHMMSS) since March 2025, so the default docker versioning cannot order them and updates are silently skipped. Mapping the date to 'major' also means every new build is a major update, so it is proposed for review rather than automerged.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["nextcloud/aio-talk"],
+      "versioning": "regex:^(?<major>\\d{8})_(?<minor>\\d{6})$"
     }
   ]
 }

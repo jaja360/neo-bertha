@@ -115,7 +115,7 @@ spec:
             widget:
               enabled: true
               custom:
-                enableLeechProgress: true
+                enableLeechProgress: "true"
                 username: ${QBIT_USERNAME}
                 password: ${QBIT_PASSWORD}
       api:

@@ -110,7 +110,7 @@ spec:
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
-            group: Apps
+            group: Misc
             name: "RomM"
             description: "ROM library manager and player"
             icon: "https://raw.githubusercontent.com/rommapp/romm/master/.github/resources/isotipo.png"

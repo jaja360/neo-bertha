@@ -94,6 +94,7 @@ spec:
             name: "dispatcharr"
             widget:
               enabled: true
-              enableActiveStreams: true
-              username: "${DISPATCHARR_USERNAME}"
-              password: "${DISPATCHARR_PASSWORD}"
+              custom:
+                enableActiveStreams: true
+                username: "${DISPATCHARR_USERNAME}"
+                password: "${DISPATCHARR_PASSWORD}"

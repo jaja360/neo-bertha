@@ -95,7 +95,6 @@ spec:
             name: "slskd"
             widget:
               enabled: true
-              key: ${SLSKD_API_KEY}
     workload:
       main:
         podSpec:

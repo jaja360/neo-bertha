@@ -84,7 +84,7 @@ spec:
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
-            group: Apps
+            group: Misc
             name: "Poznote"
             description: "Self-hosted notes and knowledge base"
             icon: "https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg"

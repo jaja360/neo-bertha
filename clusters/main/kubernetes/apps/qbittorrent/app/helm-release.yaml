@@ -114,9 +114,10 @@ spec:
             name: "qbittorrent"
             widget:
               enabled: true
-              enableLeechProgress: true
-              username: ${QBIT_USERNAME}
-              password: ${QBIT_PASSWORD}
+              custom:
+                enableLeechProgress: true
+                username: ${QBIT_USERNAME}
+                password: ${QBIT_PASSWORD}
       api:
         enabled: true
         primary: false

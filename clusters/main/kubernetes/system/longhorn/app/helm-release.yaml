@@ -44,7 +44,6 @@ spec:
     service:
       ui:
         type: LoadBalancer
-        loadBalancerIP: ${LONGHORN_UI_IP}
     ingress:
       enabled: true
       host: longhorn.${DOMAIN_0}

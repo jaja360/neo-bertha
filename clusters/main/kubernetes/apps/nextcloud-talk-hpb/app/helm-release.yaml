@@ -1,22 +1,3 @@
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
-#
-# Nextcloud Talk High Performance Backend (HPB).
-#
-# One container, four daemons: the standalone signaling server, Janus (media
-# gateway), eturnal (TURN) and NATS (internal broker). Authored for AIO but
-# usable standalone - it only needs the env below.
-#
-# Prerequisites before enabling this app (see the notes at the bottom):
-#   1. talk-hpb.${DOMAIN_0} must resolve to your ingress, with a valid cert.
-#   2. TALK_PORT (3478) tcp+udp must be reachable by the clients you want to
-#      support. On the LAN the LoadBalancer IP is enough; for participants
-#      outside your network you must port-forward it.
-#   3. Add the three secrets to clusterenv.yaml and run `clustertool cluster genconfig`:
-#        TALK_HPB_SIGNALING_SECRET: "<openssl rand -hex 32>"
-#        TALK_HPB_TURN_SECRET:      "<openssl rand -hex 32>"
-#        TALK_HPB_INTERNAL_SECRET:  "<openssl rand -hex 32>"
-#
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -55,20 +36,14 @@ spec:
           containers:
             main:
               env:
-                # The signaling server authenticates against this URL, so it must be
-                # the Nextcloud hostname (it uses https://${NC_DOMAIN} internally).
                 NC_DOMAIN: "nextcloud.${DOMAIN_0}"
-                # Used to resolve the public address TURN advertises to clients.
                 TALK_HOST: "talk-hpb.${DOMAIN_0}"
                 TALK_PORT: "3478"
-                # Janus (the media gateway inside this container) is configured as a
-                # TURN client. Its default target is NC_DOMAIN:3478 - which is your
-                # Nextcloud host, where nothing listens on 3478. Point it at the TURN
-                # service instead, so Janus can gather relay candidates.
                 TURN_DOMAIN: "${NEXTCLOUD_TALK_HPB_IP}"
                 TURN_SECRET: ${TALK_HPB_TURN_SECRET}
                 SIGNALING_SECRET: ${TALK_HPB_SIGNALING_SECRET}
                 INTERNAL_SECRET: ${TALK_HPB_INTERNAL_SECRET}
+
                 # Tune these if calls look blurry: bytes/s, per stream and per screen share.
                 # TALK_MAX_STREAM_BITRATE: "1048576"
                 # TALK_MAX_SCREEN_BITRATE: "2097152"
@@ -93,7 +68,6 @@ spec:
                   path: /api/v1/welcome
                   port: 8081
     service:
-      # Signaling (http/websocket). The ingress terminates TLS in front of this.
       main:
         enabled: true
         type: ClusterIP
@@ -103,18 +77,10 @@ spec:
             port: 8081
             protocol: http
             targetPort: 8081
-      # TURN/STUN for media relay. Two entries because one port entry carries a
-      # single protocol, and clients may fall back from udp to tcp.
-      #
-      # A fixed IP keeps the relay endpoint stable. Add to clusterenv.yaml and
-      # run `clustertool cluster genconfig`:
-      #   NEXTCLOUD_TALK_HPB_IP: "<a free address from METALLB_RANGE>"
       turn:
         enabled: true
         type: LoadBalancer
         loadBalancerIP: ${NEXTCLOUD_TALK_HPB_IP}
-        # The chart drops loadBalancerIP unless the metallb integration renders it
-        # as the metallb.io/loadBalancerIPs annotation (same pattern as plex/qbittorrent).
         integrations:
           metallb:
             enabled: true
@@ -143,17 +109,12 @@ spec:
               - path: /
                 pathType: Prefix
         integrations:
-          # No authelia here on purpose: Talk clients and browsers cannot
-          # complete an interactive SSO flow. The signaling server authenticates
-          # them against Nextcloud with SIGNALING_SECRET instead.
           nginx:
             enabled: true
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
     persistence:
-      # The container writes its generated config here, and /var/lib/turn holds
-      # the TURN state. Both must be writable while the root filesystem is not.
       conf:
         enabled: true
         type: emptyDir
@@ -162,27 +123,3 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /var/lib/turn
-#
-# After the pod is up, point Nextcloud at it. Run these inside the nextcloud pod
-# (the secret values must match TALK_HPB_* above):
-#
-#   occ config:app:set spreed signaling_servers \
-#     --value '{"servers":[{"server":"wss://talk-hpb.${DOMAIN_0}","secret":"<TALK_HPB_SIGNALING_SECRET>"}]}'
-#
-# That single setting is the whole point of this app: it lifts Talk's 2-3
-# participant limit. It works fine through the Cloudflare proxy, because the
-# signaling server pings clients every 54s, below Cloudflare's 100s websocket
-# idle timeout.
-#
-# stun_servers / turn_servers are deliberately NOT set:
-#   - Cloudflare only proxies HTTP(S) on 443 (and a handful of alternate ports),
-#     never 3478 and never UDP - so a proxied talk-hpb cannot serve TURN/STUN.
-#   - The TURN relay address this container advertises is its own pod IP, which
-#     no external client can reach anyway.
-# Talk falls back to its built-in public STUN servers, which is sufficient for
-# the peer-to-peer paths. If you ever need real relay support, set this record to
-# DNS-only (grey cloud) and point turn_servers at a TURN server that has a public
-# IP - the signaling and TURN settings are configured independently.
-#
-# Then verify from the admin overview (the warning disappears) or:
-#   occ talk:signaling:list

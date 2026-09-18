@@ -26,10 +26,6 @@ spec:
     remediation:
       retries: 3
   values:
-    imagemaidImage:
-      repository: kometateam/imagemaid
-      tag: v1.2.0@sha256:94cf9ed79a264238c64cdcbf241822fc3569225cc103de542a6390bfaf393034
-      pullPolicy: IfNotPresent
     credentials:
       backblaze:
         name: backblaze
@@ -64,17 +60,14 @@ spec:
       metadata:
         enabled: true
         type: pvc
-        targetSelectAll: true
         mountPath: "/config/Library/Application Support/Plex Media Server/Metadata"
       media:
         enabled: true
         type: pvc
-        targetSelectAll: true
         mountPath: "/config/Library/Application Support/Plex Media Server/Media"
       cache:
         enabled: true
         type: pvc
-        targetSelectAll: true
         mountPath: "/config/Library/Application Support/Plex Media Server/Cache"
     service:
       main:
@@ -123,32 +116,3 @@ spec:
                 requests:
                   cpu: 4000m
                   memory: 1Gi
-      imagemaid:
-        enabled: true
-        primary: false
-        type: Deployment
-        podSpec:
-          containers:
-            main:
-              enabled: true
-              primary: true
-              imageSelector: imagemaidImage
-              env:
-                PLEX_PATH: "/config/Library/Application Support/Plex Media Server"
-                PLEX_URL: http://plex.plex.svc.cluster.local:32400
-                PLEX_TOKEN: ${PLEX_TOKEN}
-                MODE: remove
-                SCHEDULE: 08:00|monthly(1)
-                PHOTO_TRANSCODER: True
-                EMPTY_TRASH: True
-                CLEAN_BUNDLES: True
-                OPTIMIZE_DB: True
-                LOCAL_DB: False
-                TRACE: False
-              probes:
-                liveness:
-                  enabled: false
-                readiness:
-                  enabled: false
-                startup:
-                  enabled: false

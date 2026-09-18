@@ -86,7 +86,8 @@ spec:
             version: 0.1.0
     service:
       type: LoadBalancer
-      loadBalancerIP: ${HEADLAMP_IP}
+      annotations:
+        metallb.io/loadBalancerIPs: ${HEADLAMP_IP}
     ingress:
       enabled: true
       hosts:

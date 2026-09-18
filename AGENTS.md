@@ -25,7 +25,7 @@ There is no Makefile; use CLI tools directly.
 ## Secrets & Config Generation Workflow
 `clusters/main/clusterenv.yaml` is the single source of truth for all cluster settings, secrets, and `${VAR}` substitution values. **The user edits it exclusively — the AI must never read, decrypt, or modify it**, nor the generated secret files (`clustersettings.secret.yaml`, `deploykey.secret.yaml`, `talsecret.yaml`).
 
-- User workflow: edit `clusterenv.yaml`, then run `clustertool cluster genconfig`, which SOPS-encrypts it and regenerates the derived files — notably `clusters/main/kubernetes/flux-system/flux/clustersettings.secret.yaml` (the `cluster-config` ConfigMap Flux uses for `postBuild.substituteFrom`), plus `deploykey.secret.yaml` and `talsecret.yaml`.
+- User workflow: edit `clusterenv.yaml`, then run `clustertool genconfig`, which SOPS-encrypts it and regenerates the derived files — notably `clusters/main/kubernetes/flux-system/flux/clustersettings.secret.yaml` (the `cluster-config` ConfigMap Flux uses for `postBuild.substituteFrom`), plus `deploykey.secret.yaml` and `talsecret.yaml`.
 - When a change requires new or updated secret/setting values, the AI tells the user exactly which keys to add or change in `clusterenv.yaml`; the user applies them and runs `genconfig`. The AI never touches those files itself (no `sops -d`, no `sops --set`, no edits).
 - The AI may freely edit non-secret manifests. App manifests reference these values with unquoted `${VAR}` placeholders (e.g. `enabled: ${RESTORE_PVCS}`). Booleans are stored as strings in clusterenv (`RESTORE_PVCS: "false"`) and render as proper YAML booleans after Flux substitution.
 

@@ -45,7 +45,7 @@ spec:
             credentials: backblaze
             cleanupCachePVC: true
             dest:
-              enabled: true
+              enabled: ${RESTORE_PVCS}
             src:
               enabled: true
               trigger:

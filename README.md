@@ -39,8 +39,8 @@ notes.md      # bootstrap & operational notes
 2. Initialize and generate cluster config:
 
 ```bash
-clustertool cluster init
-clustertool cluster genconfig
+clustertool init
+clustertool genconfig
 ```
 
 3. Bootstrap Talos and Flux:

@@ -51,6 +51,7 @@ spec:
         backups:
           enabled: true
           credentials: backblaze
+          retentionPolicy: 7d
         recovery:
           enabled: true
           credentials: backblaze

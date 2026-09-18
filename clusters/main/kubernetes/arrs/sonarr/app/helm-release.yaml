@@ -88,3 +88,10 @@ spec:
     metrics:
       main:
         enabled: false
+    resources:
+      requests:
+        cpu: 75m
+        memory: 512Mi
+      limits:
+        cpu: 1500m
+        memory: 6Gi

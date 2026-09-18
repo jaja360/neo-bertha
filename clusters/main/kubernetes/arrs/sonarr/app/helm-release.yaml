@@ -90,8 +90,8 @@ spec:
         enabled: false
     resources:
       requests:
-        cpu: 75m
-        memory: 512Mi
+        cpu: 200m
+        memory: 1Gi
       limits:
-        cpu: 1500m
+        cpu: 2000m
         memory: 6Gi

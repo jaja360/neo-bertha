@@ -2,3 +2,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: nextcloud-talk-hpb
+  labels:
+    # The Talk HPB runs on the host network so Janus can advertise the node's LAN
+    # address as its ICE candidate (it has no STUN server, so it cannot discover a
+    # public one). Pod Security "baseline" forbids host namespaces and host ports,
+    # hence the same escape hatch qbittorrent and dispatcharr use.
+    pod-security.kubernetes.io/enforce: privileged

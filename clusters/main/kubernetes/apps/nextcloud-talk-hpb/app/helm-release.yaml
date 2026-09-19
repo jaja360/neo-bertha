@@ -36,6 +36,81 @@ spec:
           hostNetwork: true
           containers:
             main:
+              # /start.sh regenerates /conf/janus.jcfg on every start: it strips the
+              # sample's nat block and writes a TURN-only one, so Janus never learns
+              # the public address and can only offer its LAN IP as an ICE candidate.
+              # Remote participants therefore have nothing routable to connect to.
+              # Overriding args (the image CMD) is the only hook that runs *after*
+              # generation, so we add a STUN server there, letting Janus discover its
+              # public mapping itself. No router changes needed.
+              # If a remote call still fails, the fallback is a bounded media port
+              # range (rtp_port_range) plus nat_1_1_mapping and a router forward.
+              args:
+                - /bin/bash
+                - -c
+                - |
+                  set -u
+                  CFG=/conf/janus.jcfg
+                  MEDIA_RANGE=20000-20300
+                  STUN_HOST=stun.l.google.com
+                  STUN_PORT=19302
+
+                  # Resolve STUN to an IPv4 literal: this node has no IPv6 route, and a hostname
+                  # could make Janus pick an AAAA it can never reach.
+                  STUN_IP=""
+                  for r in 1.1.1.1 8.8.8.8 on; do
+                      if [ "$$r" = on ]; then
+                          STUN_IP=$$(dig +short A "$$STUN_HOST" 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$$' | head -1)
+                      else
+                          STUN_IP=$$(dig +short A "$$STUN_HOST" "@$$r" 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$$' | head -1)
+                      fi
+                      [ -n "$$STUN_IP" ] && break
+                  done
+
+                  # Public IP, used for the 1:1 mapping. HTTP only: the DNS based "whoami"
+                  # services return rewritten answers on this network.
+                  PUBLIC_IP=""
+                  for u in https://api.ipify.org https://ifconfig.me/ip https://icanhazip.com; do
+                      ip=$$(wget -q -T 8 -O - "$$u" 2>/dev/null | tr -d ' \r\n')
+                      case "$$ip" in ''|*[!0-9.]*) continue;; esac
+                      PUBLIC_IP="$$ip"; break
+                  done
+                  PUBLIC_OK=yes
+                  case "$$PUBLIC_IP" in
+                      '') PUBLIC_OK=no;;
+                      10.*|127.*|192.168.*|169.254.*|172.1[6-9].*|172.2[0-9].*|172.3[01].*|100.6[4-9].*|100.[7-9][0-9].*)
+                          PUBLIC_OK=no; echo "WARN: detected $$PUBLIC_IP which is private/CGNAT; not adding nat_1_1_mapping";;
+                  esac
+
+                  # nat block: STUN plus a 1:1 mapping. keep_private_host keeps the LAN address
+                  # as a candidate as well, so LAN clients still connect directly (no hairpin).
+                  if [ -n "$$STUN_IP" ]; then
+                      if grep -q '^[[:space:]]*stun_server' "$$CFG"; then
+                          sed -i "s|^[[:space:]]*stun_server = .*|\tstun_server = \"$$STUN_IP\"|" "$$CFG"
+                      else
+                          sed -i "s|^nat: {|nat: {\n\tstun_server = \"$$STUN_IP\"\n\tstun_port = $$STUN_PORT|" "$$CFG"
+                      fi
+                      sed -i "s|^[[:space:]]*stun_port = .*|\tstun_port = $$STUN_PORT|" "$$CFG"
+                  fi
+                  if [ "$$PUBLIC_OK" = yes ]; then
+                      if grep -q '^[[:space:]]*nat_1_1_mapping' "$$CFG"; then
+                          sed -i "s|^[[:space:]]*nat_1_1_mapping = .*|\tnat_1_1_mapping = \"$$PUBLIC_IP\"|" "$$CFG"
+                      else
+                          sed -i "s|^nat: {|nat: {\n\tnat_1_1_mapping = \"$$PUBLIC_IP\"|" "$$CFG"
+                      fi
+                      grep -q 'keep_private_host' "$$CFG" || sed -i "s|^nat: {|nat: {\n\tkeep_private_host = true|" "$$CFG"
+                  fi
+
+                  # media block: confine RTP/ICE ports to the range forwarded on the router, so
+                  # the mapped candidates always point at a port that actually reaches this host.
+                  if grep -q 'rtp_port_range' "$$CFG"; then
+                      sed -i "s|^[[:space:]]*#*rtp_port_range = .*|\trtp_port_range = \"$$MEDIA_RANGE\"|" "$$CFG"
+                  else
+                      sed -i "s|^media: {|media: {\n\trtp_port_range = \"$$MEDIA_RANGE\"|" "$$CFG"
+                  fi
+
+                  echo "janus nat: stun=$${STUN_IP:-none}:$$STUN_PORT mapping=$${PUBLIC_IP:-none} rtp_ports=$$MEDIA_RANGE"
+                  exec dinit --system --container nats-server eturnal janus signaling
               env:
                 NC_DOMAIN: "nextcloud.${DOMAIN_0}"
                 TALK_HOST: "talk-hpb.${DOMAIN_0}"

@@ -98,3 +98,17 @@ spec:
                 enableActiveStreams: "true"
                 username: "${DISPATCHARR_USERNAME}"
                 password: "${DISPATCHARR_PASSWORD}"
+    resources:
+      requests:
+        cpu: 200m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 6Gi
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                UWSGI_RELOAD_ON_RSS: "1024"

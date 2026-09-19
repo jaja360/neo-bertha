@@ -62,6 +62,9 @@ spec:
     ingress:
       main:
         enabled: true
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
         hosts:
           - host: "radarr.${DOMAIN_0}"
             paths:

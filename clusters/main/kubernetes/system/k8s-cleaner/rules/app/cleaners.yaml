@@ -1,4 +1,3 @@
----
 # k8s-cleaner runs each resourceSelector's Lua in an isolated interpreter, so the
 # ageSeconds() helper has to be repeated per selector. Keep the copies in sync.
 apiVersion: apps.projectsveltos.io/v1alpha1

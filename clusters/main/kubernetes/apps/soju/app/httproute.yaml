@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://www.schemastore.org/any.json
 # Uploads + WebSocket (8443): Envoy terminates TLS, soju speaks plain HTTP.
 apiVersion: gateway.networking.k8s.io/v1

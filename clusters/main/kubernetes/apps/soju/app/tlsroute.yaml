@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://www.schemastore.org/any.json
 # Raw IRC (6697): Envoy terminates TLS, soju speaks plain IRC on the backend.
 apiVersion: gateway.networking.k8s.io/v1

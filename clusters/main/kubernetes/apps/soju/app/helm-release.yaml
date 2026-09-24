@@ -38,7 +38,7 @@ spec:
     image:
       repository: codeberg.org/emersion/soju
       pullPolicy: IfNotPresent
-      tag: v0.10.1
+      tag: v0.11.1
     cnpg:
       main:
         enabled: true

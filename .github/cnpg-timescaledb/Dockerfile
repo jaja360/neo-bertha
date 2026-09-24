@@ -1,7 +1,7 @@
 # CNPG-compatible PostgreSQL 16 image with TimescaleDB 2.x and Toolkit.
 # Based on the official CloudNativePG operand image (keeps postgres UID/GID 26,
 # PGDATA conventions and the instance-manager contract intact).
-FROM ghcr.io/cloudnative-pg/postgresql:16.15@sha256:34cd4159d07b3410a1b29da35072e2e927a0905e717a61afa3814624a2e8859a
+FROM ghcr.io/cloudnative-pg/postgresql:16.15-standard-bookworm@sha256:54cda06a34218f44901243a8a5274c2da5dc9f25fc7a80163c6a57a34dbb31b0
 
 USER root
 
@@ -17,7 +17,7 @@ RUN set -eux; \
       > /etc/apt/sources.list.d/timescaledb.list; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-      timescaledb-2-postgresql-16=2.26.4* \
+      timescaledb-2-postgresql-16=2.30.1* \
       timescaledb-2-loader-postgresql-16 \
       timescaledb-toolkit-postgresql-16=1:1.26.0*; \
     apt-get autoremove -y; \

@@ -3,6 +3,12 @@ name: build-cnpg-timescaledb
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
+    paths:
+      - ".github/cnpg-timescaledb/**"
+      - ".github/workflows/build-cnpg-timescaledb.yaml"
+  pull_request:
     paths:
       - ".github/cnpg-timescaledb/**"
       - ".github/workflows/build-cnpg-timescaledb.yaml"
@@ -13,6 +19,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -34,6 +41,7 @@ jobs:
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
 
       - name: Login to GHCR
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
         with:
           registry: ghcr.io
@@ -44,33 +52,79 @@ jobs:
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: .github/cnpg-timescaledb
-          push: true
+          # PR runs only validate the build.
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${{ steps.tag.outputs.tag }}
 
-      # Only on main, AFTER the image has been pushed: point the HelmRelease at
-      # the new tag so Flux/CNPG can never try to pull an image that does not
-      # exist yet.
-      - name: Roll HelmRelease to freshly built image
+      - name: Open PR rolling the HelmRelease to the freshly built image
         if: github.ref == 'refs/heads/main'
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.tag.outputs.tag }}
+          TSVER: ${{ steps.tag.outputs.tsver }}
         run: |
+          set -euo pipefail
           file="clusters/main/kubernetes/metrics/tracearr/app/helm-release.yaml"
+          branch="automation/cnpg-timescaledb-roll"
           new="ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${TAG}"
           old="$(sed -nE 's|^(\s+)imageName:\s*ghcr.io/.*/cnpg-postgresql-timescale:(.*)$|\2|p' "$file" | head -1 | tr -d '[:space:]')"
-          if [ -n "$old" ] && [ "$old" != "${TAG}" ]; then
-            sed -i "s|ghcr.io/.*/cnpg-postgresql-timescale:.*|${new}|" "$file"
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "$file"
-            git commit -m "chore(tracearr): roll cnpg timescaledb image to ${TAG}"
-            for i in 1 2 3; do
-              git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && exit 0
-              sleep 5
-            done
-            echo "::error::Failed to push imageName update after 3 attempts"
+          if [ -z "$old" ]; then
+            echo "::error::Could not find imageName in ${file}"
             exit 1
+          fi
+          if [ "$old" = "${TAG}" ]; then
+            echo "imageName already at ${TAG} - nothing to do"
+            exit 0
+          fi
+          echo "rolling imageName ${old} -> ${TAG}"
+
+          old_ts="${old##*ts}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags origin main
+          git checkout -B "$branch" FETCH_HEAD
+          sed -i "s|ghcr.io/.*/cnpg-postgresql-timescale:.*|${new}|" "$file"
+          git add "$file"
+          git commit -m "chore(tracearr): roll cnpg timescaledb image ${old} -> ${TAG}"
+
+          pushed=""
+          for attempt in 1 2 3; do
+            # This branch is only ever written by this workflow, so overwriting it
+            # is safe and keeps re-runs idempotent.
+            if git push --force origin "HEAD:${branch}"; then
+              pushed="yes"
+              break
+            fi
+            sleep 5
+          done
+          if [ -z "$pushed" ]; then
+            echo "::error::Failed to push ${branch} after ${attempt} attempts"
+            exit 1
+          fi
+
+          body="$(mktemp)"
+          {
+            echo "Image \`${new}\` was built and pushed by [run ${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
+            echo
+            echo "This moves the CNPG cluster's \`imageName\` from \`${old}\` to \`${TAG}\`."
+            if [ "${old_ts}" != "${TSVER}" ]; then
+              echo
+              echo "**:warning: The TimescaleDB extension also moves from ${old_ts} to ${TSVER}.** Take a CNPG backup/snapshot, and once the pods run the new image execute:"
+              echo
+              echo '```sql'
+              echo 'ALTER EXTENSION timescaledb UPDATE;'
+              echo '```'
+            fi
+            echo
+            echo "_Opened by CI with \`GITHUB_TOKEN\`: \`pull_request\` workflows (including the required \`Placeholder PR Tests\` check) do not run on it, so merge it with the admin bypass._"
+          } > "$body"
+
+          open_pr="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$open_pr" ]; then
+            echo "open PR #${open_pr} already tracks ${branch} - branch updated"
           else
-            echo "imageName already at ${TAG} (or not found) - nothing to commit"
+            gh pr create --base main --head "$branch" \
+              --title "chore(tracearr): roll cnpg timescaledb image to ${TAG}" \
+              --body-file "$body"
           fi

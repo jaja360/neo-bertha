@@ -22,3 +22,4 @@ resources:
   - vaultwarden/ks.yaml
   - slskd/ks.yaml
   - nextcloud-talk-hpb/ks.yaml
+  - soju/ks.yaml

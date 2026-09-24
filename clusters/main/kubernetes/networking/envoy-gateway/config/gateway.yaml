@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: envoy-internal
+  namespace: envoy-gateway
+spec:
+  gatewayClassName: envoy-internal
+  listeners:
+    - name: irc
+      protocol: TLS
+      port: 6697
+      hostname: "*.${DOMAIN_0}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: certificate-issuer-domain-0-wildcard
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: certificate-issuer-domain-0-wildcard

@@ -1,0 +1,147 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: soju
+  namespace: soju
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.23.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    image:
+      repository: codeberg.org/emersion/soju
+      pullPolicy: IfNotPresent
+      tag: v0.10.1
+    cnpg:
+      main:
+        enabled: true
+        user: soju
+        database: soju
+        password: ${CNPG_PASSWD}
+        hibernate: false
+        mode: standalone
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          credentials: backblaze
+          retentionPolicy: 7d
+    configmap:
+      config:
+        enabled: true
+        data:
+          config: |
+            listen irc+insecure://0.0.0.0:6697
+            listen http+insecure://0.0.0.0:8080
+
+            hostname irc.${DOMAIN_0}
+            http-ingress https://irc.${DOMAIN_0}:8443
+            title "IRC"
+
+            db postgres "host=soju-app-template-cnpg-main-rw dbname=soju sslmode=require"
+            message-store db
+
+            file-upload fs /uploads
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          main:
+            enabled: true
+            port: 6697
+            protocol: tcp
+            targetPort: 6697
+      http:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          http:
+            enabled: true
+            port: 8080
+            protocol: http
+            targetPort: 8080
+    persistence:
+      config:
+        enabled: true
+        type: configmap
+        objectName: config
+        defaultMode: "0644"
+        mountPath: /etc/soju/config
+        subPath: config
+      uploads:
+        enabled: true
+        type: pvc
+        size: 50Gi
+        mountPath: /uploads
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
+        volsync:
+          - name: uploads
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: ${RESTORE_PVCS}
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 9 * * *
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              args:
+                - -config
+                - /etc/soju/config
+              env:
+                PGUSER:
+                  secretKeyRef:
+                    name: cnpg-main-user
+                    key: username
+                PGPASSWORD:
+                  secretKeyRef:
+                    name: cnpg-main-user
+                    key: password
+              probes:
+                liveness:
+                  enabled: true
+                  type: tcp
+                  port: 6697
+                readiness:
+                  enabled: true
+                  type: tcp
+                  port: 6697
+                startup:
+                  enabled: true
+                  type: tcp
+                  port: 6697

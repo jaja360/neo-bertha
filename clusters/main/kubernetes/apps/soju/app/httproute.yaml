@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+# Uploads + WebSocket (8443): Envoy terminates TLS, soju speaks plain HTTP.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: soju
+  namespace: soju
+spec:
+  parentRefs:
+    - name: envoy-internal
+      namespace: envoy-gateway
+      sectionName: https
+  hostnames:
+    - "irc.${DOMAIN_0}"
+  rules:
+    - backendRefs:
+        - name: soju-app-template-http
+          port: 8080

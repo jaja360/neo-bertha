@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: envoy-internal
+  namespace: envoy-gateway
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.io/loadBalancerIPs: ${ENVOY_IP}

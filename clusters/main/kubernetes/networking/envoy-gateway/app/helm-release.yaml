@@ -1,0 +1,37 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy-gateway
+  namespace: envoy-gateway
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: gateway-helm
+      version: 1.9.1
+      sourceRef:
+        kind: HelmRepository
+        name: envoy-gateway
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    crds:
+      enabled: true
+    config:
+      envoyGateway:
+        provider:
+          type: Kubernetes
+          kubernetes:
+            deploy:
+              type: GatewayNamespace

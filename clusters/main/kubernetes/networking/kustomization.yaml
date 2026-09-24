@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - cloudflareddns/ks.yaml
   - nginx-external/ks.yaml
+  - envoy-gateway/ks.yaml

@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+# Raw IRC (6697): Envoy terminates TLS, soju speaks plain IRC on the backend.
+apiVersion: gateway.networking.k8s.io/v1
+kind: TLSRoute
+metadata:
+  name: soju
+  namespace: soju
+spec:
+  parentRefs:
+    - name: envoy-internal
+      namespace: envoy-gateway
+      sectionName: irc
+  hostnames:
+    - "irc.${DOMAIN_0}"
+  rules:
+    - backendRefs:
+        - name: soju-app-template
+          port: 6697

@@ -1,0 +1,103 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ergo
+  namespace: ergo
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.23.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    image:
+      repository: ghcr.io/ergochat/ergo
+      pullPolicy: IfNotPresent
+      tag: v2.19.1
+    service:
+      main:
+        enabled: true
+        type: ClusterIP
+        ports:
+          main:
+            enabled: true
+            port: 6667
+            protocol: tcp
+            targetPort: 6667
+    persistence:
+      data:
+        enabled: true
+        type: pvc
+        mountPath: /ircd
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
+        volsync:
+          - name: data
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: ${RESTORE_PVCS}
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 9 * * *
+      config:
+        enabled: true
+        type: configmap
+        objectName: ergo-config
+        expandObjectName: false
+        defaultMode: "0644"
+        mountPath: /ircd/ircd.yaml
+        subPath: ircd.yaml
+      motd:
+        enabled: true
+        type: configmap
+        objectName: ergo-config
+        expandObjectName: false
+        defaultMode: "0644"
+        mountPath: /ircd/ergo.motd
+        subPath: ergo.motd
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  enabled: true
+                  type: tcp
+                  port: 6667
+                readiness:
+                  enabled: true
+                  type: tcp
+                  port: 6667
+                startup:
+                  enabled: true
+                  type: tcp
+                  port: 6667

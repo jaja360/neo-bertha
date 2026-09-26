@@ -21,3 +21,4 @@ resources:
   - slskd/ks.yaml
   - nextcloud-talk-hpb/ks.yaml
   - soju/ks.yaml
+  - ergo/ks.yaml

@@ -1,7 +1,7 @@
 # CNPG-compatible PostgreSQL 16 image with TimescaleDB 2.x and Toolkit.
 # Based on the official CloudNativePG operand image (keeps postgres UID/GID 26,
 # PGDATA conventions and the instance-manager contract intact).
-FROM ghcr.io/cloudnative-pg/postgresql:16.15-standard-bookworm@sha256:54cda06a34218f44901243a8a5274c2da5dc9f25fc7a80163c6a57a34dbb31b0
+FROM ghcr.io/cloudnative-pg/postgresql:16.15-standard-bookworm@sha256:dd78d1b1a8cedb259d27a9718b92855c37c60bbcf16eca827d434d6d3a90ab45
 
 USER root
 

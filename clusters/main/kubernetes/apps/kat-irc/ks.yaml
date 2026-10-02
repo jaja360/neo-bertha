@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  # Activate after building the image and supplying the selected OpenAI credentials.
+  # Activate after the independent kat-irc image has been published.
   suspend: true
   # IRC reconnects independently of the server's Flux resource name.
   path: clusters/main/kubernetes/apps/kat-irc/app

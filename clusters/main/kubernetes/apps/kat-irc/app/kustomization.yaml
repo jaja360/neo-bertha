@@ -4,10 +4,3 @@ namespace: kat-irc
 resources:
   - namespace.yaml
   - helm-release.yaml
-  - secret.yaml
-configMapGenerator:
-  - name: kat-irc-config
-    files:
-      - config.json
-configurations:
-  - name-reference.yaml

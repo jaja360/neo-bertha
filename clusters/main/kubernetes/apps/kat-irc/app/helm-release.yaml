@@ -1,0 +1,134 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kat-irc
+  namespace: kat-irc
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 18.23.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    credentials:
+      backblaze:
+        name: backblaze
+        type: s3
+        accessKey: "${BACKBLAZE_ID}"
+        bucket: "${BACKBLAZE_BUCKET}"
+        encrKey: "${BACKBLAZE_ENCR_KEY}"
+        secretKey: "${BACKBLAZE_KEY}"
+        url: "${BACKBLAZE_URL}"
+    image:
+      repository: ghcr.io/jaja360/kat-irc
+      pullPolicy: IfNotPresent
+      tag: "0.1.0"
+    securityContext:
+      container:
+        runAsUser: 10001
+        runAsGroup: 10001
+        PUID: 10001
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      pod:
+        fsGroup: 10001
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
+    service:
+      main:
+        enabled: true
+        type: ClusterIP
+        ports:
+          main:
+            enabled: true
+            port: 8080
+            protocol: http
+            targetPort: 8080
+    persistence:
+      data:
+        enabled: true
+        type: pvc
+        size: 1Gi
+        mountPath: /data
+        targetSelectAll: true
+        annotations:
+          volsync.backube/use-copy-trigger: "true"
+        volsync:
+          - name: data
+            type: restic
+            credentials: backblaze
+            cleanupCachePVC: true
+            dest:
+              enabled: ${RESTORE_PVCS}
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 9 * * *
+      config:
+        enabled: true
+        type: configmap
+        objectName: kat-irc-config
+        expandObjectName: false
+        defaultMode: "0644"
+        mountPath: /config
+        readOnly: true
+    workload:
+      main:
+        type: Deployment
+        replicas: 1
+        strategy: Recreate
+        podSpec:
+          annotations:
+            # Restart the pod when Flux substitutes new IRC coordinates.
+            kat-irc/irc-endpoint: ${KAT_IRC_HOST}:${KAT_IRC_PORT}
+          automountServiceAccountToken: false
+          containers:
+            main:
+              args:
+                - serve
+                - -config
+                - /config/config.json
+              env:
+                OPENAI_API_KEY:
+                  secretKeyRef:
+                    name: kat-irc-openai
+                    expandObjectName: false
+                    key: OPENAI_API_KEY
+              probes:
+                liveness:
+                  enabled: true
+                  type: http
+                  port: 8080
+                  path: /healthz
+                readiness:
+                  enabled: true
+                  type: http
+                  port: 8080
+                  path: /readyz
+                startup:
+                  enabled: true
+                  type: http
+                  port: 8080
+                  path: /healthz

@@ -1,0 +1,9 @@
+# Carry the generated ConfigMap name/hash into TrueCharts' external volume reference.
+# Persona/config/memory changes then update the HelmRelease and restart the pod.
+nameReference:
+  - kind: ConfigMap
+    version: v1
+    fieldSpecs:
+      - kind: HelmRelease
+        group: helm.toolkit.fluxcd.io
+        path: spec/values/persistence/config/objectName

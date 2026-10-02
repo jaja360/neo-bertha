@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kat-irc
+  namespace: kat-irc
+spec:
+  values:
+    persistence:
+      oauth-seed:
+        enabled: true
+        type: secret
+        objectName: kat-irc-oauth
+        expandObjectName: false
+        defaultMode: "0440"
+        targetSelector:
+          main:
+            seed-oauth:
+              mountPath: /oauth-seed
+              readOnly: true
+    workload:
+      main:
+        podSpec:
+          initContainers:
+            seed-oauth:
+              enabled: true
+              type: init
+              imageSelector: image
+              command:
+                - /bin/sh
+                - -ec
+              args:
+                - |
+                  if [ ! -f /data/oauth.json ] || [ "$(cat /data/oauth-seed-version 2>/dev/null || true)" != "$(printenv SEED_VERSION)" ]; then
+                    umask 077
+                    cp /oauth-seed/oauth.json /data/oauth.json.tmp
+                    chmod 600 /data/oauth.json.tmp
+                    mv /data/oauth.json.tmp /data/oauth.json
+                    printf '%s' "$(printenv SEED_VERSION)" > /data/oauth-seed-version
+                  fi
+              env:
+                # Increment only when intentionally importing a new login session.
+                SEED_VERSION: "1"
+          containers:
+            main:
+              env:
+                OPENAI_API_KEY: null

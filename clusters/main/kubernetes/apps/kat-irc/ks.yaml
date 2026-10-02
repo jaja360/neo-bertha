@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kat-irc
+  namespace: flux-system
+spec:
+  interval: 10m
+  # Activate after building the image and supplying the selected OpenAI credentials.
+  suspend: true
+  # IRC reconnects independently of the server's Flux resource name.
+  path: clusters/main/kubernetes/apps/kat-irc/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster

@@ -12,7 +12,6 @@ resources:
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
   - poznote/ks.yaml
-  - pgadmin/ks.yaml
   - qbittorrent/ks.yaml
   - qbitmanage/ks.yaml
   - romm/ks.yaml

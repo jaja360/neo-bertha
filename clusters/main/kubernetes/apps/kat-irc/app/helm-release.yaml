@@ -18,10 +18,13 @@ spec:
   driftDetection:
     mode: warn
   install:
+    # The bot stays unready while the operator populates the PVC.
+    disableWait: true
     createNamespace: true
     remediation:
       retries: 3
   upgrade:
+    disableWait: true
     cleanupOnFail: true
     remediation:
       retries: 3
@@ -86,36 +89,19 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-      config:
-        enabled: true
-        type: configmap
-        objectName: kat-irc-config
-        expandObjectName: false
-        defaultMode: "0644"
-        mountPath: /config
-        readOnly: true
     workload:
       main:
         type: Deployment
         replicas: 1
         strategy: Recreate
         podSpec:
-          annotations:
-            # Restart the pod when Flux substitutes new IRC coordinates.
-            kat-irc/irc-endpoint: ${KAT_IRC_HOST}:${KAT_IRC_PORT}
           automountServiceAccountToken: false
           containers:
             main:
               args:
                 - serve
                 - -config
-                - /config/config.json
-              env:
-                OPENAI_API_KEY:
-                  secretKeyRef:
-                    name: kat-irc-openai
-                    expandObjectName: false
-                    key: OPENAI_API_KEY
+                - /data/config.json
               probes:
                 liveness:
                   enabled: true

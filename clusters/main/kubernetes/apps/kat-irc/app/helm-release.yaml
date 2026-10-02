@@ -18,17 +18,18 @@ spec:
   driftDetection:
     mode: warn
   install:
-    # The bot stays unready while the operator populates the PVC.
-    disableWait: true
     createNamespace: true
     remediation:
       retries: 3
   upgrade:
-    disableWait: true
     cleanupOnFail: true
     remediation:
       retries: 3
   values:
+    image:
+      repository: ghcr.io/jaja360/kat-irc
+      pullPolicy: IfNotPresent
+      tag: "0.1.0"
     credentials:
       backblaze:
         name: backblaze
@@ -38,31 +39,10 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    image:
-      repository: ghcr.io/jaja360/kat-irc
-      pullPolicy: IfNotPresent
-      tag: "0.1.0"
-    securityContext:
-      container:
-        runAsUser: 568
-        runAsGroup: 568
-        PUID: 568
-        runAsNonRoot: true
-        readOnlyRootFilesystem: true
-        allowPrivilegeEscalation: false
-      pod:
-        fsGroup: 568
-    resources:
-      requests:
-        cpu: 25m
-        memory: 32Mi
-      limits:
-        cpu: 500m
-        memory: 128Mi
     service:
       main:
         enabled: true
-        type: ClusterIP
+        type: LoadBalancer
         ports:
           main:
             enabled: true
@@ -89,6 +69,13 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
     workload:
       main:
         type: Deployment

@@ -29,7 +29,7 @@ spec:
     image:
       repository: ghcr.io/jaja360/kat-irc
       pullPolicy: IfNotPresent
-      tag: "0.3.0"
+      tag: 0.3.9
     credentials:
       backblaze:
         name: backblaze

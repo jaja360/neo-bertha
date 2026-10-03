@@ -412,7 +412,7 @@ data:
             registered-channels: "opt-out"
             direct-messages: "opt-out"
         retention:
-            allow-individual-delete: false
+            allow-individual-delete: true
             enable-account-indexing: false
         tagmsg-storage:
             default: false

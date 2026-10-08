@@ -1,7 +1,12 @@
 # CNPG-compatible PostgreSQL 16 image with TimescaleDB 2.x and Toolkit.
 # Based on the official CloudNativePG operand image (keeps postgres UID/GID 26,
 # PGDATA conventions and the instance-manager contract intact).
-FROM ghcr.io/cloudnative-pg/postgresql:16.15-standard-bookworm@sha256:dd78d1b1a8cedb259d27a9718b92855c37c60bbcf16eca827d434d6d3a90ab45
+#
+# NOTE: use the full `16.15` variant, NOT `:16.15-standard-bookworm`. The
+# `-standard` image omits the `barman-cloud-*` binaries that CNPG's in-tree
+# `barmanObjectStore` WAL archiving requires; using it silently breaks backups
+# and fills the WAL volume (see tracearr outage, Sep 2026).
+FROM ghcr.io/cloudnative-pg/postgresql:16.15@sha256:34cd4159d07b3410a1b29da35072e2e927a0905e717a61afa3814624a2e8859a
 
 USER root
 

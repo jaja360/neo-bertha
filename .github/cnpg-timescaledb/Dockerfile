@@ -31,4 +31,15 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
+# Guard: fail the build (and therefore the image roll) if the base image stops
+# shipping the barman-cloud binaries that CNPG's in-tree `barmanObjectStore`
+# WAL archiving needs. Keeps automated base bumps from silently re-breaking
+# backups and filling the WAL volume.
+RUN set -eux; \
+    for b in \
+      barman-cloud-wal-archive barman-cloud-wal-restore \
+      barman-cloud-backup barman-cloud-restore; do \
+      command -v "$b" >/dev/null 2>&1 || { echo "ERROR: $b not found in base image" >&2; exit 1; }; \
+    done
+
 USER 26

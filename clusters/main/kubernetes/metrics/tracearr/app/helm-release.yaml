@@ -43,8 +43,9 @@ spec:
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
-          # pin to the last timescaledb image known to bundle barman-cloud-*;
-          # 16.15-ts2.30.1 dropped them, breaking object-store WAL archiving
+          # timescaledb-enabled CNPG operand image; must bundle barman-cloud-*
+          # (see .github/cnpg-timescaledb/Dockerfile) or object-store WAL
+          # archiving silently breaks and fills the WAL volume
           imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.30.1
           storage:
             size: 100Gi

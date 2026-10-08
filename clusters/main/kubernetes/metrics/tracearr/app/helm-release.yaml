@@ -43,7 +43,13 @@ spec:
         cluster:
           instances: ${NUMBER_OF_NODES}
           singleNode: ${SINGLE_NODE}
-          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.30.1
+          # pin to the last timescaledb image known to bundle barman-cloud-*;
+          # 16.15-ts2.30.1 dropped them, breaking object-store WAL archiving
+          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.26.4
+          storage:
+            size: 100Gi
+          walStorage:
+            size: 200Gi
           preloadLibraries:
             - timescaledb
           postgresql:

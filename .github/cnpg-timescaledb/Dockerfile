@@ -2,11 +2,13 @@
 # Based on the official CloudNativePG operand image (keeps postgres UID/GID 26,
 # PGDATA conventions and the instance-manager contract intact).
 #
-# NOTE: use the full `16.15` variant, NOT `:16.15-standard-bookworm`. The
-# `-standard` image omits the `barman-cloud-*` binaries that CNPG's in-tree
-# `barmanObjectStore` WAL archiving requires; using it silently breaks backups
-# and fills the WAL volume (see tracearr outage, Sep 2026).
-FROM ghcr.io/cloudnative-pg/postgresql:16.15@sha256:34cd4159d07b3410a1b29da35072e2e927a0905e717a61afa3814624a2e8859a
+# NOTE: use the `-system` variant (Debian bookworm), which ships the
+# `barman-cloud-*` binaries required by CNPG's in-tree `barmanObjectStore` WAL
+# archiving. The `-standard-*` variants omit them, and the legacy bullseye
+# `16.15` tag no longer builds (the bullseye PGDG apt repo is gone). A
+# barman-less image silently breaks archiving and fills the WAL volume
+# (see tracearr outage, Sep 2026).
+FROM ghcr.io/cloudnative-pg/postgresql:16.15-system-bookworm@sha256:18db2679228571d798438a4cb9301bccd18acaf3c8a9f184e43f2d4aa5cdf507
 
 USER root
 

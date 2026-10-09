@@ -53,6 +53,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           context: .github/cnpg-timescaledb
@@ -67,31 +68,34 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.tag.outputs.tag }}
           TSVER: ${{ steps.tag.outputs.tsver }}
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           set -euo pipefail
-          : "${TAG:?tag output is empty}" "${TSVER:?tsver output is empty}"
+          : "${TAG:?tag output is empty}" "${TSVER:?tsver output is empty}" "${DIGEST:?build digest is empty}"
           file="clusters/main/kubernetes/metrics/tracearr/app/helm-release.yaml"
           branch="automation/cnpg-timescaledb-roll"
-          new="ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${TAG}"
-          old="$(sed -nE 's|^(\s+)imageName:\s*ghcr.io/.*/cnpg-postgresql-timescale:(.*)$|\2|p' "$file" | head -1 | tr -d '[:space:]')"
+          # Pin by digest: a re-pushed (mutable) tag can otherwise resolve to a
+          # stale cached image on the nodes and silently break WAL archiving.
+          new="ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${TAG}@${DIGEST}"
+          old="$(sed -nE 's|^(\s+)imageName:\s*(ghcr.io/.*/cnpg-postgresql-timescale:[^[:space:]]*).*$|\2|p' "$file" | head -1)"
           if [ -z "$old" ]; then
             echo "::error::Could not find imageName in ${file}"
             exit 1
           fi
-          if [ "$old" = "${TAG}" ]; then
-            echo "imageName already at ${TAG} - nothing to do"
+          if [ "$old" = "$new" ]; then
+            echo "imageName already at ${new} - nothing to do"
             exit 0
           fi
-          echo "rolling imageName ${old} -> ${TAG}"
-
-          old_ts="${old##*ts}"
+          old_tag="${old%%@*}"
+          old_ts="${old_tag##*ts}"
+          echo "rolling imageName ${old} -> ${new}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
           git checkout -B "$branch" FETCH_HEAD
-          sed -i "s|ghcr.io/.*/cnpg-postgresql-timescale:.*|${new}|" "$file"
+          sed -i "s|ghcr.io/[^[:space:]]*/cnpg-postgresql-timescale:[^[:space:]]*|${new}|" "$file"
           git add "$file"
-          git commit -m "chore(tracearr): roll cnpg timescaledb image ${old} -> ${TAG}"
+          git commit -m "chore(tracearr): roll cnpg timescaledb image ${old_tag} -> ${TAG}"
 
           pushed=""
           for attempt in 1 2 3; do
@@ -112,7 +116,7 @@ jobs:
           {
             echo "Image \`${new}\` was built and pushed by [run ${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
             echo
-            echo "This moves the CNPG cluster's \`imageName\` from \`${old}\` to \`${TAG}\`."
+            echo "This moves the CNPG cluster's \`imageName\` from \`${old}\` to \`${new}\`."
             if [ "${old_ts}" != "${TSVER}" ]; then
               echo
               echo "**:warning: The TimescaleDB extension also moves from ${old_ts} to ${TSVER}.** Take a CNPG backup/snapshot, and once the pods run the new image execute:"

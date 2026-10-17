@@ -117,6 +117,15 @@ spec:
         version: v1
         kind: Pod
         evaluate: |
+          -- RFC3339 ("2026-10-17T08:46:35Z") -> age in seconds
+          function ageSeconds(timestampStr)
+            local epoch = tonumber(string.gsub(timestampStr, '(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)Z',
+              function(y, mo, d, h, mi, s)
+                return os.time({year=tonumber(y), month=tonumber(mo), day=tonumber(d), hour=tonumber(h), min=tonumber(mi), sec=tonumber(s)})
+              end))
+            return os.difftime(os.time(), epoch)
+          end
+
           function evaluate()
             hs = {}
             hs.matching = false
@@ -135,7 +144,10 @@ spec:
                   hs.message = "container " .. c.name .. " is " .. c.state.waiting.reason
                   break
                 end
-                if c.lastState ~= nil and c.lastState.terminated ~= nil and c.lastState.terminated.reason == "OOMKilled" then
+                if c.lastState ~= nil and c.lastState.terminated ~= nil
+                  and c.lastState.terminated.reason == "OOMKilled"
+                  and c.lastState.terminated.finishedAt ~= nil
+                  and ageSeconds(c.lastState.terminated.finishedAt) < 2 * 60 * 60 then
                   hs.matching = true
                   hs.message = "container " .. c.name .. " was OOMKilled"
                   break

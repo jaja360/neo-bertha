@@ -59,6 +59,18 @@ spec:
     service:
       main:
         type: LoadBalancer
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        memory: 4Gi
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                MALLOC_ARENA_MAX: "2"
     ingress:
       main:
         enabled: true

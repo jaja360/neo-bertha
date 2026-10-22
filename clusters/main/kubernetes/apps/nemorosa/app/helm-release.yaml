@@ -84,4 +84,11 @@ spec:
                 readiness:
                   enabled: false
                 startup:
-                  enabled: false
+                  enabled: true
+                  type: tcp
+                  port: 8256
+                  spec:
+                    initialDelaySeconds: 10
+                    periodSeconds: 15
+                    failureThreshold: 40
+                    timeoutSeconds: 5

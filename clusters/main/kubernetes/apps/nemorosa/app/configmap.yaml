@@ -106,5 +106,4 @@ data:
     (config_dir / "config.yml").write_text(config.replace("target_site: []", target_sites), encoding="utf-8")
     '
 
-    nemorosa --config /app/data/nemorosa/config.yml
     exec nemorosa --server --config /app/data/nemorosa/config.yml

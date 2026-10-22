@@ -29,7 +29,7 @@ spec:
     image:
       repository: nextcloud/aio-talk
       pullPolicy: IfNotPresent
-      tag: 20260929_105435@sha256:831a08f9772d188e65aee2fb59ef3785d3567a1fe2fb65f0e6fd2c17a16ffc87
+      tag: 20261021_180331@sha256:def1e3eea4ebf707b6e518c838ea391ed32741fff1da13e2596fc157c9f98547
     workload:
       main:
         podSpec:

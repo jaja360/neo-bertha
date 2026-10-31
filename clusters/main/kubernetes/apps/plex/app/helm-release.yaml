@@ -71,14 +71,7 @@ spec:
         mountPath: "/config/Library/Application Support/Plex Media Server/Cache"
       transcode:
         size: 4Gi
-      tmp:
-        size: 256Mi
-      varlogs:
-        size: 256Mi
-      varrun:
-        size: 256Mi
-      devshm:
-        size: 256Mi
+        medium: ""  # Disk-backed
     service:
       main:
         type: LoadBalancer
@@ -122,7 +115,7 @@ spec:
               resources:
                 limits:
                   cpu: 24000m
-                  memory: 10Gi
+                  memory: 8Gi
                 requests:
                   cpu: 4000m
                   memory: 2Gi

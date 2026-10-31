@@ -4,6 +4,7 @@ sopssecret.yaml
 sopssecret*
 *sopssecret*
 mounts/
+temp/
 TODO.md
 
 opencode.json

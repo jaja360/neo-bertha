@@ -18,7 +18,6 @@ resources:
   - sabnzbd/ks.yaml
   - vaultwarden/ks.yaml
   - slskd/ks.yaml
-  - nextcloud-talk-hpb/ks.yaml
   - soju/ks.yaml
   - ergo/ks.yaml
   - kat-irc/ks.yaml

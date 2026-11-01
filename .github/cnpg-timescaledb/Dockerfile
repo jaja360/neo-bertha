@@ -8,7 +8,7 @@
 # `16.15` tag no longer builds (the bullseye PGDG apt repo is gone). A
 # barman-less image silently breaks archiving and fills the WAL volume
 # (see tracearr outage, Sep 2026).
-FROM ghcr.io/cloudnative-pg/postgresql:16.15-system-bookworm@sha256:18db2679228571d798438a4cb9301bccd18acaf3c8a9f184e43f2d4aa5cdf507
+FROM ghcr.io/cloudnative-pg/postgresql:16.15-system-bookworm@sha256:ca1ca2e092bdc01d28d558a20d9ce71360aacb501608e7efea1a63fb9ce5c9a7
 
 USER root
 

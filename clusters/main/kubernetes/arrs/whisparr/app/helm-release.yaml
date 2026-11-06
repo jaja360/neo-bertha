@@ -56,6 +56,18 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  enabled: true
+                  type: http
+                  path: /ping
+                  httpHeaders:
+                    Host: localhost
     service:
       main:
         type: LoadBalancer

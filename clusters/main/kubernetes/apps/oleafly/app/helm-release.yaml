@@ -86,6 +86,10 @@ spec:
               env:
                 OLEAFLY_PUBLIC_URL: https://oleafly.${DOMAIN_0}
                 OLEAFLY_BEHIND_PROXY: "true"
+                OLEAFLY_OPEN_SIGNUP: "true"
+                OLEAFLY_ACCOUNT_STORAGE_MB: "5120"
+                OLEAFLY_MAX_PROJECTS_PER_ACCOUNT: "200"
+                OLEAFLY_UPLOADS_PER_HOUR: "1000"
                 OLEAFLY_SMTP_URL: smtps://${EMAIL_GMAIL}:${EMAIL_GMAIL_PASSWD}@smtp.gmail.com:465
                 OLEAFLY_MAIL_FROM: ${EMAIL_GMAIL}
                 OLEAFLY_OIDC_AUTHELIA_ISSUER: https://auth.${DOMAIN_0}

@@ -176,6 +176,14 @@ spec:
                   - algorithm: RS256
                     use: sig
                     key: {{ "${AUTHELIA_OIDC_JWKS_KEY_B64}" | b64dec | toJson }}
+                claims_policies:
+                  default:
+                    id_token:
+                      - email
+                      - email_verified
+                      - preferred_username
+                      - name
+                      - picture
                 clients:
             {{- range $id, $c := .Values.oidcClients }}
             {{- if not $c.secretHash }}
@@ -184,6 +192,7 @@ spec:
                   - client_id: {{ $id }}
                     client_name: {{ $c.name | default $id | quote }}
                     client_secret: {{ $c.secretHash | quote }}
+                    claims_policy: {{ $c.claimsPolicy | default "default" }}
                     public: false
                     authorization_policy: {{ $c.authorizationPolicy | default "two_factor" }}
                     redirect_uris:

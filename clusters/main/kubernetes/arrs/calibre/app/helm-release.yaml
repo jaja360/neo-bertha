@@ -35,7 +35,6 @@ spec:
                 PASSWORD: null
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: "${BACKBLAZE_ID}"
         bucket: "${BACKBLAZE_BUCKET}"

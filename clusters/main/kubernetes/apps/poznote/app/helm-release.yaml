@@ -28,7 +28,6 @@ spec:
   values:
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: ${BACKBLAZE_ID}
         bucket: ${BACKBLAZE_BUCKET}
@@ -105,10 +104,6 @@ spec:
                 POZNOTE_DEBUG: "false"
                 MCP_HOST: "0.0.0.0"
                 POZNOTE_MCP_AUTH_TOKEN: ${POZNOTE_MCP_AUTH_TOKEN}
-              ports:
-                mcp:
-                  enabled: true
-                  port: 8045
               probes:
                 liveness:
                   enabled: false

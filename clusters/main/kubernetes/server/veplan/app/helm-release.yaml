@@ -35,7 +35,7 @@ spec:
         type: LoadBalancer
         ports:
           main:
-            enable: true
+            enabled: true
             port: 8080
     ingress:
       main:
@@ -70,7 +70,6 @@ spec:
         server: ${NFS_SERVER}
     securityContext:
       container:
-        PUID: 1000
         runAsUser: 1000
         runAsGroup: 1000
     workload:

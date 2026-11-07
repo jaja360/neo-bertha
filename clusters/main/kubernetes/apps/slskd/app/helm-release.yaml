@@ -28,13 +28,10 @@ spec:
   values:
     securityContext:
       container:
-        PUID: 568
-        PGID: 568
         runAsUser: 568
         runAsGroup: 568
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: "${BACKBLAZE_ID}"
         bucket: "${BACKBLAZE_BUCKET}"

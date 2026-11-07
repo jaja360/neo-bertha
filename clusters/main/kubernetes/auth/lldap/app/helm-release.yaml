@@ -26,7 +26,6 @@ spec:
   values:
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: "${BACKBLAZE_ID}"
         bucket: "${BACKBLAZE_BUCKET}"
@@ -46,7 +45,6 @@ spec:
           credentials: backblaze
           retentionPolicy: 7d
         recovery:
-          enabled: true
           credentials: backblaze
     persistence:
       data:

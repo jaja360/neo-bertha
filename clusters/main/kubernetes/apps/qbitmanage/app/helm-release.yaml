@@ -60,7 +60,6 @@ spec:
               enabled: false
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: "${BACKBLAZE_ID}"
         bucket: "${BACKBLAZE_BUCKET}"

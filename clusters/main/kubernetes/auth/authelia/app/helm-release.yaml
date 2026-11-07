@@ -140,13 +140,7 @@ spec:
           resources:
             - ^/api([/?].*)?$
         - domain:
-          - lounge.${DOMAIN_0}
-          policy: bypass
-          resources:
-            - ^/uploads/.*$
-        - domain:
           - nextcloud.${DOMAIN_0}
-          - lounge.${DOMAIN_0}
           - calibreweb.${DOMAIN_0}
           policy: two_factor
           subject:

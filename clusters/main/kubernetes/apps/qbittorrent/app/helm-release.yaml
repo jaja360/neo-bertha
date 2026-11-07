@@ -31,6 +31,9 @@ spec:
         enabled: true
         container:
           resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
             limits:
               truecharts.org/tun: 1
           env:
@@ -46,7 +49,6 @@ spec:
             FIREWALL_VPN_INPUT_PORTS: ${WG_QBIT_INPUT_PORT}
     credentials:
       backblaze:
-        name: backblaze
         type: s3
         accessKey: "${BACKBLAZE_ID}"
         bucket: "${BACKBLAZE_BUCKET}"
@@ -138,7 +140,7 @@ spec:
     resources:
       requests:
         cpu: 1
-        memory: 1Gi
+        memory: 2Gi
       limits:
         cpu: 4
         memory: 4Gi

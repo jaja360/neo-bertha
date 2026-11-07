@@ -162,6 +162,7 @@ spec:
         secretHash: ${AUTHELIA_OLEAFLY_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://oleafly.${DOMAIN_0}/auth/callback/authelia
+        tokenEndpointAuthMethod: client_secret_basic
     secret:
       authelia-configfile:
         enabled: true
@@ -197,7 +198,7 @@ spec:
                       - authorization_code
                     response_types:
                       - code
-                    token_endpoint_auth_method: {{ $c.tokenEndpointAuthMethod | default "client_secret_post" }}
+                    token_endpoint_auth_method: {{ $c.tokenEndpointAuthMethod | default "client_secret_basic" }}
             {{- end }}
     workload:
       main:

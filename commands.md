@@ -52,3 +52,5 @@ Register the client in `clusters/main/kubernetes/auth/authelia/app/helm-release.
         redirectURIs:
           - https://photos.${DOMAIN_0}/auth/login
 ```
+
+`tokenEndpointAuthMethod` defaults to `client_secret_basic`; set it to `client_secret_post` for apps that send the secret in the request body.

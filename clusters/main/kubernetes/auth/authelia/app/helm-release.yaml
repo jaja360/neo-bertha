@@ -158,6 +158,49 @@ spec:
           policy: two_factor
           subject:
             - group:all_access
+    oidcClients:
+      oleafly:
+        name: Oleafly
+        secretHash: ${AUTHELIA_OLEAFLY_CLIENT_SECRET_HASH}
+        redirectURIs:
+          - https://oleafly.${DOMAIN_0}/auth/callback/authelia
+    secret:
+      authelia-configfile:
+        enabled: true
+        data:
+          configuration.yaml: |
+            {{- $.Values.authelia | toYaml | nindent 2 }}
+            identity_providers:
+              oidc:
+                hmac_secret: ${AUTHELIA_OIDC_HMAC_SECRET}
+                jwks:
+                  - algorithm: RS256
+                    use: sig
+                    key: {{ "${AUTHELIA_OIDC_JWKS_KEY_B64}" | b64dec | toJson }}
+                clients:
+            {{- range $id, $c := .Values.oidcClients }}
+            {{- if not $c.secretHash }}
+            {{- fail (printf "oidcClients.%s.secretHash is empty" $id) }}
+            {{- end }}
+                  - client_id: {{ $id }}
+                    client_name: {{ $c.name | default $id | quote }}
+                    client_secret: {{ $c.secretHash | quote }}
+                    public: false
+                    authorization_policy: {{ $c.authorizationPolicy | default "two_factor" }}
+                    redirect_uris:
+            {{- range $c.redirectURIs }}
+                      - {{ . | quote }}
+            {{- end }}
+                    scopes:
+            {{- range $c.scopes | default (list "openid" "profile" "email") }}
+                      - {{ . }}
+            {{- end }}
+                    grant_types:
+                      - authorization_code
+                    response_types:
+                      - code
+                    token_endpoint_auth_method: {{ $c.tokenEndpointAuthMethod | default "client_secret_post" }}
+            {{- end }}
     workload:
       main:
         replicas: ${NUMBER_OF_NODES}

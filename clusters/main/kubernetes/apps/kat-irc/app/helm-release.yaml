@@ -29,7 +29,7 @@ spec:
     image:
       repository: ghcr.io/jaja360/kat-irc
       pullPolicy: IfNotPresent
-      tag: 0.5.1
+      tag: 0.6.0
     credentials:
       backblaze:
         type: s3
@@ -51,10 +51,7 @@ spec:
     persistence:
       data:
         enabled: true
-        type: pvc
-        size: 1Gi
         mountPath: /data
-        targetSelectAll: true
         annotations:
           volsync.backube/use-copy-trigger: "true"
         volsync:
@@ -77,11 +74,7 @@ spec:
         memory: 128Mi
     workload:
       main:
-        type: Deployment
-        replicas: 1
-        strategy: Recreate
         podSpec:
-          automountServiceAccountToken: false
           containers:
             main:
               args:

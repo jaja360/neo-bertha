@@ -395,12 +395,14 @@ data:
         #       key: "-----BEGIN PRIVATE KEY-----\nMC4CAQAwBQYDK2VwBCIEIHfpO1x835o9NIQA1kBkN7/Myd6wqE/m/EYJUHBC18hW\n-----END PRIVATE KEY-----"
 
     history:
-        enabled: false
+        # required for draft/message-redaction: Ergo disables that capability
+        # when history is off (in-memory history is enough, no persistence).
+        enabled: true
         channel-length: 2048
         client-length: 256
         autoresize-window: 3d
         autoreplay-on-join: 0
-        chathistory-maxmessages: 0
+        chathistory-maxmessages: 1000
         znc-maxmessages: 2048
         restrictions:
             expire-time: 1w

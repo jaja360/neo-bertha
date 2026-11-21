@@ -68,6 +68,13 @@ spec:
         type: nfs
         path: ${NFS_NEXTCLOUD_PATH}
         server: ${NFS_SERVER}
+      nasdata:
+        enabled: true
+        type: nfs
+        mountPath: /mnt/nas-data
+        path: ${NFS_DATA_PATH}
+        server: ${NFS_SERVER}
+        readOnly: true
     cnpg:
       main:
         password: ${CNPG_PASSWD}

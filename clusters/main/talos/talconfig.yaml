@@ -49,10 +49,6 @@ controlPlane:
         - '@./patches/controlplane.yaml'
         # Temporarily disabled while Talos is upgraded with a smaller UKI.
         # - '@./patches/nvidia.yaml'
-    kernelModules:
-     - name: nvme_tcp
-     - name: vfio_pci
-     - name: uio_pci_generic
     schematic:
         customization:
             extraKernelArgs:
@@ -71,10 +67,6 @@ worker:
         - '@./patches/worker.yaml'
         # Temporarily disabled while Talos is upgraded with a smaller UKI.
         # - '@./patches/nvidia.yaml'
-    kernelModules:
-     - name: nvme_tcp
-     - name: vfio_pci
-     - name: uio_pci_generic
     schematic:
         customization:
             systemExtensions:

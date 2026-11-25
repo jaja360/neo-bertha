@@ -34,6 +34,21 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
+    cnpg:
+      main:
+        enabled: true
+        user: seerr
+        database: seerr
+        password: ${CNPG_PASSWD}
+        hibernate: false
+        mode: standalone
+        cluster:
+          instances: ${NUMBER_OF_NODES}
+          singleNode: ${SINGLE_NODE}
+        backups:
+          enabled: true
+          credentials: backblaze
+          retentionPolicy: 7d
     persistence:
       config:
         annotations:
@@ -74,18 +89,3 @@ spec:
               enabled: true
               custom:
                 key: ${SEERR_APIKEY}
-    cnpg:
-      main:
-        enabled: false
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                DB_TYPE: sqlite
-                DB_HOST: ""
-                DB_PASS: ""
-                DB_USER: ""
-                DB_NAME: ""
-                DB_PORT: ""

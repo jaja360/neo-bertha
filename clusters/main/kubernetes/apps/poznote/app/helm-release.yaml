@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: poznote
-      version: 2.35.0
+      version: 3.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -63,30 +63,29 @@ spec:
       repository: ghcr.io/timothepoznanski/poznote-mcp
       tag: "6"
       pullPolicy: IfNotPresent
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: poznote.${DOMAIN_0}
-            paths:
-              - path: /
-                pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "poznote.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Misc
-            name: "Poznote"
-            description: "Self-hosted notes and knowledge base"
-            icon: "https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg"
+            name: Poznote
+            description: Self-hosted notes and knowledge base
+            icon: https://raw.githubusercontent.com/timothepoznanski/poznote/main/images/poznote.svg
             widget:
               enabled: false
     # MCP server sidecar: shares the data volume to read .mcp_token and talks

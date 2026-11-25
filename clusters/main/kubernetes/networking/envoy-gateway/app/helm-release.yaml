@@ -30,6 +30,8 @@ spec:
       enabled: true
     config:
       envoyGateway:
+        extensionApis:
+          enableBackend: true
         provider:
           type: Kubernetes
           kubernetes:

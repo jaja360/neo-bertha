@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: cloudflareddns
-      version: 15.1.11
+      version: 16.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,20 +26,15 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: ghcr.io/hotio/cloudflareddns
-      pullPolicy: IfNotPresent
-      tag: latest@sha256:3c906adaa86d3419898bf108aa1a0662522f74c09dcd299a93fb6e26b58b6ed0
-    securityContext:
-      container:
-        runAsNonRoot: false
-        readOnlyRootFilesystem: false
-        runAsUser: 0
-        runAsGroup: 0
-    cloudflareddns:
-      api_token: "${DOMAIN_0_CLOUDFLARE_TOKEN}"
-      interval: 300
-      host_zone_record:
-        - domain: "${DOMAIN_0}"
-          zone: "${DOMAIN_0_ZONE_ID}"
-          record: A
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                UPDATE_IPV6: false
+                CF_HOSTS: "${DOMAIN_0}"
+    secret:
+      env-secrets:
+        data:
+          CF_APITOKEN: "${DOMAIN_0_CLOUDFLARE_TOKEN}"

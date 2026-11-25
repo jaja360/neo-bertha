@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: external-service
-      version: 18.1.6
+      version: 19.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -36,25 +36,24 @@ spec:
             enabled: true
             port: 81
             protocol: http
-    ingress:
+    route:
       main:
         enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "truenas.${DOMAIN_0}"
         annotations:
           gethomepage.dev/external: "true"
           gethomepage.dev/ping: "${TRUENAS_IP}"
           gethomepage.dev/statusStyle: "dot"
-        hosts:
-          - host: "truenas.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

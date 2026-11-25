@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: external-service
-      version: 18.1.6
+      version: 19.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -36,31 +36,30 @@ spec:
             enabled: true
             port: 80
             protocol: http
-    ingress:
+    route:
       main:
         enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "bertha.${DOMAIN_0}"
         annotations:
           gethomepage.dev/external: "true"
           gethomepage.dev/ping: "${JETKVM_BERTHA_IP}"
           gethomepage.dev/statusStyle: "dot"
-          nginx.ingress.kubernetes.io/proxy-http-version:  "1.1"
-          nginx.ingress.kubernetes.io/proxy-read-timeout:  "3600"
-          nginx.ingress.kubernetes.io/proxy-send-timeout:  "3600"
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-        hosts:
-          - host: "bertha.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
+            backendTrafficPolicy:
+              httpUpgrade:
+                - type: websocket
+              timeout:
+                http:
+                  streamIdleTimeout: 3600s
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

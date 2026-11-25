@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: lidarr
-      version: 30.2.8
+      version: 31.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -59,31 +59,31 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        annotations:
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-        hosts:
-          - host: "lidarr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "lidarr.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
+            backendTrafficPolicy:
+              timeout:
+                http:
+                  streamIdleTimeout: 300s
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Arrs
-            name: "Lidarr"
+            name: Lidarr
             widget:
               enabled: true
               custom:

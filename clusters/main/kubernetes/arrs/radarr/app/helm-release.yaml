@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: radarr
-      version: 29.1.11
+      version: 30.1.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -58,31 +58,31 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        annotations:
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-        hosts:
-          - host: "radarr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "radarr.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
+            backendTrafficPolicy:
+              timeout:
+                http:
+                  streamIdleTimeout: 300s
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Arrs
-            name: "Radarr"
+            name: Radarr
             widget:
               enabled: true
               custom:

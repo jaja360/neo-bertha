@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: dispatcharr
-      version: 3.3.1
+      version: 4.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -69,34 +69,33 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "dispatcharr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "dispatcharr.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Arrs
-            name: "dispatcharr"
+            name: dispatcharr
             widget:
               enabled: true
               custom:
-                enableActiveStreams: "true"
-                username: "${DISPATCHARR_USERNAME}"
-                password: "${DISPATCHARR_PASSWORD}"
+                enableActiveStreams: 'true'
+                username: ${DISPATCHARR_USERNAME}
+                password: ${DISPATCHARR_PASSWORD}
     resources:
       requests:
         cpu: 200m

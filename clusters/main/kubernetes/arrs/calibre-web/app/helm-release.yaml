@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: calibre-web
-      version: 23.1.4
+      version: 24.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -58,27 +58,26 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "calibreweb.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "calibreweb.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Arrs
-            name: "Calibre Web"
+            name: Calibre Web
             widget:
               enabled: false

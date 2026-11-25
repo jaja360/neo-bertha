@@ -32,6 +32,6 @@ spec:
         enableListenerSet: true
       featureGates:
         ListenerSets: true
-    dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53"
-    dns01RecursiveNameserversOnly: false
+    dns01RecursiveNameservers: "https://1.1.1.1/dns-query,https://8.8.8.8/dns-query"
+    dns01RecursiveNameserversOnly: true
     enableCertificateOwnerRef: true

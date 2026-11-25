@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: external-service
-      version: 18.1.6
+      version: 19.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -36,20 +36,20 @@ spec:
             enabled: true
             port: 8123
             protocol: http
-    ingress:
+    route:
       main:
         enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "hass.${DOMAIN_0}"
         annotations:
           gethomepage.dev/external: "true"
           gethomepage.dev/ping: "${HASS_IP}"
           gethomepage.dev/statusStyle: "dot"
-        hosts:
-          - host: "hass.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
         integrations:
-          nginx:
+          envoy:
             enabled: true
           certManager:
             enabled: true

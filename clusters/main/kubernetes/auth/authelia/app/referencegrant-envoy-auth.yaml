@@ -1,0 +1,114 @@
+# A ReferenceGrant allows at most 16 `from` entries, hence one object per domain.
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: envoy-auth-apps
+  namespace: authelia
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: fileflows
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: firefox
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: homepage
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: libredb-studio
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: poznote
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: qbitmanage
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: qbittorrent
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: romm
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: sabnzbd
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: slskd
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: vaultwarden
+  to:
+    - group: ""
+      kind: Service
+      name: authelia
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: envoy-auth-arrs
+  namespace: authelia
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: bazarr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: calibre
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: calibre-web
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: dispatcharr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: lidarr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: maintainerr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: prowlarr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: radarr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: shelfmark
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: sonarr
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: stash
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: whisparr
+  to:
+    - group: ""
+      kind: Service
+      name: authelia
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: envoy-auth-other
+  namespace: authelia
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: external-service
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: lldap
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: tracearr
+  to:
+    - group: ""
+      kind: Service
+      name: authelia

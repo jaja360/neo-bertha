@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: homepage
-      version: 14.5.0
+      version: 15.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -53,21 +53,20 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "home.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "home.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

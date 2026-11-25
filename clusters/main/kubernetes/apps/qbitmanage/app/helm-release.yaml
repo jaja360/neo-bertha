@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: qbitmanage
-      version: 13.3.2
+      version: 14.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -33,21 +33,20 @@ spec:
           main:
             enabled: true
             port: 8080
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "qbitmanage.${DOMAIN_0}"
-            paths:
-              - path: /
-                pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "qbitmanage.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
-              type: authelia
-              internalHost: authelia.authelia.svc.cluster.local:9091
-              externalHost: auth.${DOMAIN_0}
+              type: "authelia"
+              internalHost: "authelia.authelia.svc.cluster.local:9091"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

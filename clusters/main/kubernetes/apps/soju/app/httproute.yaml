@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://www.schemastore.org/any.json
-# Uploads + WebSocket (8443): Envoy terminates TLS, soju speaks plain HTTP.
+# Uploads + WebSocket (8443): Soju's ListenerSet terminates TLS with its managed certificate.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -7,8 +7,9 @@ metadata:
   namespace: soju
 spec:
   parentRefs:
-    - name: envoy-internal
-      namespace: envoy-gateway
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: soju-https
       sectionName: https
   hostnames:
     - "irc.${DOMAIN_0}"

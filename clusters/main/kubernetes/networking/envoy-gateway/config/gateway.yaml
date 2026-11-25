@@ -6,11 +6,31 @@ metadata:
   namespace: envoy-gateway
 spec:
   gatewayClassName: envoy-internal
+  allowedListeners:
+    namespaces:
+      from: All
   listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
     - name: irc
       protocol: TLS
       port: 6697
       hostname: "*.${DOMAIN_0}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: certificate-issuer-domain-0-wildcard
+    - name: https-443
+      protocol: HTTPS
+      port: 443
       allowedRoutes:
         namespaces:
           from: All

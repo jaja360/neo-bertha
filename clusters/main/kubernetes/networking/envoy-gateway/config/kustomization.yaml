@@ -4,3 +4,6 @@ resources:
   - envoyproxy.yaml
   - gatewayclass.yaml
   - gateway.yaml
+  - https-redirect.yaml
+  - clienttrafficpolicy.yaml
+  - backendtrafficpolicy.yaml

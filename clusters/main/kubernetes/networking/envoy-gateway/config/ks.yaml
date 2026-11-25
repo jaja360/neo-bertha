@@ -4,9 +4,6 @@ metadata:
   name: envoy-gateway-config
   namespace: flux-system
 spec:
-  # The Gateway API CRDs and the Envoy Gateway controller are installed by the
-  # `envoy-gateway` Kustomization. The wildcard TLS Secret referenced by the
-  # Gateway is produced by `clusterissuer`.
   dependsOn:
     - name: envoy-gateway
     - name: clusterissuer

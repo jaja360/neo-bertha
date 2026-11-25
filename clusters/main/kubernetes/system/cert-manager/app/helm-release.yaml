@@ -26,6 +26,12 @@ spec:
   values:
     crds:
       enabled: true
+    config:
+      gatewayAPI:
+        enabled: true
+        enableListenerSet: true
+      featureGates:
+        ListenerSets: true
     dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53"
     dns01RecursiveNameserversOnly: false
     enableCertificateOwnerRef: true

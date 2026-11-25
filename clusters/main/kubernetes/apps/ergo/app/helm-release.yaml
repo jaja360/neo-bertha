@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 21.3.8
+      version: 22.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -100,3 +100,13 @@ spec:
                   enabled: true
                   type: tcp
                   port: 6667
+    route:
+      irc:
+        enabled: true
+        kind: TLSRoute
+        parentRefs:
+          - name: envoy-internal
+            namespace: envoy-gateway
+            sectionName: irc
+        hostnames:
+          - "ergo.${DOMAIN_0}"

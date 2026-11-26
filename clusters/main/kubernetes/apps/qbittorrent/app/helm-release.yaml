@@ -138,6 +138,15 @@ spec:
     workload:
       qbitportforward:
         enabled: false
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  type: tcp
+                readiness:
+                  type: tcp
     resources:
       requests:
         cpu: 1

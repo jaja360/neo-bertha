@@ -34,8 +34,9 @@ To Add an app:
 
 ```sh
 APP=immich
-out=$(docker run --rm ghcr.io/authelia/authelia:4.39.28 \
-  authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72)
+out=$(kubectl -n authelia exec deploy/authelia -- \
+  authelia crypto hash generate pbkdf2 --variant sha512 \
+  --random --random.length 72 --random.charset alphanumeric --no-confirm)
 UPPER=$(printf '%s' "$APP" | tr '[:lower:]' '[:upper:]')
 printf '%s\n' \
   "${UPPER}_OIDC_CLIENT_SECRET: $(printf '%s\n' "$out" | sed -n 's/^Random Password: //p')" \

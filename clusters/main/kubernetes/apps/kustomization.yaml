@@ -14,6 +14,7 @@ resources:
   - poznote/ks.yaml
   - qbittorrent/ks.yaml
   - qbitmanage/ks.yaml
+  - qui/ks.yaml
   - romm/ks.yaml
   - sabnzbd/ks.yaml
   - vaultwarden/ks.yaml

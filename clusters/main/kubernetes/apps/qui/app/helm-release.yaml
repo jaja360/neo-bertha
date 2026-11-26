@@ -1,0 +1,91 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qui
+  namespace: qui
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 22.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/autobrr/qui
+      tag: v1.36.1
+    service:
+      main:
+        ports:
+          main:
+            port: 7476
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        size: 2Gi
+        mountPath: /config
+      tmp:
+        enabled: true
+        type: emptyDir
+        mountPath: /tmp
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  type: http
+                  path: /health
+                readiness:
+                  type: http
+                  path: /health
+              env:
+                QUI__LOG_LEVEL: INFO
+                QUI__OIDC_ENABLED: "true"
+                QUI__OIDC_ISSUER: https://auth.${DOMAIN_0}
+                QUI__OIDC_CLIENT_ID: qui
+                QUI__OIDC_CLIENT_SECRET: ${QUI_OIDC_CLIENT_SECRET}
+                QUI__OIDC_REDIRECT_URL: https://qui.${DOMAIN_0}/api/auth/oidc/callback
+                QUI__OIDC_ALLOWED_EMAIL: ${QUI_OIDC_ALLOWED_EMAIL}
+                QUI__OIDC_DISABLE_BUILT_IN_LOGIN: "true"
+                QUI__SESSION_COOKIE_SECURE: "true"
+    route:
+      main:
+        enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        hostnames:
+          - qui.${DOMAIN_0}
+        integrations:
+          envoy:
+            enabled: true
+            backendTrafficPolicy:
+              timeout:
+                http:
+                  streamIdleTimeout: 3600s
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Downloads
+            name: qui
+            widget:
+              enabled: false

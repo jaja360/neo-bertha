@@ -151,7 +151,11 @@ spec:
         secretHash: ${AUTHELIA_OLEAFLY_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://oleafly.${DOMAIN_0}/auth/callback/authelia
-        tokenEndpointAuthMethod: client_secret_basic
+      qui:
+        name: qui
+        secretHash: ${AUTHELIA_QUI_CLIENT_SECRET_HASH}
+        redirectURIs:
+          - https://qui.${DOMAIN_0}/api/auth/oidc/callback
     secret:
       authelia-configfile:
         enabled: true

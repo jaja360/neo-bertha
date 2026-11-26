@@ -46,7 +46,6 @@ spec:
           postgresqlDatabase: soju
           password: ${CNPG_PASSWD}
         operator:
-          pgVersion: 16
           mode: recovery
           cluster:
             instances: ${NUMBER_OF_NODES}
@@ -55,43 +54,9 @@ spec:
             enabled: true
             credentials: backblaze
             retentionPolicy: 7d
+            # serverName: soju-app-template-cnpg-main-pg18
           recovery:
             credentials: backblaze
-    configmap:
-      config:
-        enabled: true
-        data:
-          config: |
-            listen irc+insecure://0.0.0.0:6697
-            listen http+insecure://0.0.0.0:8080
-
-            hostname irc.${DOMAIN_0}
-            http-ingress https://irc.${DOMAIN_0}:8443
-            title "IRC"
-
-            db postgres "host=soju-app-template-cnpg-main-rw dbname=soju sslmode=require"
-            message-store db
-
-            file-upload fs /uploads
-    service:
-      main:
-        enabled: true
-        type: LoadBalancer
-        ports:
-          main:
-            enabled: true
-            port: 6697
-            protocol: tcp
-            targetPort: 6697
-      http:
-        enabled: true
-        type: LoadBalancer
-        ports:
-          http:
-            enabled: true
-            port: 8080
-            protocol: http
-            targetPort: 8080
     persistence:
       config:
         enabled: true
@@ -118,6 +83,39 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 9 * * *
+    service:
+      main:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          main:
+            enabled: true
+            port: 6697
+            protocol: tcp
+      http:
+        enabled: true
+        type: LoadBalancer
+        ports:
+          http:
+            enabled: true
+            port: 8080
+            protocol: http
+    configmap:
+      config:
+        enabled: true
+        data:
+          config: |
+            listen irc+insecure://0.0.0.0:6697
+            listen http+insecure://0.0.0.0:8080
+
+            hostname irc.${DOMAIN_0}
+            http-ingress https://irc.${DOMAIN_0}:8443
+            title "IRC"
+
+            db postgres "host=soju-app-template-cnpg-main-rw dbname=soju sslmode=require"
+            message-store db
+
+            file-upload fs /uploads
     workload:
       main:
         podSpec:
@@ -148,3 +146,29 @@ spec:
                   enabled: true
                   type: tcp
                   port: 6697
+    route:
+      main:
+        enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "irc.${DOMAIN_0}"
+        targetSelector:
+          http: http
+        integrations:
+          envoy:
+            enabled: true
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+      irc:
+        enabled: true
+        primary: false
+        kind: TLSRoute
+        parentRefs:
+          - name: envoy-internal
+            namespace: envoy-gateway
+            sectionName: irc
+        hostnames:
+          - "irc.${DOMAIN_0}"

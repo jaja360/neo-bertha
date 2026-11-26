@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: plex
-      version: 23.1.8
+      version: 24.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -78,16 +78,16 @@ spec:
         integrations:
           metallb:
             enabled: true
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "plex.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "plex.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
           certManager:
             enabled: true
@@ -95,7 +95,7 @@ spec:
           homepage:
             enabled: true
             group: Misc
-            name: "Plex"
+            name: Plex
             widget:
               enabled: true
               custom:

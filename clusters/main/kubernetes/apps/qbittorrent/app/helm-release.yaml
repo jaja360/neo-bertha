@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: qbittorrent
-      version: 26.2.5
+      version: 27.0.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -26,6 +26,9 @@ spec:
     remediation:
       retries: 3
   values:
+    gluetunImage:
+      repository: docker.io/qmcgaw/gluetun
+      tag: v3.41.3
     addons:
       gluetun:
         enabled: true
@@ -88,52 +91,52 @@ spec:
         ports:
           torrent:
             port: 60502
-    ingress:
+    route:
       main:
         enabled: true
-        annotations:
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            proxy_set_header X-Forwarded-For $server_addr;
-            proxy_set_header X-Real-IP $server_addr;
-        hosts:
-          - host: "qbit.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "qbit.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Downloads
-            name: "qbittorrent"
+            name: qbittorrent
             widget:
               enabled: true
               custom:
-                enableLeechProgress: "true"
+                enableLeechProgress: 'true'
                 username: ${QBIT_USERNAME}
                 password: ${QBIT_PASSWORD}
       api:
         enabled: true
         primary: false
-        targetSelector:
-          main: main
-        hosts:
-          - host: "qbit-api.${DOMAIN_0}"
-            paths:
-            - path: /api/v2
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "qbit-api.${DOMAIN_0}"
         integrations:
+          envoy:
+            enabled: true
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api/v2
     workload:
       qbitportforward:
         enabled: false

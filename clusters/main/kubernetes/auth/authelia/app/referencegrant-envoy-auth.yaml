@@ -100,6 +100,9 @@ spec:
   from:
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
+      namespace: bentopdf
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
       namespace: external-service
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
@@ -113,6 +116,9 @@ spec:
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: longhorn-system
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: plex
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: tracearr

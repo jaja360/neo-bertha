@@ -28,7 +28,7 @@ jobs:
         id: tag
         run: |
           base="$(sed -nE 's|^FROM ghcr.io/cloudnative-pg/postgresql:([0-9.]+).*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
-          tsver="$(sed -nE 's|.*timescaledb-2-postgresql-16=([0-9.]+)\*.*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
+          tsver="$(sed -nE 's|.*timescaledb-2-postgresql-16=([0-9.]+)[*~].*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
           if [ -z "$base" ] || [ -z "$tsver" ]; then
             echo "::error::Could not parse base or timescale version from Dockerfile"
             exit 1

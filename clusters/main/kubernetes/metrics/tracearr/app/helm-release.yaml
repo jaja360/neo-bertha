@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: tracearr
-      version: 8.4.1
+      version: 9.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -34,57 +34,64 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    cnpg:
-      main:
-        password: ${CNPG_PASSWD}
-        hibernate: false
-        mode: recovery
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-          # timescaledb-enabled CNPG operand image; must bundle barman-cloud-*
-          # (see .github/cnpg-timescaledb/Dockerfile) or object-store WAL
-          # archiving silently breaks and fills the WAL volume
-          imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.30.1
-          storage:
-            size: 100Gi
-          walStorage:
-            size: 200Gi
-          preloadLibraries:
-            - timescaledb
-          postgresql:
-            max_locks_per_transaction: "256"
-        backups:
-          enabled: true
-          credentials: backblaze
-          retentionPolicy: 7d
-        recovery:
-          credentials: backblaze
+    dependencies:
+      postgresql:
+        enabled: true
+        depconfig:
+          postgresqlUsername: tracearr
+          postgresqlDatabase: tracearr
+          password: ${CNPG_PASSWD}
+        operator:
+          pgVersion: 16
+          mode: recovery
+          cluster:
+            imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.15-ts2.30.1
+            instances: ${NUMBER_OF_NODES}
+            singleNode: ${SINGLE_NODE}
+            storage:
+              size: 100Gi
+            walStorage:
+              size: 200Gi
+            preloadLibraries:
+              - timescaledb
+            postgresql:
+              max_locks_per_transaction: "256"
+          backups:
+            enabled: true
+            credentials: backblaze
+            retentionPolicy: 7d
+          recovery:
+            credentials: backblaze
     service:
       main:
         type: LoadBalancer
-    ingress:
+    secret:
+      env-secrets:
+        enabled: true
+        data:
+          JWT_SECRET: "${TRACEARR_JWT_SECRET}"
+          COOKIE_SECRET: "${TRACEARR_COOKIE_SECRET}"
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "tracearr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "tracearr.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Misc
-            name: "tracearr"
+            name: tracearr
             widget:
               enabled: true
               custom:

@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: romm
-      version: 21.2.6
+      version: 22.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -34,23 +34,25 @@ spec:
         encrKey: ${BACKBLAZE_ENCR_KEY}
         secretKey: ${BACKBLAZE_KEY}
         url: ${BACKBLAZE_URL}
-    cnpg:
-      main:
+    dependencies:
+      postgresql:
         enabled: true
-        user: romm
-        database: romm
-        password: ${CNPG_PASSWD}
-        hibernate: false
-        mode: recovery
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-        backups:
-          enabled: true
-          credentials: backblaze
-          retentionPolicy: 7d
-        recovery:
-          credentials: backblaze
+        depconfig:
+          postgresqlUsername: romm
+          postgresqlDatabase: romm
+          password: ${CNPG_PASSWD}
+        operator:
+          pgVersion: 16
+          mode: recovery
+          cluster:
+            instances: ${NUMBER_OF_NODES}
+            singleNode: ${SINGLE_NODE}
+          backups:
+            enabled: true
+            credentials: backblaze
+            retentionPolicy: 7d
+          recovery:
+            credentials: backblaze
     persistence:
       config:
         annotations:
@@ -89,33 +91,36 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    secret:
+      env-secrets:
+        data:
+          ROMM_AUTH_SECRET_KEY: "${ROMM_AUTH_SECRET_KEY}"
+          IGDB_CLIENT_SECRET: "${IGDB_CLIENT_SECRET}"
+    route:
       main:
         enabled: true
-        hosts:
-          - host: romm.${DOMAIN_0}
-            paths:
-              - path: /
-                pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "romm.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
           homepage:
             enabled: true
             group: Misc
-            name: "RomM"
-            description: "ROM library manager and player"
-            icon: "https://raw.githubusercontent.com/rommapp/romm/master/.github/resources/isotipo.png"
+            name: RomM
+            description: ROM library manager and player
+            icon: https://raw.githubusercontent.com/rommapp/romm/master/.github/resources/isotipo.png
             widget:
               enabled: false
-
     workload:
       main:
         podSpec:
@@ -130,11 +135,9 @@ spec:
                   memory: 1Gi
               env:
                 ROMM_BASE_URL: "https://romm.${DOMAIN_0}"
-                ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY}
                 SCREENSCRAPER_USER: ${SCREENSCRAPER_USER}
                 SCREENSCRAPER_PASSWORD: ${SCREENSCRAPER_PASSWORD}
                 IGDB_CLIENT_ID: ${IGDB_CLIENT_ID}
-                IGDB_CLIENT_SECRET: ${IGDB_CLIENT_SECRET}
                 RETROACHIEVEMENTS_API_KEY: ${RETROACHIEVEMENTS_API_KEY}
                 STEAMGRIDDB_API_KEY: ${STEAMGRIDDB_API_KEY}
                 HASHEOUS_API_ENABLED: true

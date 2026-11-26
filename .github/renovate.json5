@@ -24,9 +24,10 @@
   },
   "packageRules": [
     {
-      "description": "Custom CNPG image base: stay on PG 16.x - major bumps would require a data migration and are not supported by the chart",
+      "description": "tracearr custom image (TimescaleDB): keep the build base on PG 16.x until the PG18 + TimescaleDB migration is planned",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql"],
+      "matchFileNames": [".github/cnpg-timescaledb/Dockerfile"],
       "allowedVersions": "<17"
     },
     {

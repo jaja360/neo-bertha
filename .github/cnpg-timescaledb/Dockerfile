@@ -9,7 +9,7 @@
 # TimescaleDB publishes its apt packages per PostgreSQL patch release: the
 # `~debian13-1616` build matches PostgreSQL 16.16. Base image and package
 # versions must therefore be bumped together.
-FROM ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie@sha256:c1d2ebeaf7b254264bdb63997270cc9d5e007ba5be4efe6112ae801d1ad68118
+FROM ghcr.io/cloudnative-pg/postgresql:18.7-standard-trixie@sha256:1abcfd1cac6d53cda5185706819aab36d66a4ed88e99fc2ae44ab0826aa99f00
 
 USER root
 

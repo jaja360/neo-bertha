@@ -44,6 +44,13 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /tmp
+      medias:
+        enabled: true
+        type: nfs
+        mountPath: /medias
+        path: ${NFS_MEDIAS_PATH}
+        server: ${NFS_SERVER}
+        readOnly: true
     workload:
       main:
         podSpec:

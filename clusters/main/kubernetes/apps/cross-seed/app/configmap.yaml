@@ -51,13 +51,13 @@ data:
       flatLinking: false,
       matchMode: "partial",
       skipRecheck: true,
-      autoResumeMaxDownload: 52428800,
+      autoResumeMaxDownload: 0,
       ignoreNonRelevantFilesToResume: false,
       includeSingleEpisodes: true,
       includeNonVideos: true,
       seasonFromEpisodes: 1,
-      // 0.02 means at least ~98% size similarity for partial matching.
-      fuzzySizeThreshold: 0.02,
+      // 0 = taille identique exigée (plus de tolérance ~2%)
+      fuzzySizeThreshold: 0,
       excludeOlder: "2 weeks",
       excludeRecentSearch: "3 days",
       action: "inject",

@@ -31,24 +31,15 @@
       "allowedVersions": "<19"
     },
     {
-      "description": "aio-talk only publishes date-stamped tags (YYYYMMDD_HHMMSS) since March 2025, so the default docker versioning cannot order them and updates are silently skipped. Mapping the date to 'major' also means every new build is a major update, so it is proposed for review rather than automerged.",
+      "description": "aio-talk only publishes date-stamped tags (YYYYMMDD_HHMMSS) since March 2025, so the default docker versioning cannot order them and updates are silently skipped.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["nextcloud/aio-talk"],
       "versioning": "regex:^(?<major>\\d{8})_(?<minor>\\d{6})$"
     },
     {
-      "description": "Talos OS patch/minor bumps. Since Talos 1.14 the ghcr.io/siderolabs/installer image is no longer published, so Talos versions are tracked via ghcr.io/siderolabs/talos. The upstream trueforge talos preset only matches ghcr.io/siderolabs/installer, hence these rules replicate its no-automerge behaviour for the new package name.",
+      "description": "Talos OS: versions are tracked via ghcr.io/siderolabs/talos.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/siderolabs/talos"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": false,
-      "labels": ["system-upgrade"]
-    },
-    {
-      "description": "Talos OS major bumps require approval from the dependency dashboard (same intent as the upstream trueforge talos preset).",
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["ghcr.io/siderolabs/talos"],
-      "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true,
       "automerge": false,
       "labels": ["system-upgrade"]

@@ -42,7 +42,6 @@ spec:
           postgresqlDatabase: tracearr
           password: ${CNPG_PASSWD}
         operator:
-          pgVersion: 16
           mode: recovery
           cluster:
             imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:18.7-ts2.32.1@sha256:00119bf7347bbfc55cc316962c2c27f0766340c87953380273adf12488d904a8

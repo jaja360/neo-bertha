@@ -13,6 +13,11 @@ on:
       - ".github/cnpg-timescaledb/**"
       - ".github/workflows/build-cnpg-timescaledb.yaml"
 
+env:
+  MANIFEST: clusters/main/kubernetes/metrics/tracearr/app/helm-release.yaml
+  BRANCH: automation/cnpg-timescaledb-roll
+  IMAGE: ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,25 +26,19 @@ jobs:
       packages: write
       pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Derive image tag from Dockerfile base
+      - name: Derive image tag from Dockerfile
         id: tag
         run: |
+          set -euo pipefail
           base="$(sed -nE 's|^FROM ghcr.io/cloudnative-pg/postgresql:([0-9.]+).*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
-          tsver="$(sed -nE 's|.*timescaledb-2-postgresql-16=([0-9.]+)[*~].*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
+          tsver="$(sed -nE 's|.*timescaledb-2-postgresql-[0-9]+=([0-9.]+)[*~].*|\1|p' .github/cnpg-timescaledb/Dockerfile | head -1)"
           if [ -z "$base" ] || [ -z "$tsver" ]; then
             echo "::error::Could not parse base or timescale version from Dockerfile"
             exit 1
           fi
-          echo "base=$base"
-          echo "tsver=$tsver"
-          {
-            echo "base=${base}"
-            echo "tsver=${tsver}"
-            echo "tag=${base}-ts${tsver}"
-          } >> "$GITHUB_OUTPUT"
+          echo "tag=${base}-ts${tsver}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
@@ -59,84 +58,50 @@ jobs:
           context: .github/cnpg-timescaledb
           # PR runs only validate the build.
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${{ steps.tag.outputs.tag }}
+          tags: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
 
-      - name: Open PR rolling the HelmRelease to the freshly built image
+      - name: Open or refresh the roll PR
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.tag.outputs.tag }}
-          TSVER: ${{ steps.tag.outputs.tsver }}
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           set -euo pipefail
-          : "${TAG:?tag output is empty}" "${TSVER:?tsver output is empty}" "${DIGEST:?build digest is empty}"
-          file="clusters/main/kubernetes/metrics/tracearr/app/helm-release.yaml"
-          branch="automation/cnpg-timescaledb-roll"
           # Pin by digest: a re-pushed (mutable) tag can otherwise resolve to a
           # stale cached image on the nodes and silently break WAL archiving.
-          new="ghcr.io/${{ github.repository_owner }}/cnpg-postgresql-timescale:${TAG}@${DIGEST}"
-          old="$(sed -nE 's|^(\s+)imageName:\s*(ghcr.io/.*/cnpg-postgresql-timescale:[^[:space:]]*).*$|\2|p' "$file" | head -1)"
-          if [ -z "$old" ]; then
-            echo "::error::Could not find imageName in ${file}"
-            exit 1
-          fi
-          if [ "$old" = "$new" ]; then
-            echo "imageName already at ${new} - nothing to do"
+          new="${IMAGE}:${TAG}@${DIGEST}"
+          sed -i "s|ghcr.io/[^[:space:]]*/cnpg-postgresql-timescale:[^[:space:]]*|${new}|" "$MANIFEST"
+          if git diff --quiet -- "$MANIFEST"; then
+            echo "imageName already at ${new} - nothing to roll"
             exit 0
           fi
-          old_tag="${old%%@*}"
-          old_ts="${old_tag##*ts}"
-          echo "rolling imageName ${old} -> ${new}"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch --no-tags origin main
-          git checkout -B "$branch" FETCH_HEAD
-          sed -i "s|ghcr.io/[^[:space:]]*/cnpg-postgresql-timescale:[^[:space:]]*|${new}|" "$file"
-          git add "$file"
-          git commit -m "chore(tracearr): roll cnpg timescaledb image ${old_tag} -> ${TAG}"
-
-          pushed=""
-          for attempt in 1 2 3; do
-            # This branch is only ever written by this workflow, so overwriting it
-            # is safe and keeps re-runs idempotent.
-            if git push --force origin "HEAD:${branch}"; then
-              pushed="yes"
-              break
-            fi
-            sleep 5
-          done
-          if [ -z "$pushed" ]; then
-            echo "::error::Failed to push ${branch} after ${attempt} attempts"
-            exit 1
-          fi
+          git checkout -B "$BRANCH"
+          git commit -am "chore(tracearr): roll cnpg timescaledb image to ${TAG}"
+          git push --force origin "HEAD:${BRANCH}"
 
           body="$(mktemp)"
           {
             echo "Image \`${new}\` was built and pushed by [run ${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
             echo
-            echo "This moves the CNPG cluster's \`imageName\` from \`${old}\` to \`${new}\`."
-            if [ "${old_ts}" != "${TSVER}" ]; then
-              echo
-              echo "**:warning: The TimescaleDB extension also moves from ${old_ts} to ${TSVER}.** Take a CNPG backup/snapshot, and once the pods run the new image execute:"
-              echo
-              echo '```sql'
-              echo 'ALTER EXTENSION timescaledb UPDATE;'
-              echo '```'
-            fi
+            echo "This moves the CNPG cluster's \`imageName\` to \`${TAG}\`."
+            echo
+            echo "**:warning: If the TimescaleDB version changed, take a CNPG backup, then once the pods run the new image execute:**"
+            echo
+            echo '```sql'
+            echo 'ALTER EXTENSION timescaledb UPDATE;'
+            echo '```'
             echo
             echo "_Opened by CI with \`GITHUB_TOKEN\`: \`pull_request\` workflows (including the required \`Placeholder PR Tests\` check) do not run on it, so merge it with the admin bypass._"
           } > "$body"
 
-          open_pr="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')"
-          if [ -n "$open_pr" ]; then
-            echo "open PR #${open_pr} already tracks ${branch} - refreshing it"
-            gh pr edit "$open_pr" \
-              --title "chore(tracearr): roll cnpg timescaledb image to ${TAG}" \
-              --body-file "$body"
-          else
-            gh pr create --base main --head "$branch" \
-              --title "chore(tracearr): roll cnpg timescaledb image to ${TAG}" \
-              --body-file "$body"
-          fi
+          # create fails when the PR already exists; edit keeps re-runs idempotent.
+          gh pr create --base main --head "$BRANCH" \
+            --title "chore(tracearr): roll cnpg timescaledb image to ${TAG}" \
+            --body-file "$body" ||
+          gh pr edit "$BRANCH" \
+            --title "chore(tracearr): roll cnpg timescaledb image to ${TAG}" \
+            --body-file "$body"

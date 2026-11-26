@@ -24,11 +24,11 @@
   },
   "packageRules": [
     {
-      "description": "tracearr custom image (TimescaleDB): keep the build base on PG 16.x until the PG18 + TimescaleDB migration is planned",
+      "description": "tracearr custom image (TimescaleDB): stay within PostgreSQL 18.x until a TimescaleDB build exists for the next major",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql"],
       "matchFileNames": [".github/cnpg-timescaledb/Dockerfile"],
-      "allowedVersions": "<17"
+      "allowedVersions": "<19"
     },
     {
       "description": "aio-talk only publishes date-stamped tags (YYYYMMDD_HHMMSS) since March 2025, so the default docker versioning cannot order them and updates are silently skipped. Mapping the date to 'major' also means every new build is a major update, so it is proposed for review rather than automerged.",

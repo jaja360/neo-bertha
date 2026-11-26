@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: nextcloud
-      version: 49.2.15
+      version: 50.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -75,57 +75,56 @@ spec:
         path: ${NFS_DATA_PATH}
         server: ${NFS_SERVER}
         readOnly: true
-    cnpg:
-      main:
-        password: ${CNPG_PASSWD}
-        hibernate: false
-        mode: recovery
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-          postgresql:
-            shared_buffers: "1GB"
-            effective_cache_size: "3GB"
-            maintenance_work_mem: "256MB"
-            work_mem: "8MB"
-            random_page_cost: "2.0"
-            max_connections: "100"
-          resources:
-            requests:
-              cpu: 500m
-              memory: 1Gi
-            limits:
-              cpu: "4"
-              memory: 4Gi
-        backups:
-          enabled: true
-          credentials: backblaze
-          retentionPolicy: 7d
-        recovery:
-          credentials: backblaze
-    redis:
-      password: ${CNPG_PASSWD}
-      workload:
-        main:
-          podSpec:
-            containers:
-              main:
-                env:
-                  ALLOW_EMPTY_PASSWORD: "no"
-                  VALKEY_PASSWORD: ${CNPG_PASSWD}
+    dependencies:
+      postgresql:
+        enabled: true
+        depconfig:
+          postgresqlUsername: nextcloud
+          postgresqlDatabase: nextcloud
+          password: ${CNPG_PASSWD}
+        operator:
+          pgVersion: 16
+          mode: recovery
+          cluster:
+            instances: ${NUMBER_OF_NODES}
+            singleNode: ${SINGLE_NODE}
+            postgresql:
+              shared_buffers: "1GB"
+              effective_cache_size: "3GB"
+              maintenance_work_mem: "256MB"
+              work_mem: "8MB"
+              random_page_cost: "2.0"
+              max_connections: "100"
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                cpu: "4"
+                memory: 4Gi
+          backups:
+            enabled: true
+            credentials: backblaze
+            retentionPolicy: 7d
+          recovery:
+            credentials: backblaze
+      valkey:
+        enabled: true
+        depconfig:
+          password: ${CNPG_PASSWD}
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "nextcloud.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "nextcloud.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
           certManager:
             enabled: true

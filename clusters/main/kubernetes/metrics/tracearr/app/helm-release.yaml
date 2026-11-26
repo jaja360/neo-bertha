@@ -45,7 +45,7 @@ spec:
           pgVersion: 16
           mode: recovery
           cluster:
-            imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:18.7-ts2.32.1@sha256:00119bf7347bbfc55cc316962c2c27f0766340c87953380273adf12488d904a8
+            imageName: ghcr.io/jaja360/cnpg-postgresql-timescale:16.16-ts2.32.1@sha256:8ea317f1e0fde3e1325735cdd205c8e4095b41edaeed8dbb6ec333ab6d541bf5
             instances: ${NUMBER_OF_NODES}
             singleNode: ${SINGLE_NODE}
             storage:

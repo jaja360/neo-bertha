@@ -119,7 +119,6 @@ spec:
         enabled: true
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         hostnames:
           - "nextcloud.${DOMAIN_0}"
         integrations:
@@ -141,7 +140,7 @@ spec:
         initialAdminUser: ${NEXTCLOUD_ADMIN_USER}
         initialAdminPassword: ${NEXTCLOUD_ADMIN_PASSWD}
       general:
-        accessIP: ${NGINX_EXTERNAL_IP}
+        accessIP: ${ENVOY_IP}
         default_phone_region: CA
       previews:
         providers:

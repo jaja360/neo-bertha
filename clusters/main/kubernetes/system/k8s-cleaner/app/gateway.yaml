@@ -1,0 +1,80 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: k8s-cleaner
+  namespace: k8s-cleaner
+  annotations:
+    cert-manager.io/cluster-issuer: domain-0-le-prod
+    cert-manager.io/private-key-rotation-policy: Always
+spec:
+  parentRef:
+    name: envoy-internal
+    namespace: envoy-gateway
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: cleaner.${DOMAIN_0}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: k8s-cleaner-cert
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: k8s-cleaner
+  namespace: k8s-cleaner
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/href: "https://cleaner.${DOMAIN_0}"
+    gethomepage.dev/description: "Prune stale Kubernetes resources"
+    gethomepage.dev/group: Admin
+    gethomepage.dev/icon: https://raw.githubusercontent.com/gianlucam76/k8s-cleaner/main/assets/logo.png
+    gethomepage.dev/name: "k8s-cleaner"
+    gethomepage.dev/external: "true"
+    gethomepage.dev/ping: "https://cleaner.${DOMAIN_0}"
+    gethomepage.dev/statusStyle: "dot"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: k8s-cleaner
+      sectionName: https
+  hostnames:
+    - cleaner.${DOMAIN_0}
+  rules:
+    - backendRefs:
+        - name: k8s-cleaner-web
+          port: 9080
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: k8s-cleaner
+  namespace: k8s-cleaner
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: k8s-cleaner
+  extAuth:
+    headersToExtAuth:
+      - accept
+      - sec-fetch-mode
+      - sec-fetch-dest
+      - x-requested-with
+      - cookie
+      - authorization
+      - proxy-authorization
+      - x-forwarded-proto
+    http:
+      backendRefs:
+        - name: authelia
+          namespace: authelia
+          port: 9091
+      path: /api/authz/ext-authz/

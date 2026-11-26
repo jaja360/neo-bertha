@@ -103,7 +103,16 @@ spec:
       namespace: external-service
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
+      namespace: headlamp
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: k8s-cleaner
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
       namespace: lldap
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: longhorn-system
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: tracearr

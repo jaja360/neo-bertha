@@ -38,7 +38,6 @@ spec:
         enabled: true
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         hostnames:
           - "qbitmanage.${DOMAIN_0}"
         integrations:

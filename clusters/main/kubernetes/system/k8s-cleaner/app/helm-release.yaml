@@ -37,26 +37,4 @@ spec:
       readOnly: true
       port: 9080
       ingress:
-        enabled: true
-        className: external
-        host: cleaner.${DOMAIN_0}
-        tls:
-          - hosts:
-              - cleaner.${DOMAIN_0}
-            secretName: k8s-cleaner-tls-0
-        annotations:
-          nginx.ingress.kubernetes.io/auth-method: 'GET'
-          nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
-          nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
-          nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
-          cert-manager.io/cluster-issuer: domain-0-le-prod
-          cert-manager.io/private-key-rotation-policy: Always
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/href: "https://cleaner.${DOMAIN_0}"
-          gethomepage.dev/description: "Prune stale Kubernetes resources"
-          gethomepage.dev/group: Admin
-          gethomepage.dev/icon: https://raw.githubusercontent.com/gianlucam76/k8s-cleaner/main/assets/logo.png
-          gethomepage.dev/name: "k8s-cleaner"
-          gethomepage.dev/external: "true"
-          gethomepage.dev/ping: "https://cleaner.${DOMAIN_0}"
-          gethomepage.dev/statusStyle: "dot"
+        enabled: false

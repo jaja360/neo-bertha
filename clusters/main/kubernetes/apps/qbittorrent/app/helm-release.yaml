@@ -96,7 +96,6 @@ spec:
         enabled: true
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         hostnames:
           - "qbit.${DOMAIN_0}"
         integrations:
@@ -123,7 +122,6 @@ spec:
         primary: false
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         hostnames:
           - "qbit-api.${DOMAIN_0}"
         integrations:

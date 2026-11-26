@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helm-release.yaml
+  - route.yaml
   - volumeSnapshotClass.yaml
   - jobs

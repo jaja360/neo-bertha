@@ -4,4 +4,3 @@ resources:
   - cloudflareddns/ks.yaml
   - envoy-gateway/ks.yaml
   - envoy-gateway/config/ks.yaml
-  - nginx-external/ks.yaml

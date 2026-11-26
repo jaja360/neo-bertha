@@ -41,7 +41,6 @@ spec:
         enabled: true
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         hostnames:
           - "truenas.${DOMAIN_0}"
         annotations:

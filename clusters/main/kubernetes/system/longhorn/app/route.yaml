@@ -1,0 +1,79 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+  annotations:
+    cert-manager.io/cluster-issuer: domain-0-le-prod
+    cert-manager.io/private-key-rotation-policy: Always
+spec:
+  parentRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-internal
+    namespace: envoy-gateway
+  listeners:
+    - name: longhorn
+      hostname: longhorn.${DOMAIN_0}
+      port: 443
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: longhorn-gw-tls-0
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/href: "https://longhorn.${DOMAIN_0}"
+    gethomepage.dev/description: "View and manage PVCs and snapshots"
+    gethomepage.dev/group: Admin
+    gethomepage.dev/icon: longhorn.svg
+    gethomepage.dev/name: "Longhorn UI"
+    gethomepage.dev/pod-selector: "app=longhorn-ui"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: longhorn
+      sectionName: longhorn
+  hostnames:
+    - longhorn.${DOMAIN_0}
+  rules:
+    - backendRefs:
+        - name: longhorn-frontend
+          port: 80
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: longhorn
+  extAuth:
+    headersToExtAuth:
+      - accept
+      - sec-fetch-mode
+      - sec-fetch-dest
+      - x-requested-with
+      - cookie
+      - authorization
+      - proxy-authorization
+      - x-forwarded-proto
+    http:
+      backendRefs:
+        - name: authelia
+          namespace: authelia
+          port: 9091
+      path: /api/authz/ext-authz/

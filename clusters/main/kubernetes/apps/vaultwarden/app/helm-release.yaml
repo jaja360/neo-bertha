@@ -68,16 +68,15 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "vault.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        hostnames:
+          - "vault.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
           certManager:
             enabled: true
@@ -90,21 +89,23 @@ spec:
               enabled: false
       admin:
         enabled: true
-        primary: false
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        hostnames:
+          - "vault.${DOMAIN_0}"
         targetSelector:
           main: main
-        hosts:
-          - host: "vault.${DOMAIN_0}"
-            paths:
-            - path: /admin
-              pathType: Prefix
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /admin
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
@@ -113,3 +114,10 @@ spec:
         enabled: true
         installationId: ${VAULTWARDEN_PUSH_ID}
         installationKey: ${VAULTWARDEN_PUSH_KEY}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                DOMAIN: https://vault.${DOMAIN_0}

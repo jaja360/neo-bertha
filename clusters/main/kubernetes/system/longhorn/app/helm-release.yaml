@@ -44,23 +44,3 @@ spec:
     service:
       ui:
         type: LoadBalancer
-    ingress:
-      enabled: true
-      host: longhorn.${DOMAIN_0}
-      pathType: Prefix
-      tls: true
-      tlsSecret: "longhorn-tls-0"
-      annotations:
-        nginx.ingress.kubernetes.io/auth-method: 'GET'
-        nginx.ingress.kubernetes.io/auth-url: 'http://authelia.authelia.svc.cluster.local:9091/api/verify'
-        nginx.ingress.kubernetes.io/auth-signin: 'https://auth.${DOMAIN_0}?rm=$request_method'
-        nginx.ingress.kubernetes.io/auth-response-headers: 'Remote-User,Remote-Name,Remote-Groups,Remote-Email'
-        cert-manager.io/cluster-issuer: domain-0-le-prod
-        cert-manager.io/private-key-rotation-policy: Always
-        gethomepage.dev/enabled: "true"
-        gethomepage.dev/href: "https://longhorn.${DOMAIN_0}"
-        gethomepage.dev/description: "View and manage PVCs and snapshots"
-        gethomepage.dev/group: Admin
-        gethomepage.dev/icon: longhorn.svg
-        gethomepage.dev/name: "Longhorn UI"
-        gethomepage.dev/pod-selector: "app=longhorn-ui"

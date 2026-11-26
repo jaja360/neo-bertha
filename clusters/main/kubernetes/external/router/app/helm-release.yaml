@@ -41,7 +41,6 @@ spec:
         enabled: true
         gateway: envoy-internal
         gatewayNamespace: envoy-gateway
-        listenerPort: 8443
         annotations:
           gethomepage.dev/external: "true"
           gethomepage.dev/ping: "${GATEWAY}"

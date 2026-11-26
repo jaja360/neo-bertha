@@ -9,7 +9,6 @@ resources:
   - cloudnative-pg.yaml
   - envoy-gateway.yaml
   - home-ops-mirror.yaml
-  - ingress-nginx.yaml
   - jetstack.yaml
   - metallb.yaml
   - node-feature-discovery.yaml

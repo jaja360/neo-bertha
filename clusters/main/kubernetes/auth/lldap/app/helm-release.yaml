@@ -68,21 +68,19 @@ spec:
         type: LoadBalancer
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: lldap.${DOMAIN_0}
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        hostnames:
+          - lldap.${DOMAIN_0}
         integrations:
-          nginx:
+          envoy:
             enabled: true
             auth:
               type: "authelia"
               internalHost: "authelia.authelia.svc.cluster.local:9091"
-              externalHost: "auth.${DOMAIN_0}"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

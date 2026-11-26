@@ -64,6 +64,13 @@ spec:
     service:
       main:
         type: LoadBalancer
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                BETTER_AUTH_URL: https://tracearr.${DOMAIN_0}
     secret:
       env-secrets:
         enabled: true

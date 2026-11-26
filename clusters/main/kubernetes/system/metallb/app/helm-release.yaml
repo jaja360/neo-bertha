@@ -24,3 +24,5 @@ spec:
   values:
     speaker:
       ignoreExcludeLB: true
+    frrk8s:
+      enabled: false

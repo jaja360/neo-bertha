@@ -39,6 +39,9 @@ spec:
         integrations:
           envoy:
             enabled: true
+            auth:
+              type: authelia
+              internalHost: authelia.authelia.svc.cluster.local:9091
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod

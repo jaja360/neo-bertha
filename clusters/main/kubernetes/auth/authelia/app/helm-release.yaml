@@ -206,7 +206,7 @@ spec:
           AUTHELIA_STORAGE_ENCRYPTION_KEY: "${AUTHELIA_STORAGE_ENCRYPTION_KEY}"
     waitImage:
       repository: docker.io/library/bash
-      tag: "5.2"
+      tag: "5.3"
       pullPolicy: IfNotPresent
     workload:
       main:

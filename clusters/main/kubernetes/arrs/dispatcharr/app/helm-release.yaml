@@ -28,7 +28,7 @@ spec:
   values:
     gluetunImage:
       repository: docker.io/qmcgaw/gluetun
-      tag: v3.40.4
+      tag: v3.41.3
     addons:
       gluetun:
         enabled: true

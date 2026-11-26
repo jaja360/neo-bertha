@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: seerr
-      version: 17.1.6
+      version: 18.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -34,21 +34,25 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    cnpg:
-      main:
+    dependencies:
+      postgresql:
         enabled: true
-        user: seerr
-        database: seerr
-        password: ${CNPG_PASSWD}
-        hibernate: false
-        mode: standalone
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-        backups:
-          enabled: true
-          credentials: backblaze
-          retentionPolicy: 7d
+        depconfig:
+          postgresqlUsername: seerr
+          postgresqlDatabase: seerr
+          password: ${CNPG_PASSWD}
+        operator:
+          pgVersion: 16
+          mode: recovery
+          cluster:
+            instances: ${NUMBER_OF_NODES}
+            singleNode: ${SINGLE_NODE}
+          backups:
+            enabled: true
+            credentials: backblaze
+            retentionPolicy: 7d
+          recovery:
+            credentials: backblaze
     persistence:
       config:
         annotations:
@@ -67,16 +71,16 @@ spec:
     service:
       main:
         type: LoadBalancer
-    ingress:
+    route:
       main:
         enabled: true
-        hosts:
-          - host: "seerr.${DOMAIN_0}"
-            paths:
-            - path: /
-              pathType: Prefix
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        listenerPort: 8443
+        hostnames:
+          - "seerr.${DOMAIN_0}"
         integrations:
-          nginx:
+          envoy:
             enabled: true
           certManager:
             enabled: true
@@ -84,7 +88,7 @@ spec:
           homepage:
             enabled: true
             group: Arrs
-            name: "Seerr"
+            name: Seerr
             widget:
               enabled: true
               custom:

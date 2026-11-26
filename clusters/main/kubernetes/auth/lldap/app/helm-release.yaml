@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: lldap
-      version: 10.1.4
+      version: 11.0.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -32,20 +32,23 @@ spec:
         encrKey: "${BACKBLAZE_ENCR_KEY}"
         secretKey: "${BACKBLAZE_KEY}"
         url: "${BACKBLAZE_URL}"
-    cnpg:
-      main:
-        mode: recovery
-        password: ${CNPG_PASSWD}
-        hibernate: false
-        cluster:
-          instances: ${NUMBER_OF_NODES}
-          singleNode: ${SINGLE_NODE}
-        backups:
-          enabled: true
-          credentials: backblaze
-          retentionPolicy: 7d
-        recovery:
-          credentials: backblaze
+    dependencies:
+      postgresql:
+        enabled: true
+        depconfig:
+          password: ${CNPG_PASSWD}
+        operator:
+          pgVersion: 16
+          mode: recovery
+          cluster:
+            instances: ${NUMBER_OF_NODES}
+            singleNode: ${SINGLE_NODE}
+          backups:
+            enabled: true
+            credentials: backblaze
+            retentionPolicy: 7d
+          recovery:
+            credentials: backblaze
     persistence:
       data:
         annotations:
@@ -100,4 +103,7 @@ spec:
                 LLDAP_LDAP_BASE_DN: ${LDAP_BASE_DN}
                 LLDAP_LDAP_USER_DN: admin
                 LLDAP_LDAP_USER_EMAIL: ${LDAP_ADMIN_EMAIL}
-                LLDAP_LDAP_USER_PASS: ${LDAP_ADMIN_PASSWD}
+    secret:
+      env-secrets:
+        data:
+          LLDAP_LDAP_USER_PASS: "${LDAP_ADMIN_PASSWD}"

@@ -24,11 +24,11 @@
   },
   "packageRules": [
     {
-      "description": "tracearr custom image (TimescaleDB): stay within PostgreSQL 18.x until a TimescaleDB build exists for the next major",
+      "description": "cnpg-timescaledb image: the base image and the TimescaleDB apt packages (timescaledb-2-postgresql-<major>=<version>~debian13-<pgpatch>) must be bumped together, which Renovate cannot do - it would move only the FROM line and the build would fail. Bump by hand.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/cloudnative-pg/postgresql"],
       "matchFileNames": [".github/cnpg-timescaledb/Dockerfile"],
-      "allowedVersions": "<19"
+      "enabled": false
     },
     {
       "description": "aio-talk only publishes date-stamped tags (YYYYMMDD_HHMMSS) since March 2025, so the default docker versioning cannot order them and updates are silently skipped.",

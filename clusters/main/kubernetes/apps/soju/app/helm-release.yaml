@@ -54,7 +54,6 @@ spec:
             enabled: true
             credentials: backblaze
             retentionPolicy: 7d
-            # serverName: soju-app-template-cnpg-main-pg18
           recovery:
             credentials: backblaze
     persistence:

@@ -55,7 +55,6 @@ spec:
         depconfig:
           password: ${CNPG_PASSWD}
         operator:
-          pgVersion: 16
           mode: recovery
           cluster:
             instances: ${NUMBER_OF_NODES}

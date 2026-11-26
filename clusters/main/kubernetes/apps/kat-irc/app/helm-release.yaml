@@ -47,7 +47,6 @@ spec:
             enabled: true
             port: 8080
             protocol: http
-            targetPort: 8080
     persistence:
       data:
         enabled: true

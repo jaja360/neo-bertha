@@ -156,6 +156,11 @@ spec:
         secretHash: ${AUTHELIA_QUI_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://qui.${DOMAIN_0}/api/auth/oidc/callback
+      romm:
+        name: RomM
+        secretHash: ${AUTHELIA_ROMM_CLIENT_SECRET_HASH}
+        redirectURIs:
+          - https://romm.${DOMAIN_0}/api/oauth/openid
     secret:
       authelia-configfile:
         enabled: true

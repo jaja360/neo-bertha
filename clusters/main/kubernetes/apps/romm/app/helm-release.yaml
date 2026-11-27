@@ -106,9 +106,6 @@ spec:
         integrations:
           envoy:
             enabled: true
-            auth:
-              type: "authelia"
-              internalHost: "authelia.authelia.svc.cluster.local:9091"
           certManager:
             enabled: true
             certificateIssuer: domain-0-le-prod
@@ -133,6 +130,16 @@ spec:
                   cpu: 500m
                   memory: 1Gi
               env:
+                OIDC_ENABLED: "true"
+                OIDC_PROVIDER: Authelia
+                OIDC_SERVER_APPLICATION_URL: https://auth.${DOMAIN_0}
+                OIDC_CLIENT_ID: romm
+                OIDC_CLIENT_SECRET: ${ROMM_OIDC_CLIENT_SECRET}
+                OIDC_REDIRECT_URI: https://romm.${DOMAIN_0}/api/oauth/openid
+                OIDC_USERNAME_ATTRIBUTE: preferred_username
+                OIDC_ALLOW_REGISTRATION: "true"
+                OIDC_AUTOLOGIN: "true"
+                DISABLE_USERPASS_LOGIN: "true"
                 ROMM_BASE_URL: "https://romm.${DOMAIN_0}"
                 SCREENSCRAPER_USER: ${SCREENSCRAPER_USER}
                 SCREENSCRAPER_PASSWORD: ${SCREENSCRAPER_PASSWORD}

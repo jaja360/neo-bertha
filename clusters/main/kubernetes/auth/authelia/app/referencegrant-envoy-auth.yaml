@@ -28,9 +28,6 @@ spec:
       namespace: qbittorrent
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
-      namespace: romm
-    - group: gateway.envoyproxy.io
-      kind: SecurityPolicy
       namespace: sabnzbd
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy

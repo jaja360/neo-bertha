@@ -33,7 +33,11 @@ spec:
       main:
         ports:
           main:
+            enabled: true
             port: 7476
+          tracker:
+            enabled: true
+            port: 7477
     persistence:
       config:
         enabled: true
@@ -50,7 +54,6 @@ spec:
         mountPath: /medias
         path: ${NFS_MEDIAS_PATH}
         server: ${NFS_SERVER}
-        readOnly: true
     workload:
       main:
         podSpec:
@@ -96,3 +99,17 @@ spec:
             name: qui
             widget:
               enabled: false
+      tracker:
+        enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        targetSelector:
+          main: tracker
+        hostnames:
+          - share.${DOMAIN_0}
+        integrations:
+          envoy:
+            enabled: true
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod

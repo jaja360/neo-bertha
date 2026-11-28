@@ -95,6 +95,12 @@ spec:
           base_dn: ${LDAP_BASE_DN}
           user: uid=admin,ou=people,${LDAP_BASE_DN}
           password: ${LDAP_ADMIN_PASSWD}
+          attributes:
+            extra:
+              entryUUID:
+                name: nc_directory_uuid
+                value_type: string
+                multi_valued: false
       session:
         cookies:
           - domain: ${DOMAIN_0}
@@ -167,6 +173,16 @@ spec:
           - https://romm.${DOMAIN_0}/api/oauth/openid
         consentMode: pre-configured
         preConfiguredConsentDuration: '1 year'
+      nextcloud:
+        name: Nextcloud
+        secretHash: ${AUTHELIA_NEXTCLOUD_CLIENT_SECRET_HASH}
+        redirectURIs:
+          - https://nextcloud.${DOMAIN_0}/apps/user_oidc/code
+          - https://nextcloud.${DOMAIN_0}/index.php/apps/user_oidc/code
+        claimsPolicy: nextcloud
+        authorizationPolicy: nextcloud
+        consentMode: pre-configured
+        preConfiguredConsentDuration: '1 year'
     secret:
       authelia-configfile:
         enabled: true
@@ -188,6 +204,18 @@ spec:
                       - preferred_username
                       - name
                       - picture
+                  nextcloud:
+                    id_token:
+                      - nc_uid
+                    custom_claims:
+                      nc_uid:
+                        attribute: nc_directory_uuid
+                authorization_policies:
+                  nextcloud:
+                    default_policy: two_factor
+                    rules:
+                      - policy: deny
+                        subject: 'user:admin'
                 clients:
             {{- range $id, $c := .Values.oidcClients }}
             {{- if not $c.secretHash }}

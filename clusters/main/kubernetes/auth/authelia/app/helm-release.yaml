@@ -183,6 +183,7 @@ spec:
         authorizationPolicy: nextcloud
         consentMode: pre-configured
         preConfiguredConsentDuration: '1 year'
+        tokenEndpointAuthMethod: client_secret_post
     secret:
       authelia-configfile:
         enabled: true

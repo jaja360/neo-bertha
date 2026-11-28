@@ -9,6 +9,7 @@ resources:
   - nemorosa/ks.yaml
   - nextcloud/ks.yaml
   - oleafly/ks.yaml
+  - omni-tools/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
   - poznote/ks.yaml

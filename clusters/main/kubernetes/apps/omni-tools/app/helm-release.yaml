@@ -1,0 +1,76 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: omni-tools
+  namespace: omni-tools
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 22.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: iib0011/omni-tools
+      tag: 0.7.0
+    service:
+      main:
+        type: LoadBalancer
+        ports:
+          main:
+            enabled: true
+            port: 80
+    persistence:
+      cache:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/cache/nginx
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  type: http
+                  path: /
+                readiness:
+                  type: http
+                  path: /
+    route:
+      main:
+        enabled: true
+        gateway: envoy-internal
+        gatewayNamespace: envoy-gateway
+        hostnames:
+          - omnitools.${DOMAIN_0}
+        integrations:
+          envoy:
+            enabled: true
+          certManager:
+            enabled: true
+            certificateIssuer: domain-0-le-prod
+          homepage:
+            enabled: true
+            group: Misc
+            name: OmniTools
+            description: Browser-based utility toolbox
+            icon: https://raw.githubusercontent.com/iib0011/omni-tools/main/public/favicon.svg
+            widget:
+              enabled: false

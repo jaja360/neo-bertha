@@ -151,16 +151,22 @@ spec:
         secretHash: ${AUTHELIA_OLEAFLY_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://oleafly.${DOMAIN_0}/auth/callback/authelia
+        consentMode: pre-configured
+        preConfiguredConsentDuration: '1 year'
       qui:
         name: qui
         secretHash: ${AUTHELIA_QUI_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://qui.${DOMAIN_0}/api/auth/oidc/callback
+        consentMode: pre-configured
+        preConfiguredConsentDuration: '1 year'
       romm:
         name: RomM
         secretHash: ${AUTHELIA_ROMM_CLIENT_SECRET_HASH}
         redirectURIs:
           - https://romm.${DOMAIN_0}/api/oauth/openid
+        consentMode: pre-configured
+        preConfiguredConsentDuration: '1 year'
     secret:
       authelia-configfile:
         enabled: true
@@ -206,6 +212,12 @@ spec:
                     response_types:
                       - code
                     token_endpoint_auth_method: {{ $c.tokenEndpointAuthMethod | default "client_secret_basic" }}
+            {{- with $c.consentMode }}
+                    consent_mode: {{ . | quote }}
+            {{- end }}
+            {{- with $c.preConfiguredConsentDuration }}
+                    pre_configured_consent_duration: {{ . | quote }}
+            {{- end }}
             {{- end }}
       env-secrets:
         enabled: true

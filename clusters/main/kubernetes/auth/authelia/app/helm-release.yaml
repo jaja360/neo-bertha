@@ -181,6 +181,11 @@ spec:
           - https://nextcloud.${DOMAIN_0}/index.php/apps/user_oidc/code
         claimsPolicy: nextcloud
         authorizationPolicy: nextcloud
+        scopes:
+          - openid
+          - profile
+          - email
+          - nc_identity
         consentMode: pre-configured
         preConfiguredConsentDuration: '1 year'
         tokenEndpointAuthMethod: client_secret_post
@@ -211,6 +216,10 @@ spec:
                     custom_claims:
                       nc_uid:
                         attribute: nc_directory_uuid
+                scopes:
+                  nc_identity:
+                    claims:
+                      - nc_uid
                 authorization_policies:
                   nextcloud:
                     default_policy: two_factor
